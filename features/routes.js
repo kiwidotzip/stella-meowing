@@ -134,7 +134,7 @@ function saveRoute(force){
         }
     }
     routes[roomRID] = route[roomRID]  
-    FileLib.write("eclipseAddons", "data/routes.json", JSON.stringify(routes,undefined,4));
+    FileLib.write("eclipseAddons", "data/routes.json", JSON.stringify(routes,undefined,4))
     if(force) ChatLib.chat('&aOverwritten!')
     else ChatLib.chat('&aSaved!')
     stopRecording()
@@ -308,6 +308,16 @@ register("renderWorld", () => {
                 if(settings().showText) drawString("BOOM",x + 0.5, y + 0.6, z + 0.5, 0xffffff, true, 0.03, false)  
             } 
         }
+
+        if(recordingData.interacts !== null){ 
+            for(var i = 0; i  < recordingData.interacts.length; i++){
+                let [ x, y, z ] = getRealCoord(recordingData.interacts[i], currRoomData)
+                let [r, g, b] = [settings().clickColor[0] / 255, settings().clickColor[1] / 255, settings().clickColor[2] / 255]
+
+                drawBoxAtBlock(x, y, z, r, g, b, 1, 1)   
+                if(settings().showText) drawString("Click",x + 0.5, y + 0.6, z + 0.5, 0xffffff, true, 0.03, false)
+            }
+        }
     
         if(recordingData.mines !== null){ 
             for(var i = 0; i  < recordingData.mines.length; i++){
@@ -321,7 +331,6 @@ register("renderWorld", () => {
                 }
             }
         }
-
         
         if(Object.keys(route).length !== 0){
             let [ x, y, z ] = getRealCoord(route[roomRID][step -1].secret.location, currRoomData)
@@ -478,6 +487,8 @@ register("packetReceived", (packet) => {
 
         let realpos = this.tempItemIdLocs.get(packet.func_149354_c())
         pos = [Math.round(realpos[0]), Math.round(realpos[1]), Math.round(realpos[2])]
+        let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1]
+        let pdistance = calcDistance(playerPos, pos)
 
         ChatLib.chat(JSON.stringify(pos,undefined,2))
         if(Object.keys(route).length !== 0){
@@ -488,14 +499,15 @@ register("packetReceived", (packet) => {
             ChatLib.chat(distance)
 
             if(distance > 5){ 
-                addPoint(pos, "secretItem")
                 pushToRoute()
                 ChatLib.chat("item added!")
             } 
         } 
 
         else{
-            addPoint(pos, "secretItem")
+            if(pdistance > 5) addPoint(playerPos, "secretItem")
+            else addPoint(pos, "secretItem")
+
             pushToRoute()
             ChatLib.chat("item added!")
         }
