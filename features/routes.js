@@ -1,20 +1,18 @@
 import { getRealCoord, getRoomID, getRoomWorldData, getRouteData, getRoomData, inDungeon, getRoomCoord, routes } from "../utils/dutils"
 import { drawBoxAtBlock, drawFilledBox, drawLine } from "../utils/renderUtils"
 import { calcDistance, drawLineParticles, drawString } from "../utils/utils"
-import { registerForge } from "../utils/forge"
 import settings from "../utils/config"
 
 const EntityItem = Java.type("net.minecraft.entity.item.EntityItem")
+const secretItems = new Set(["Healing VIII Splash Potion", "Healing Potion 8 Splash Potion", "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"])
 
 /*secret routes
     the main point of this mod, I tried to doccument how it works as best as I could
     
     TO DO
     ---------------
-    item detection for recording
-    rendering multible steps at once
+    rendering multible steps at once (is this even nececary)
     keybinds
-    fix tnt (you know what im talking about)
     --------------
 */
 
@@ -133,7 +131,7 @@ function saveRoute(force){
             }
         }
     }
-    routes[roomRID] = route[roomRID]  
+    routes[roomRID] = route[roomRID]
     FileLib.write("eclipseAddons", "data/routes.json", JSON.stringify(routes,undefined,4))
     if(force) ChatLib.chat('&aOverwritten!')
     else ChatLib.chat('&aSaved!')
@@ -142,22 +140,6 @@ function saveRoute(force){
 }
 
 //more functions
-
-//borrowed from bettermap
-let tempItemIdLocs = new Map()
-
-registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (event) => {
-    if (event.entity instanceof EntityItem) {
-        let e = new Entity(event.entity)
-        let pos = [e.getX(), e.getY(), e.getZ()]
-        tempItemIdLocs.set(event.entity.func_145782_y(), pos)
-    }
-})
-
-register("worldLoad", () => {
-    tempItemIdLocs.clear()
-})
-
 
 //gets room data
 register('step', () => {
@@ -467,15 +449,47 @@ register("soundPlay",  (pos, name) => {
 
 
 //item detection (still need to tweak sense)
+
+//borrowed from bettermap
+let tempItemIdLocs = new Map()
+
+register(net.minecraftforge.event.entity.EntityJoinWorldEvent, (event) => {
+    if (event.entity instanceof EntityItem) {
+        tempItemIdLocs.set(event.entity.func_145782_y(), event.entity)
+    }
+})
+
+register("worldLoad", () => {
+    tempItemIdLocs.clear()
+})
+
+//Thanks DocilElm for all your help with this
+
 register("packetReceived", (packet) => {
+    let entityID = packet.func_149354_c()
+
+    if(!this.tempItemIdLocs.has(entityID)) return
+
+    let entity = tempItemIdLocs.get(entityID)
+    let name = entity.func_92059_d()?.func_82833_r()
+
+    let e = new Entity(entity)
+    let pos = [e.getX(), e.getY(), e.getZ()]
+
+    if (!name || !secretItems.has(name.removeFormatting())){
+        ChatLib.chat("Not a secret")
+        return
+    }
+
     //normal item detection
     if(currRouteData !== null && !recording){
         if(step < currRouteData.length){
             if (currRouteData[step].secret.type !== "item") return
 
             let secretPos = getRealCoord(currRouteData[step].secret.location, currRoomData)
-            let pos = this.tempItemIdLocs.get(packet.func_149354_c())
             let distance = calcDistance(pos, secretPos)
+
+            ChatLib.chat(distance)
 
             if(distance < 5){ step ++}  
         }
@@ -484,21 +498,22 @@ register("packetReceived", (packet) => {
     //recording item detection
     if(recording){
         ChatLib.chat("item picked up")
-
-        let realpos = this.tempItemIdLocs.get(packet.func_149354_c())
-        pos = [Math.round(realpos[0]), Math.round(realpos[1]), Math.round(realpos[2])]
+        let posRound = [Math.round(pos[0]), Math.round(pos[1]), Math.round(pos[2])]
         let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1]
-        let pdistance = calcDistance(playerPos, pos)
+        let pdistance = calcDistance(playerPos, posRound)
 
-        ChatLib.chat(JSON.stringify(pos,undefined,2))
+        ChatLib.chat(JSON.stringify(posRound,undefined,2))
         if(Object.keys(route).length !== 0){
             ChatLib.chat("distance check")
             let secretPos = getRealCoord(route[roomRID][step -1].secret.location, currRoomData)
             ChatLib.chat(JSON.stringify(secretPos,undefined,2))
-            let distance = calcDistance(pos, secretPos)
+            let distance = calcDistance(posRound, secretPos)
             ChatLib.chat(distance)
 
-            if(distance > 5){ 
+            if(distance > 5){
+                if(pdistance > 5) addPoint(playerPos, "secretItem")
+                else addPoint(pos, "secretItem") 
+                
                 pushToRoute()
                 ChatLib.chat("item added!")
             } 
@@ -512,8 +527,7 @@ register("packetReceived", (packet) => {
             ChatLib.chat("item added!")
         }
     }
-    
-}).setPacketClasses([net.minecraft.network.play.server.S0DPacketCollectItem])
+}).setFilteredClass(net.minecraft.network.play.server.S0DPacketCollectItem)
 
 //bat detection (easyest part imo)
 register("renderWorld", () => {
