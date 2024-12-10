@@ -32,7 +32,7 @@
 
 <h2 align="center">Credits</h2>
 
-- **[Eclipse]** - Created this piece of programming nightmare.  
+- **[Eclipse (AKA NEXD_)]** - Created this piece of programming nightmare.  
 - [SecretRoutes](https://github.com/yourboykyle/SecretRoutes) - Insperation
 - [ChatTriggers](https://www.chattriggers.com/) - Mod Platform
 - [BetterMap](https://github.com/BetterMap/BetterMap) - Secret Waypoints and Coordnate conversion
