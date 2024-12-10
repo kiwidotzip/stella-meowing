@@ -8,7 +8,7 @@
   </a>
 </p>
 
-<p align="center" id="description"><em>Eclipse Addons</em> is a verry work in progress Skyblock Quality-of-Life (QoL) mod for chattriggers</p>
+<p align="center" id="description"><em>Eclipse Addons</em> is a verry work in progress Skyblock Quality-of-Life (QoL) mod for ChatTriggers</p>
 
 ---
 
