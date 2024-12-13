@@ -2,6 +2,22 @@ import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
 import Settings from "../../Amaterasu/core/Settings"
 
 const config = new DefaultConfig("eclipseAddons", "data/settings.json")
+
+/*  ------------------- Config ------------------
+
+    Core Config
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
+
+//markdown stuff
+//const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md")
+//const CHANGELOG = FileLib.read("eclipseAddons", "assets/changelog.md")
+
 //general
 
 .addTextParagraph({
@@ -42,6 +58,36 @@ const config = new DefaultConfig("eclipseAddons", "data/settings.json")
     subcatagory: "General",
     value: true
 })
+
+//keybinds
+
+.addKeybind({
+    category: "Routes",
+    subcategory: "Keybinds",
+    configName: "nextStep",
+    title: "Next Step",
+    description: "Goes to the next step",
+    value: 221
+})
+
+.addKeybind({
+    category: "Routes",
+    subcategory: "Keybinds",
+    configName: "lastStep",
+    title: "Last Step",
+    description: "Goes back to the last step",
+    value: 219
+})
+
+.addKeybind({
+    category: "Routes",
+    subcategory: "Keybinds",
+    configName: "resetStep",
+    title: "Reset",
+    description: "Resets the route",
+    value: 220
+})
+
 
 //line stuff
 .addDropDown({
@@ -198,5 +244,7 @@ const config = new DefaultConfig("eclipseAddons", "data/settings.json")
 const setting = new Settings("eclipseAddons", config, "data/ColorScheme.json")
 
 .setCommand("sr")
+//.addMarkdown("Changelog", CHANGELOG)
+//.addMarkdown("Credits", CREDITS)
 
 export default () => setting.settings

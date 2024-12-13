@@ -1,5 +1,16 @@
 import PogObject from "../../PogData";
 
+/*  ----------- First Install Message -----------
+
+    Funny Popup thing
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
+
 const firstInstall = new PogObject("CrafterAddons", {
     firstInstall: false
 });
@@ -22,6 +33,7 @@ register("tick", () => {
     }
 })
 
+//debug command for testing
 register("command", () => {
     firstInstall.firstInstall = false
     firstInstall.save()

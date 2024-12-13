@@ -3,6 +3,16 @@ const DefaultVertexFormats = net.minecraft.client.renderer.vertex.DefaultVertexF
 const WorldRenderer = MCTessellator.func_178180_c()
 const EnumParticleTypes = Java.type('net.minecraft.util.EnumParticleTypes');
 
+/*  ------------- General Utilities -------------
+
+    General skyblok utilities
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
 /**
  * - Chattrigger's Tessellator.drawString() with depth check and multiline and shadow
  * - Renders floating lines of text in the 3D world at a specific position.

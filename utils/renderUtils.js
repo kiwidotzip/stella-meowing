@@ -1,5 +1,16 @@
 //borrowed from soopyV2
 
+/*  ------------- Render Utilities --------------
+
+    Utilities for rendering stuff
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
+
 if (!GlStateManager) {
     var GL11 = Java.type("org.lwjgl.opengl.GL11"); // Using var so it goes to global scope
     var GlStateManager = Java.type("net.minecraft.client.renderer.GlStateManager");

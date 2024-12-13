@@ -3,6 +3,16 @@ import { drawBoxAtBlock } from "../utils/renderUtils"
 import { drawString } from "../utils/utils"
 import settings from "../utils/config"
 
+/*  ------------- Secret Waypoints---------------
+
+    Draws goofy waypoints at secrets
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
 //variables
 var lastRoomId = null
 var currRoomData = null

@@ -1,5 +1,16 @@
 import { getScoreboard, removeUnicode } from "./utils"
 
+/*  ------------ Dungeon Utilities --------------
+
+    Dungeon related utilites
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
+
 //load rooms list
 export const rooms = JSON.parse(FileLib.read("eclipseAddons", "data/roomdata.json"))
 

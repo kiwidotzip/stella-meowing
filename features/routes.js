@@ -3,17 +3,27 @@ import { drawBoxAtBlock, drawFilledBox, drawLine } from "../utils/renderUtils"
 import { calcDistance, drawLineParticles, drawString } from "../utils/utils"
 import settings from "../utils/config"
 
+/*  --------------- secret routes ---------------
+
+    the main point of this mod
+
+    ------------------- To Do -------------------
+
+    -rendering multible steps at once (is this even nececary)
+    -keybinds
+
+    --------------------------------------------- */
+
+
+//item filtering
 const EntityItem = Java.type("net.minecraft.entity.item.EntityItem")
 const secretItems = new Set(["Healing VIII Splash Potion", "Healing Potion 8 Splash Potion", "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"])
 
-/*secret routes
-    the main point of this mod, I tried to doccument how it works as best as I could
-    
-    TO DO
-    ---------------
-    rendering multible steps at once (is this even nececary)
-    keybinds
-    --------------
+//set keybinds
+/*
+let nStep = new KeyBind("Next Step", settings().nextStep, "Eclipse Addons")
+let lStep = new KeyBind("Last Step", settings().lastStep, "Eclipse Addons")
+let rStep = new KeyBind("Reset Route", settings().resetStep, "Eclipse Addons")
 */
 
 //general variables
@@ -34,8 +44,16 @@ var recording = false;
 
 //resets the rooms current route
 function reset() {
+    //resets route
     step = 0;
     currRouteData = getRouteData()
+
+    //refreshes keybinds
+    /*
+    nStep.getKeyCode(settings().nextStep)
+    lStep.getKeyCode(settings().lastStep)
+    rStep.getKeyCode(settings().resetStep)
+    */
 }
 
 //functions for recording
@@ -560,6 +578,12 @@ register('step', () => {
 
 
 }).setFps(2)
+
+//keybind uses
+
+//if (nStep.isPressed()){ step ++; ChatLib.chat('&aShowing next step!') }
+//if (lStep.isPressed()){ step --; ChatLib.chat('&aShowing last step!') }
+//if (rStep.isPressed()){ reset(); }
 
 //debug commands
 register("command", (...args) => {
