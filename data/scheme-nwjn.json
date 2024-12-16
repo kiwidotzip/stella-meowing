@@ -7,7 +7,7 @@
             "roundness": 3
         },
         "text": {
-            "color": [255, 255, 255, 255],
+            "color": [200, 200, 200, 255],
             "scale": 1
         },
         "mouseClickAnimation": {
@@ -24,7 +24,7 @@
             "roundness": 5
         },
         "lines": {
-            "color": [0, 0, 0, 80],
+            "color": [200, 200, 200, 80],
             "roundness": 3
         },
         "text": {
@@ -40,7 +40,7 @@
             "time": 0.2
         },
         "mouseEnterAnimation": {
-            "color": [0, 0, 0, 80],
+            "color": [255, 255, 255, 80],
             "type": "OUT_EXP",
             "time": 0.5
         },
@@ -75,10 +75,10 @@
     },
     "Checkbox": {
         "background": {
-            "enabledColor": [255, 255, 255, 80],
-            "disabledColor": [0, 0, 0, 80],
+            "enabledColor": [50, 255, 50, 80],
+            "disabledColor": [255, 50, 50, 80],
             "outlineColor": [255, 255, 255, 255],
-            "outlineSize": 0,
+            "outlineSize": 0.5,
             "roundness": 3
         },
         "check": {
@@ -299,7 +299,7 @@
             "roundness": 3
         },
         "line": {
-            "color": [255, 255, 255, 80],
+            "color": [255, 255, 255, 0],
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
             "roundness": 3
@@ -431,7 +431,7 @@
     },
     "Amaterasu": {
         "background": {
-            "color": [0, 0, 0, 80],
+            "color": [100, 100, 100, 80],
             "outlineColor": [255, 255, 255, 80],
             "outlineSize": 0.5,
             "roundness": 5
@@ -444,8 +444,8 @@
             "roundness": 5
         },
         "panel": {
-            "leftColor": [0, 0, 0, 0],
-            "rightColor": [0, 0, 0, 0]
+            "leftColor": [0, 0, 0, 30],
+            "rightColor": [0, 0, 0, 30]
         },
         "scrollbar": {
             "color": [255, 255, 255, 80]

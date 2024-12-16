@@ -12,10 +12,10 @@ import { getScoreboard, removeUnicode } from "./utils"
 
 
 //load rooms list
-export const rooms = JSON.parse(FileLib.read("eclipseAddons", "data/roomdata.json"))
+export const rooms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/roomdata.json"))
 
 //load routes
-export var routes = JSON.parse(FileLib.read("eclipseAddons", "data/routes.json"))
+export var routes = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/routes/routes.json"))
 
 //checks if your in dungeons based on the scorebord
 export const inDungeon = () => {

@@ -1,8 +1,6 @@
 import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
 import Settings from "../../Amaterasu/core/Settings"
 
-const config = new DefaultConfig("eclipseAddons", "data/settings.json")
-
 /*  ------------------- Config ------------------
 
     Core Config
@@ -13,13 +11,21 @@ const config = new DefaultConfig("eclipseAddons", "data/settings.json")
 
     --------------------------------------------- */
 
+//setup
+
+const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"]
 
 //markdown stuff
-//const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md")
-//const CHANGELOG = FileLib.read("eclipseAddons", "assets/changelog.md")
+const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).version
+
+const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md")
+const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAddons", "assets/changelog.md")}`
+
+//config
+
+const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
 
 //general
-
 .addTextParagraph({
     category: "General",
     configName: "Info",
@@ -241,10 +247,88 @@ const config = new DefaultConfig("eclipseAddons", "data/settings.json")
     value: [255, 0, 0, 255]
 })
 
-const setting = new Settings("eclipseAddons", config, "data/ColorScheme.json")
+//theming
 
-.setCommand("sr")
-//.addMarkdown("Changelog", CHANGELOG)
-//.addMarkdown("Credits", CREDITS)
+.addSelection({
+    category: "GUI",
+    configName: "scheme",
+    title: "Change My Scheme!",
+    description: "Select which scheme you want from these presets (needs apply after)",
+    options: ["Default", "Vigil", "nwjn"]
+})
+
+.addButton({
+    category: "GUI",
+    configName: "apply",
+    title: "Apply Changes",
+    description: "Need to click this for window to reload with selected changes",
+    onClick(config) {
+        // Change the scheme path depending on the value of the [Selector] config
+        const currentScheme = schemes[config.settings.scheme]
+        const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))
+        // Setting the alpha
+        scheme.Amaterasu.background.color = config.settings.bgColor
+
+        // Now we save the [currentScheme] with the [alpha] set in the [Slider]
+        FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4))
+
+        // Now we set the new position, size and colorScheme for our [ConfigGui]
+        config
+            .setPos(config.settings.x, config.settings.y)
+            .setSize(config.settings.width, config.settings.height)
+            .setScheme(currentScheme)
+            .apply()
+    }
+})
+
+.addColorPicker({
+    category: "GUI",
+    configName: "bgColor",
+    title: "Change Background Color",
+    description: "Changes the color and alpha of the background",
+    value: [0, 0, 0, 80]
+})
+
+.addSlider({
+    category: "GUI",
+    configName: "x",
+    title: "Change X",
+    description: "Changes the starting X coordinate of the GUI (in percent)",
+    options: [0, 75],
+    value: 20
+})
+
+.addSlider({
+    category: "GUI",
+    configName: "y",
+    title: "Change Y",
+    description: "Changes the starting Y coordinate of the GUI (in percent)",
+    options: [0, 75],
+    value: 20
+})
+
+.addSlider({
+    category: "GUI",
+    configName: "width",
+    title: "Change Width",
+    description: "Changes the width of the GUI (in percent)",
+    options: [25, 100],
+    value: 60
+})
+
+.addSlider({
+    category: "GUI",
+    configName: "height",
+    title: "Change Height",
+    description: "Changes the height of the GUI (in percent)",
+    options: [25, 100],
+    value: 60
+})
+
+const setting = new Settings("Eclipse Addons", config, "data/ColorScheme.json")
+
+.addMarkdown("Credits", CREDITS)
+.addMarkdown("Changelog", CHANGELOG)
+
 
 export default () => setting.settings

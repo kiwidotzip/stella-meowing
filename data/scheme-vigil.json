@@ -1,51 +1,51 @@
 {
     "Button": {
         "background": {
-            "color": [0, 0, 0, 80],
+            "color": [50, 50, 50, 255],
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
             "roundness": 3
         },
         "text": {
-            "color": [255, 255, 255, 255],
+            "color": [200, 200, 200, 255],
             "scale": 1
         },
         "mouseClickAnimation": {
-            "color": [255, 255, 255, 80],
+            "color": [200, 200, 200, 255],
             "type": "OUT_EXP",
             "time": 0.2
         }
     },
     "Button1": {
         "background": {
-            "color": [0, 0, 0, 0],
+            "color": [50, 50, 50, 255],
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
             "roundness": 5
         },
         "lines": {
-            "color": [0, 0, 0, 80],
+            "color": [0, 0, 0, 0],
             "roundness": 3
         },
         "text": {
-            "color": [255, 255, 255, 255],
+            "color": [200, 200, 200, 255],
             "scale": 1,
             "format": "",
             "centered": false,
-            "selectedColor": [19, 117, 141, 255]
+            "selectedColor": [35, 130, 219, 255]
         },
         "mouseClickAnimation": {
-            "color": [255, 255, 255, 80],
+            "color": [200, 200, 200, 255],
             "type": "OUT_EXP",
             "time": 0.2
         },
         "mouseEnterAnimation": {
-            "color": [0, 0, 0, 80],
+            "color": [200, 200, 200, 255],
             "type": "OUT_EXP",
             "time": 0.5
         },
         "mouseLeaveAnimation": {
-            "color": [0, 0, 0, 0],
+            "color": [50, 50, 50, 255],
             "type": "OUT_EXP",
             "time": 0.5
         }
@@ -75,10 +75,10 @@
     },
     "Checkbox": {
         "background": {
-            "enabledColor": [255, 255, 255, 80],
-            "disabledColor": [0, 0, 0, 80],
-            "outlineColor": [255, 255, 255, 255],
-            "outlineSize": 0,
+            "enabledColor": [41, 151, 255, 255],
+            "disabledColor": [187, 187, 187, 255],
+            "outlineColor": [41, 151, 255, 255],
+            "outlineSize": 0.5,
             "roundness": 3
         },
         "check": {
@@ -112,7 +112,7 @@
     },
     "Slider": {
         "background": {
-            "color": [0, 0, 0, 0],
+            "color": [41, 151, 255, 155],
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
             "roundness": 3
@@ -120,7 +120,7 @@
         "bar": {
             "color": [0, 0, 0, 80],
             "outlineColor": [255, 255, 255, 255],
-            "outlineSize": 0,
+            "outlineSize": 0.5,
             "roundness": 3
         },
         "completionbar": {
@@ -130,7 +130,7 @@
             "roundness": 3
         },
         "sliderbox": {
-            "color": [140, 140, 140, 80],
+            "color": [255, 255, 255, 80],
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
             "roundness": 3
@@ -145,7 +145,7 @@
             "time": 0.5
         },
         "mouseLeaveAnimation": {
-            "color": [140, 140, 140, 80],
+            "color": [255, 255, 255, 80],
             "type": "OUT_EXP",
             "time": 0.5
         }
@@ -431,13 +431,13 @@
     },
     "Amaterasu": {
         "background": {
-            "color": [0, 0, 0, 80],
+            "color": [24, 24, 24, 80],
             "outlineColor": [255, 255, 255, 80],
             "outlineSize": 0.5,
             "roundness": 5
         },
         "line": {
-            "color": [255, 255, 255, 80],
+            "color": [35, 35, 35, 80],
             "size": 0.5,
             "outlineColor": [255, 255, 255, 255],
             "outlineSize": 0,
@@ -455,9 +455,9 @@
             "scale": 1
         },
         "descriptionbackground": {
-            "color": [0, 0, 0, 80],
+            "color": [24, 24, 24, 80],
             "size": 0.5,
-            "outlineColor": [255, 255, 255, 80],
+            "outlineColor": [35, 35, 35, 80],
             "outlineSize": 0.5,
             "roundness": 5
         },
