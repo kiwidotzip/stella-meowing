@@ -39,7 +39,6 @@ register('step', () => {
 register("renderWorld", () => {
     if(!inDungeon()) return
     if(settings().secretWaypoints){
-        //let [r, g, b, a] = [settings().secretsColor[0], settings().secretsColor[1], settings().secretsColor[2], settings().secretsColor[3]]
         if(secretsData === null) return
         if(!secretsData.secret_coords) return
 

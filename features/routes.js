@@ -611,7 +611,7 @@ register("command", (...args) => {
     }
     else if (args[0] === 'help') {
         ChatLib.chat('&8&m-------------------------------------------------');
-        ChatLib.chat('&6/srdb help &7Opens the SRM Debug help menu!')
+        ChatLib.chat('&6/srdb help &7Opens the Secret Routes Debug help menu!')
         ChatLib.chat('&6/srdb room &7Displays current room information!')
         ChatLib.chat('&6/srdb route &7Displays current secret route information!')
         ChatLib.chat('&6/srdb next &7Goes to the next route step!')
