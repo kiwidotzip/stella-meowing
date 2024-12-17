@@ -9,8 +9,9 @@ import settings from "../utils/config"
 
     ------------------- To Do -------------------
 
-    -rendering multible steps at once (is this even nececary)
-    -keybinds
+    - rendering multible steps at once (is this even nececary)
+    - update keybinds without reload (far future)
+    - differant route file switching
 
     --------------------------------------------- */
 
@@ -20,11 +21,9 @@ const EntityItem = Java.type("net.minecraft.entity.item.EntityItem")
 const secretItems = new Set(["Healing VIII Splash Potion", "Healing Potion 8 Splash Potion", "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"])
 
 //set keybinds
-/*
 let nStep = new KeyBind("Next Step", settings().nextStep, "Eclipse Addons")
 let lStep = new KeyBind("Last Step", settings().lastStep, "Eclipse Addons")
 let rStep = new KeyBind("Reset Route", settings().resetStep, "Eclipse Addons")
-*/
 
 //general variables
 var lastRoomId = null
@@ -47,13 +46,6 @@ function reset() {
     //resets route
     step = 0;
     currRouteData = getRouteData()
-
-    //refreshes keybinds
-    /*
-    nStep.getKeyCode(settings().nextStep)
-    lStep.getKeyCode(settings().lastStep)
-    rStep.getKeyCode(settings().resetStep)
-    */
 }
 
 //functions for recording
@@ -150,7 +142,7 @@ function saveRoute(force){
         }
     }
     routes[roomRID] = route[roomRID]
-    FileLib.write("eclipseAddons", "data/routes.json", JSON.stringify(routes,undefined,4))
+    FileLib.write("eclipseAddons", "data/dungeons/routes/routes.json", JSON.stringify(routes,undefined,4))
     if(force) ChatLib.chat('&aOverwritten!')
     else ChatLib.chat('&aSaved!')
     stopRecording()
@@ -580,10 +572,29 @@ register('step', () => {
 }).setFps(2)
 
 //keybind uses
+nStep.registerKeyPress(() => {
+    if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
+    if(recording) {ChatLib.chat('&cError: Recording!'); return}
 
-//if (nStep.isPressed()){ step ++; ChatLib.chat('&aShowing next step!') }
-//if (lStep.isPressed()){ step --; ChatLib.chat('&aShowing last step!') }
-//if (rStep.isPressed()){ reset(); }
+    step ++;
+    ChatLib.chat('&aShowing next step!') 
+})
+
+lStep.registerKeyPress(() => { 
+    if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
+    if(recording) {ChatLib.chat('&cError: Recording!'); return}
+
+    step --; 
+    ChatLib.chat('&aShowing last step!') 
+})
+
+rStep.registerKeyPress(() => { 
+    if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
+    if(recording) {ChatLib.chat('&cError: Recording!'); return}
+
+    reset();
+    ChatLib.chat('&aReset Route!')
+})
 
 //debug commands
 register("command", (...args) => {
@@ -655,12 +666,11 @@ register("command", (...args) => {
 
     else if (args[0] === 'help') {
         ChatLib.chat('&8&m-------------------------------------------------');
-        ChatLib.chat('&6/srdb help &7Opens the SRM Debug help menu!')
-        ChatLib.chat('&6/srdb room &7Displays current room information!')
-        ChatLib.chat('&6/srdb route &7Displays current secret route information!')
-        ChatLib.chat('&6/srdb next &7Goes to the next route step!')
-        ChatLib.chat('&6/srdb back &7Goes to the last route step!')
-        ChatLib.chat('&6/srdb reset &7resets back to the first step!')
+        ChatLib.chat('&6/route help &7Opens the Route Recording help menu!')
+        ChatLib.chat('&6/route record &7Record a secret route!')
+        ChatLib.chat('&6/route stop &7Stops recording a secret route!')
+        ChatLib.chat('&6/route save &7Saves the recorded route!')
+        ChatLib.chat('&6/route bat &7Adds a bat secret!')
         ChatLib.chat('&8&m-------------------------------------------------');
     } 
     else {

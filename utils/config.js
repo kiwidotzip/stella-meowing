@@ -1,5 +1,5 @@
-import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
 import Settings from "../../Amaterasu/core/Settings"
+import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
 
 /*  ------------------- Config ------------------
 
@@ -7,13 +7,11 @@ import Settings from "../../Amaterasu/core/Settings"
 
     ------------------- To Do -------------------
 
-    - Nothing :D
+    - Make themeing work
 
     --------------------------------------------- */
 
 //setup
-
-const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"]
 
 //markdown stuff
 const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).version
@@ -21,9 +19,10 @@ const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).versi
 const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md")
 const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAddons", "assets/changelog.md")}`
 
-//config
+const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"]
 
-const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
+//config
+const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
 //general
 .addTextParagraph({
@@ -33,6 +32,18 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     description: "&bMade by NEXD_",
     centered: true,
     subcategory: ""
+})
+
+.addButton({
+    category: "General", 
+    configName: "MyDiscord",
+    title: "Discord Server", 
+    description: "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
+    tags: ["discord"], 
+    onClick(setting) {
+        ChatLib.command("ct copy coming soon", true)
+        ChatLib.chat("&6Copied Discord Link!")
+    }
 })
 
 //Secret routes
@@ -73,7 +84,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "nextStep",
     title: "Next Step",
     description: "Goes to the next step",
-    value: 221
+    value: 27
 })
 
 .addKeybind({
@@ -82,7 +93,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "lastStep",
     title: "Last Step",
     description: "Goes back to the last step",
-    value: 219
+    value: 26
 })
 
 .addKeybind({
@@ -91,7 +102,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "resetStep",
     title: "Reset",
     description: "Resets the route",
-    value: 220
+    value: 43
 })
 
 
@@ -178,7 +189,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "secretWaypoints",
     title: "Secret Waypoints",
     description: "Displays secret waypoints",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcatagory: "General"
 })
 
@@ -186,7 +197,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "boxWSecrets",
     title: "Box Secrets",
     description: "wether or not to box secrets",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcatagory: "General",
     value: true
 })
@@ -195,7 +206,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "showWText",
     title: "ShowText",
     description: "wether or not to show text",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcatagory: "General",
     value: true
 })
@@ -206,7 +217,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "chestColor",
     title: "Chest Color",
     description: "The color to use for chests.",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcategory: "Colors",
     value: [0, 255, 0, 255]
 })
@@ -215,7 +226,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "witherColor",
     title: "Wither Essence Color",
     description: "The color to use for the wither essence.",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcategory: "Colors",
     value: [255, 0, 255, 255]
 })
@@ -224,7 +235,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "itemColor",
     title: "Item Color",
     description: "The color to use for items.",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcategory: "Colors",
     value: [0, 0, 255, 255]
 })
@@ -233,7 +244,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "batColor",
     title: "Bat Color",
     description: "The color to use for bats.",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcategory: "Colors",
     value: [0, 255, 0, 255]
 })
@@ -242,37 +253,32 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
     configName: "redstoneColor",
     title: "Redstone Key Color",
     description: "The color to use for the redstone keys.",
-    category: "Secret Waypoints",
+    category: "Waypoints",
     subcategory: "Colors",
     value: [255, 0, 0, 255]
 })
 
-//theming
-
+//themeing
 .addSelection({
-    category: "GUI",
+    category: "Theme",
     configName: "scheme",
-    title: "Change My Scheme!",
-    description: "Select which scheme you want from these presets (needs apply after)",
+    title: "Themes",
+    description: "Select which theme you want from these presets (needs apply after)",
     options: ["Default", "Vigil", "nwjn"]
 })
 
 .addButton({
-    category: "GUI",
+    category: "Theme",
     configName: "apply",
     title: "Apply Changes",
     description: "Need to click this for window to reload with selected changes",
     onClick(config) {
-        // Change the scheme path depending on the value of the [Selector] config
         const currentScheme = schemes[config.settings.scheme]
         const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))
-        // Setting the alpha
         scheme.Amaterasu.background.color = config.settings.bgColor
 
-        // Now we save the [currentScheme] with the [alpha] set in the [Slider]
         FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4))
-
-        // Now we set the new position, size and colorScheme for our [ConfigGui]
+        
         config
             .setPos(config.settings.x, config.settings.y)
             .setSize(config.settings.width, config.settings.height)
@@ -282,7 +288,7 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
 })
 
 .addColorPicker({
-    category: "GUI",
+    category: "Theme",
     configName: "bgColor",
     title: "Change Background Color",
     description: "Changes the color and alpha of the background",
@@ -290,45 +296,57 @@ const config = new DefaultConfig("Eclipse Addons", "data/settings.json")
 })
 
 .addSlider({
-    category: "GUI",
+    category: "Theme",
     configName: "x",
     title: "Change X",
-    description: "Changes the starting X coordinate of the GUI (in percent)",
+    description: "Changes the starting X coordinate of the Config (in percent)",
     options: [0, 75],
     value: 20
 })
 
 .addSlider({
-    category: "GUI",
+    category: "Theme",
     configName: "y",
     title: "Change Y",
-    description: "Changes the starting Y coordinate of the GUI (in percent)",
+    description: "Changes the starting Y coordinate of the Config (in percent)",
     options: [0, 75],
     value: 20
 })
 
 .addSlider({
-    category: "GUI",
+    category: "Theme",
     configName: "width",
     title: "Change Width",
-    description: "Changes the width of the GUI (in percent)",
+    description: "Changes the width of the Config (in percent)",
     options: [25, 100],
     value: 60
 })
 
 .addSlider({
-    category: "GUI",
+    category: "Theme",
     configName: "height",
     title: "Change Height",
-    description: "Changes the height of the GUI (in percent)",
+    description: "Changes the height of the Config (in percent)",
     options: [25, 100],
     value: 60
 })
 
-const setting = new Settings("Eclipse Addons", config, "data/ColorScheme.json")
+const config = new Settings("eclipseAddons", defaultConf, "data/ColorScheme.json")
 
-.addMarkdown("Credits", CREDITS)
 .addMarkdown("Changelog", CHANGELOG)
+.addMarkdown("Credits", CREDITS)
 
 
-export default () => setting.settings
+const currentScheme = schemes[config.settings.scheme]
+const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))
+scheme.Amaterasu.background.color = config.settings.bgColor
+
+FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4))
+
+config
+    .setPos(config.settings.x, config.settings.y)
+    .setSize(config.settings.width, config.settings.height)
+    .setScheme(currentScheme)
+    .apply()
+
+export default () => config.settings
