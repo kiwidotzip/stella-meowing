@@ -13,6 +13,16 @@
         ]
     },
     {
+        "category": "Dungeons",
+        "settings": [
+            {
+                "type": 6,
+                "name": "termWaypoints",
+                "value": false
+            }
+        ]
+    },
+    {
         "category": "Routes",
         "settings": [
             {

@@ -3,7 +3,7 @@ import { drawBoxAtBlock } from "../utils/renderUtils"
 import { drawString } from "../utils/utils"
 import settings from "../utils/config"
 
-/*  ------------- Secret Waypoints---------------
+/*  ------------- Secret Waypoints --------------
 
     Draws goofy waypoints at secrets
 
