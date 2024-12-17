@@ -19,8 +19,8 @@
 ### **Dungeons**
 - Dungeon Routes (kinda like BLC, but I need someone to record routes)
   --> ( https://www.youtube.com/watch?v=FKndGLs0G1Y ) check this video to see it in action!
-- Secret Waypoints 
 - The ability to record your own routes!
+- Secret Waypoints 
 
 <h2 align="center">Installation Steps (hopefully coming soon)</h2>
 
