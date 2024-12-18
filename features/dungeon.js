@@ -9,7 +9,7 @@ import PogObject from "../../PogData";
 
     ------------------- To Do -------------------
 
-    - Nothing :D
+    - Doccument how gui works
 
     --------------------------------------------- */
 
