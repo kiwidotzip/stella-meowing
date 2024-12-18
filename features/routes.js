@@ -508,25 +508,25 @@ register("packetReceived", (packet) => {
 
     //recording item detection
     if(recording){
-        ChatLib.chat("item picked up")
+        //ChatLib.chat("item picked up")
         let posRound = [Math.round(pos[0]), Math.round(pos[1]), Math.round(pos[2])]
         let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1]
         let pdistance = calcDistance(playerPos, posRound)
 
-        ChatLib.chat(JSON.stringify(posRound,undefined,2))
+        //ChatLib.chat(JSON.stringify(posRound,undefined,2))
         if(Object.keys(route).length !== 0){
-            ChatLib.chat("distance check")
+           // ChatLib.chat("distance check")
             let secretPos = getRealCoord(route[roomRID][step -1].secret.location, currRoomData)
-            ChatLib.chat(JSON.stringify(secretPos,undefined,2))
+            //ChatLib.chat(JSON.stringify(secretPos,undefined,2))
             let distance = calcDistance(posRound, secretPos)
-            ChatLib.chat(distance)
+            //ChatLib.chat(distance)
 
             if(distance > 5){
                 if(pdistance > 5) addPoint(playerPos, "secretItem")
                 else addPoint(pos, "secretItem") 
                 
                 pushToRoute()
-                ChatLib.chat("item added!")
+                //ChatLib.chat("item added!")
             } 
         } 
 
@@ -535,7 +535,7 @@ register("packetReceived", (packet) => {
             else addPoint(pos, "secretItem")
 
             pushToRoute()
-            ChatLib.chat("item added!")
+            //ChatLib.chat("item added!")
         }
     }
 }).setFilteredClass(net.minecraft.network.play.server.S0DPacketCollectItem)
@@ -665,7 +665,7 @@ register("command", (...args) => {
             let pos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1]
             addPoint(pos, "secretBat")
             pushToRoute()
-            ChatLib.chat("Added bat")
+            ChatLib.chat("&aAdded bat")
         }
     }
     else if (args[0] === 'route_save_force'){
