@@ -15,7 +15,7 @@ import PogObject from "../../PogData";
 
 //variables
 
-const rGui = new PogObject("eclcipseAddons", {
+const rGui = new PogObject("eclipseAddons", {
     X: Renderer.screen.getWidth() / 2,
     Y: Renderer.screen.getHeight() / 2,
     scale: 1
