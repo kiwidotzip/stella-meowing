@@ -1,0 +1,5 @@
+settings.json
+.gitignore
+.data.json
+.git
+.DS_store
