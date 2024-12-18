@@ -47,7 +47,7 @@ export const getRoomName  = () => {
             }   
         }
     }
-    return "Unknown Room"
+    return "Room Not Found"
 }
 
 //pulls room data from the roomData.json file
@@ -205,7 +205,7 @@ export const getRoomCoord = ([x, y, z], roomData) => {
     if(roomData.rotation === 1) roomCorner = [roomData.x, 0, roomData.y]
     if(roomData.rotation === 2) roomCorner = [roomData.x + roomData.width, 0, roomData.y]
     if(roomData.rotation === 3) roomCorner =  [roomData.x + roomData.width, 0, roomData.y + roomData.height]
-    if(roomData.rotation === 4) roomCorner =  [roomData.x, 0, roomData.y]
+    if(roomData.rotation === 4) roomCorner =  [roomData.x, 0, roomData.y + roomData.height]
     const roomCoord = unRotateCoords(coord.map((v, i) => v - roomCorner[i]), roomData.rotation)
 
     return roomCoord

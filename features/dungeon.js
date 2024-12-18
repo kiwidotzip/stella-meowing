@@ -22,7 +22,7 @@ const rGui = new PogObject("eclcipseAddons", {
 });
 
 var lastRoomId = null
-var currRoomName = "Uknown Room"
+var currRoomName = "Room Not Found"
 //functions
 
 const renderRoomNameEditGui = () => {
@@ -65,7 +65,9 @@ register("renderOverlay", () => {
 
     if(settings().showRoomName && inDungeon()){
         renderRoomName()
-    } 
+    }
+
+    if(!inDungeon) currRoomName = "Room Not Found"
 })
 
 register("dragged", (dx, dy, x, y, btn) => {

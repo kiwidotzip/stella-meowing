@@ -5584,6 +5584,7 @@
     },
     {
         "name": "New Trap",
+        "rid": "Trap-Very-Hard-3",
         "type": "trap",
         "shape": "1x1",
         "doors": "D",

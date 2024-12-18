@@ -141,6 +141,7 @@ function saveRoute(force){
             }
         }
     }
+    pushToRoute()
     routes[roomRID] = route[roomRID]
     FileLib.write("eclipseAddons", "data/dungeons/routes/routes.json", JSON.stringify(routes,undefined,4))
     if(force) ChatLib.chat('&aOverwritten!')
@@ -247,7 +248,7 @@ register("renderWorld", () => {
                     if(settings().showText) drawString("Click",x + 0.5, y + 0.6, z + 0.5, 0xffffff, true, 0.03, false)
                 }
                 
-                if(currRouteData[step].secret !== null){
+                if(currRouteData[step].secret.type !== null){
                     let [ x, y, z ] = getRealCoord(currRouteData[step].secret.location, currRoomData)
                     let [r, g, b] = [settings().secretColor[0] / 255, settings().secretColor[1] / 255, settings().secretColor[2] / 255]
 
@@ -541,6 +542,8 @@ register("packetReceived", (packet) => {
 
 //bat detection (easyest part imo)
 register("renderWorld", () => {
+    if(recording) return
+
     if(currRouteData !== null){ 
         if(step < currRouteData.length){
             if(currRouteData[step].secret.type !== "bat") return
@@ -629,7 +632,7 @@ register("command", (...args) => {
     if (args[0] === 'record'){
         if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
         if(recording) ChatLib.chat('&cError: Already recording!')
-        if(!recording) {recording = true; ChatLib.chat('&aRecording!')}
+        if(!recording) {reset(); recording = true; ChatLib.chat('&aRecording!')}
         
     }
 
@@ -647,6 +650,14 @@ register("command", (...args) => {
         }
     }
 
+    else if (args[0] === 'view'){
+        if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
+        if(!recording) ChatLib.chat('&cError: Not recording!')  
+        if(recording){
+            ChatLib.chat(JSON.stringify(route, undefined, 2))
+        } 
+    }
+
     else if (args[0] === 'bat'){
         if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
         if(!recording) ChatLib.chat('&cError: Not recording!')
@@ -654,6 +665,7 @@ register("command", (...args) => {
             let pos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1]
             addPoint(pos, "secretBat")
             pushToRoute()
+            ChatLib.chat("Added bat")
         }
     }
     else if (args[0] === 'route_save_force'){
