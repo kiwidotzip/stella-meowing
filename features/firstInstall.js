@@ -11,7 +11,7 @@ import PogObject from "../../PogData";
     --------------------------------------------- */
 
 
-const firstInstall = new PogObject("CrafterAddons", {
+const firstInstall = new PogObject("eclipseAddons", {
     firstInstall: false
 });
 

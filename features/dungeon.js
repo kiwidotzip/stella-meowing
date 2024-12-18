@@ -1,6 +1,7 @@
 import { renderCenteredString } from "../utils/utils"
-//import { getRoomName, getRoomID } from "../utils/dutils"
+import { getRoomName, getRoomID, inDungeon} from "../utils/dutils"
 import settings, { roomName } from "../utils/config"
+import PogObject from "../../PogData";
 
 /*  --------------- secret routes ---------------
 
@@ -14,36 +15,34 @@ import settings, { roomName } from "../utils/config"
 
 //variables
 
-var lastRoomId = null
-var roomNameData = {
-    currRoomName: "Nothing :O",
-    scale,
-    x: 0,
-    y: 0
-}
+const rGui = new PogObject("eclcipseAddons", {
+    X: Renderer.screen.getWidth() / 2,
+    Y: Renderer.screen.getHeight() / 2,
+    scale: 1
+});
 
+var lastRoomId = null
+var currRoomName = "Uknown Room"
 //functions
 
 const renderRoomNameEditGui = () => {
-    renderCenteredString("Scroll to change the scale", Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3, 1, false)
+    renderCenteredString("&6Scroll &rto change the scale", Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3, 1, false)
 }
 
-
 const renderRoomName = () => {
-    let width = Renderer.getStringWidth(roomNameData.currRoomName)
+    let width = Renderer.getStringWidth(currRoomName)
     let height = 11
     let c = settings().roomNameColor
     let [r, g, b, a] = c
     Renderer.retainTransforms(true)
-    Renderer.translate(roomNameData.x, roomNameData.y)
-    Renderer.scale(roomNameData.scale, roomNameData.scale)
-    if (a !== 0) Renderer.drawRect(Renderer.color(r, g, b, a), 0, 0, width, height)
-    Renderer.drawStringWithShadow(roomNameData.currRoomName, 2, 11)
+    Renderer.translate(rGui.X, rGui.Y)
+    Renderer.scale(rGui.scale, rGui.scale)
+    if (a !== 0) Renderer.drawRect(Renderer.color(r, g, b, a), -1, -1, width+2, height)
+    Renderer.drawString(currRoomName, 0, 0)
     Renderer.retainTransforms(false)
 }
 
-//gets current room data
-/*
+//gets current room name
 register('step', () => {
     if(settings().showRoomName){
         let roomId = getRoomID()
@@ -53,29 +52,33 @@ register('step', () => {
         if (lastRoomId !== roomId) {
             lastRoomId = roomId
 
-            roomNameData.currRoomName = getRoomName()
+            currRoomName = getRoomName()
         }
     }
-}).setFps(5)
-*/
-
+}).setFps(20)
 
 register("renderOverlay", () => {
-    if (roomName.isOpen()) {renderRoomNameEditGui()}
-    renderRoomName()
+    if (roomName.isOpen()) {
+        renderRoomNameEditGui()
+        renderRoomName()
+    }
+
+    if(settings().showRoomName && inDungeon()){
+        renderRoomName()
+    } 
 })
 
-/*
 register("dragged", (dx, dy, x, y, btn) => {
     if (roomName.isOpen()) {
-        roomNameData.x = x
-        roomNameData.y = y
+        rGui.X = x
+        rGui.Y = y
+        rGui.save()
     }
 })
 
 register("scrolled", (mx, my, dir) => {
     if (!roomName.isOpen()) return
-    if (dir == 1) roomNameData.scale += 0.05
-    else roomNameData.scale -= 0.05
+    if (dir == 1) rGui.scale += 0.05
+    else rGui.scale -= 0.05
+    rGui.save()
 })
-*/

@@ -46,7 +46,8 @@ export const getRoomName  = () => {
                 return rooms[i].name
             }   
         }
-    }         
+    }
+    return "Unknown Room"
 }
 
 //pulls room data from the roomData.json file
