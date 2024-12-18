@@ -1,7 +1,9 @@
 - §aAdded: Keybinds
 - §aAdded: Secret item Filtering
-- §aAdded: Customization
+- §aAdded: Themeing
+- §aAdded: Room Name gui
+- §aAdded: Some secret routes
  
 - §eImproved: Performace and module structure
  
-- §cRemoved: Varius backend functions
+- §cRemoved: Debug stuff
