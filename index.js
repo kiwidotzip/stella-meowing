@@ -3,6 +3,7 @@ import "./features/termwaypoints"
 import "./features/firstInstall"
 import "./features/secrets"
 import "./features/routes"
+import "./features/dungeon"
 
 /*  ------------------- Index -------------------
 

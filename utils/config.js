@@ -21,6 +21,9 @@ const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAdd
 
 const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"]
 
+//guis
+export const roomName = new Gui()
+
 //config
 const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
@@ -43,6 +46,47 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     onClick(setting) {
         ChatLib.command("ct copy coming soon", true)
         ChatLib.chat("&6Copied Discord Link!")
+    }
+})
+
+//dungoens
+
+//room name
+.addSwitch({
+    category: "Dungeons", 
+    configName: "showRoomName",
+    title: "Show Room Name",
+    description: "Shows the current rooms name",
+    subcategory: "Room Name"
+})
+
+.addButton({
+    category: "Dungeons",
+    configName: "editRoomName",
+    title: "Room Name Location",
+    description: "Move the room name, change the scale, etc.",
+    subcategory: "Room Name",
+    placeHolder: "Edit",
+
+    onClick() {
+        roomName.open()
+    },
+
+    shouldShow(data) {
+        return data.showRoomName
+    }
+})
+
+.addColorPicker({
+    configName: "roomNameColor",
+    title: "Background Color",
+    description: "The Background Color of the room name",
+    category: "Dungeons",
+    subcategory: "Room Name",
+    value: [0, 0, 0, 0],
+
+    shouldShow(data) {
+        return data.showRoomName
     }
 })
 
@@ -282,6 +326,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     configName: "apply",
     title: "Apply Changes",
     description: "Need to click this for window to reload with selected changes",
+    placeHolder: "Apply",
     onClick(config) {
         const currentScheme = schemes[config.settings.scheme]
         const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))

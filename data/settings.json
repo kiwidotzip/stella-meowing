@@ -17,8 +17,27 @@
         "settings": [
             {
                 "type": 6,
+                "name": "showRoomName",
+                "value": true
+            },
+            {
+                "type": 2,
+                "name": "editRoomName"
+            },
+            {
+                "type": 5,
+                "name": "roomNameColor",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "type": 6,
                 "name": "termWaypoints",
-                "value": false
+                "value": true
             }
         ]
     },

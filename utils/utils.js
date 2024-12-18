@@ -90,6 +90,41 @@ export function drawString(
     GlStateManager.func_179121_F() // popMatrix
 }
 
+// Renders centered text at a position. Can split each word onto a new line.
+// If an array of strings is passed, it will render each item on a new line.
+/**
+ * Renders text perfectly centered on the screen both horizontally and vertically. Supports color codes
+ * or optionally, pass in a Java Color to force the text to render that color.
+ * @param {String|String[]} string - The text to be rendered. If an array of strings is passed, each item will be rendered on a new line.
+ * @param {Number} x - Left/Right on the screen.
+ * @param {Number} y - Up/Down on the screen.
+ * @param {Number} scale - Scale the text to make it larger/smaller.
+ * @param {Boolean} splitWords - Split the string at each space and render on a new line.
+ * @param {Color} forceColor - Force the text to be a certain Java Color.
+ * @returns 
+ */
+export const renderCenteredString = (string, x, y, scale, splitWords=false, javaColor=null) => {
+    if (!string || !x || !y) return
+    Renderer.retainTransforms(true)
+    string = Array.isArray(string) ? string : splitWords ? string.split(" ") : [string]
+    let vertOffset = string.length*7 + (2*(string.length-1))
+    let [r, g, b, a] = []
+    if (javaColor) {
+        r = javaColor.getRed()
+        g = javaColor.getGreen()
+        b = javaColor.getBlue()
+        a = javaColor.getAlpha()
+    }
+    Renderer.translate(x, y)
+    Renderer.scale(scale, scale)
+    Renderer.translate(0, -vertOffset/2)
+    for (let i = 0; i < string.length; i++) {
+        if (javaColor) Renderer.colorize(r, g, b, a)
+        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i])/2, (i*7 + (2*i)))
+    }
+    Renderer.retainTransforms(false)
+}
+
 //self explanitory
 export const removeUnicode = (string) => typeof(string) !== "string" ? "" : string.replace(/[^\u0000-\u007F]/g, "")
 
