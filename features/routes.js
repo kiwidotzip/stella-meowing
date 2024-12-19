@@ -93,6 +93,13 @@ function addPoint(realpos, type){
     }
 
     if(type === "secretInteract"){
+        if(Object.keys(route).length !== 0){
+            if(route[roomRID][step -1].secret.type === "interact"){
+                let [x, y, z] = getRealCoord(route[roomRID][step -1].secret.location, currRoomData)
+                if(x === pos[0] && y === pos[1] && z === pos[2]) return
+            }
+        }
+
         recordingData.secret.type = "interact"
         recordingData.secret.location = pos
     }
@@ -523,7 +530,7 @@ register("packetReceived", (packet) => {
 
             if(distance > 5){
                 if(pdistance > 5) addPoint(playerPos, "secretItem")
-                else addPoint(pos, "secretItem") 
+                else addPoint(posRound, "secretItem") 
                 
                 pushToRoute()
                 //ChatLib.chat("item added!")
@@ -532,7 +539,7 @@ register("packetReceived", (packet) => {
 
         else{
             if(pdistance > 5) addPoint(playerPos, "secretItem")
-            else addPoint(pos, "secretItem")
+            else addPoint(posRound, "secretItem")
 
             pushToRoute()
             //ChatLib.chat("item added!")
