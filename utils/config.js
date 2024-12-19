@@ -51,6 +51,28 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
 //dungoens
 
+//dugeon trash
+.addSwitch({
+    category: "Dungeons", 
+    configName: "highlightTrash",
+    title: "Highligt Dugneon trash",
+    description: "Highlights dungeon trash in your inventory",
+    subcategory: "General"
+})
+
+.addColorPicker({
+    configName: "trashColor",
+    title: "Highlight Color",
+    description: "The color to highlight trash",
+    category: "Dungeons",
+    subcategory: "General",
+    value: [0, 255, 255, 255],
+
+    shouldShow(data) {
+        return data.highlightTrash
+    }
+})
+
 //room name
 .addSwitch({
     category: "Dungeons", 

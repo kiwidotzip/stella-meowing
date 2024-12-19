@@ -14,8 +14,28 @@ import PogObject from "../../PogData";
     --------------------------------------------- */
 
 //variables
-const trashItems = new Set(["Healing VIII Splash Potion", "Healing Potion 8 Splash Potion", "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"])
-
+let trashItems = [
+    "Healing VIII Splash Potion",
+    "Healing Potion 8 Splash Potion", 
+    "Training Weights",
+    "Defuse Kit", 
+    "Revive Stone",
+    "Premium Flesh",
+    "Grunt",
+    "Rotten",
+    "Lord",
+    "Master",
+    "Machine Gun Shortbow",
+    "Dreadlord Sword",
+    "Earth Shard",
+    "Bouncy",
+    "Heavy",
+    "Soldier",
+    "Sniper",
+    "Commander",
+    "Knight",
+    "Rune"
+]
 
 const rGui = new PogObject("eclipseAddons", {
     X: Renderer.screen.getWidth() / 2,
@@ -89,12 +109,22 @@ register("scrolled", (mx, my, dir) => {
     rGui.save()
 })
 
-
-register("guiRender", (mx, mt, gui) => {
-    let inv = Player.getInventory()
-    for(var i = 0; i < inv.getSize() - 1; i ++){
-        if(trashItems.has(inv?.getStackInSlot(i)?.getName()?.removeFormatting())){
-            highlightSlot(gui, i, 0, 1, 0, 1, false)
+//highlihgt trash
+register("guiRender", (mx, mt, gui) => {    
+    if(settings().highlightTrash){
+        let inv = Player.getContainer()
+        let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255]
+        let shops = ["Booster Cookie", "Ophelia", "Trades"]        
+        if(shops.some(k => inv?.getName()?.includes(k))){
+            let test = "Training Weights x1"
+            for(var i = 0; i < inv.getSize(); i ++){
+                let item = inv?.getStackInSlot(i)?.getName()
+                if(item != null){
+                    if(trashItems.some(j => item.includes(j))){
+                        highlightSlot(gui, i, r, g, b, a, false)
+                    }
+                }
+            }
         }
     }
 })

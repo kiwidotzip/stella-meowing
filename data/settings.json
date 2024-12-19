@@ -17,6 +17,21 @@
         "settings": [
             {
                 "type": 6,
+                "name": "highlightTrash",
+                "value": true
+            },
+            {
+                "type": 5,
+                "name": "trashColor",
+                "value": [
+                    0,
+                    255,
+                    255,
+                    255
+                ]
+            },
+            {
+                "type": 6,
                 "name": "showRoomName",
                 "value": true
             },
