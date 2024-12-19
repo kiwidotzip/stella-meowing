@@ -170,17 +170,6 @@ export const renderCenteredString = (
   Renderer.retainTransforms(false);
 };
 
-//self explanitory
-export const removeUnicode = (string) =>
-  typeof string !== "string" ? "" : string.replace(/[^\u0000-\u007F]/g, "");
-
-export const getScoreboard = (formatted = false) => {
-  if (!World.getWorld()) return null;
-  let sb = Scoreboard.getLines().map((a) => a.getName());
-  if (formatted) return Scoreboard.getLines();
-  return sb.map((a) => ChatLib.removeFormatting(a));
-};
-
 //calculates the distance between 2 points using the 3d distance formula
 export const calcDistance = (p1, p2) => {
   var a = p2[0] - p1[0];
