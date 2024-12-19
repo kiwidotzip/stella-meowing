@@ -25,6 +25,7 @@ let trashItems = [
   "Rotten",
   "Lord",
   "Master",
+  "Soulstealer Bow",
   "Machine Gun Shortbow",
   "Dreadlord Sword",
   "Earth Shard",
