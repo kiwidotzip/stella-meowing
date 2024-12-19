@@ -201,7 +201,7 @@ register("renderWorld", () => {
     //route rendering
     if(settings().modEnabled && !recording){ 
         if(currRouteData !== null){
-            if(step < currRouteData.length){
+            if(step < currRouteData.length || step >= 0){
                 for(var i = 0; i  < currRouteData[step].locations.length; i++){
                 let [ x, y, z ] = getRealCoord(currRouteData[step].locations[i], currRoomData)
 
@@ -585,6 +585,7 @@ register('step', () => {
 nStep.registerKeyPress(() => {
     if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
     if(recording) {ChatLib.chat('&cError: Recording!'); return}
+    if(step === currRouteData.length - 1) {ChatLib.chat('&cError: On last step!'); return}
 
     step ++;
     ChatLib.chat('&aShowing next step!') 
@@ -593,7 +594,7 @@ nStep.registerKeyPress(() => {
 lStep.registerKeyPress(() => { 
     if(!inDungeon()) {ChatLib.chat('&cError: Not in dungeon!'); return}
     if(recording) {ChatLib.chat('&cError: Recording!'); return}
-
+    if(step === 0) {ChatLib.chat('&cError: On first step!'); return}
     step --; 
     ChatLib.chat('&aShowing last step!') 
 })
