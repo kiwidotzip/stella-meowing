@@ -27,22 +27,85 @@ export const inDungeon = () => {
     return false
 }
 
+//thanks bm
+export const getPos = () => {
+    let worldX = Math.floor((Player.getX() + 200.5) / 32)
+    let worldZ = Math.floor((Player.getZ() + 200.5) / 32)
+
+
+
+    let roomComponentArray = []
+
+    for (let i = 0; i < 36; i++) {
+        let x = i%6
+        let z = Math.floor(i/6)
+        let rx = -185 + x * 32
+        let rz = -185 + z * 32
+        roomComponentArray[i] = [rx, rz];
+    }
+
+    const index = worldX + worldZ * 6
+    
+    if (index < 0 || index > 35) return null
+    
+    return roomComponentArray[index]
+}
+
+const blacklisted = [
+    101,    // Iron Bars
+    54,     // Chest
+]
+export const hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0) // From https://stackoverflow.com/a/15710692/15767968
+
+/**
+ * Gets the core hash at a certain x, z position
+ * @param {Number} x 
+ * @param {Number} z 
+ * @returns 
+ */
+export const getCore = () => {
+    if(!inDungeon()) return
+
+    let [x , z] = getPos()
+    let blockIds = ""
+    for (let y = 140; y >= 12; y--) {
+        let block = World.getBlockAt(x, y, z)
+        // Blacklisted blocks should just be counted as air.
+        if (blacklisted.includes(block.type.getID())) {
+            blockIds += "0"
+            continue
+        }
+
+        blockIds += block.type.getID()
+    }
+
+    return hashCode(blockIds)
+}
+
 //kinda self explanitory
 export const getRoomID = () => {
-    let sb = getScoreboard(false)
-    if (!sb) return null
-    let line = removeUnicode(sb[sb.length-1])
-    let match = line.match(/\d+\/\d+\/\d+ \w+ ([-\d]+,[-\d]+)/)
-    if (!match) return null
-    return match[1]
+    let roomCore = getCore()
+    if(!roomCore) return 
+
+    for(var i = 0; i < rooms.length; i ++){
+        for(var j = 0; j < 5; j++){
+            if(roomCore === rooms[i].cores[j]){
+                return rooms[i].id
+            }   
+        }
+    }
+
+    return null
 }
 
 //gets room name based on room id
 export const getRoomName  = () => {
-    let roomID = getRoomID();
+    let roomCore = getCore()
+    if(!roomCore) return 
+
     for(var i = 0; i < rooms.length; i ++){
         for(var j = 0; j < 5; j++){
-            if(roomID === rooms[i].id[j]){
+            if(roomCore === rooms[i].cores[j]){
                 return rooms[i].name
             }   
         }
@@ -52,19 +115,26 @@ export const getRoomName  = () => {
 
 //pulls room data from the roomData.json file
 export const getRoomData = () => {
-    let roomID = getRoomID();
+    let roomCore = getCore()
+    if(!roomCore) return 
+
     for(var i = 0; i < rooms.length; i ++){
         for(var j = 0; j < 5; j++){
-            if(roomID === rooms[i].id[j]){
+            if(roomCore === rooms[i].cores[j]){
                 return rooms[i]
             }   
         }
-    }  
-}
+    }
+    
+    return null
+}  
+   
 
 //pulls route data for current room from the routes.json file
 export const getRouteData = () => {
     let id = getRoomData().rid
+    if(!id) return
+
     let routeData = Object.keys(routes)
     for(var i = 0; i < routeData.length; i++){
         if(routeData[i] === id) return Object.values(routes)[i]
@@ -217,7 +287,7 @@ export const getRealCoord = ([x, y, z], roomData) => {
     const rotated = rotateCoords([x, y, z], roomData.rotation)
     if(roomData.rotation === 1) roomCorner = [roomData.x, 0, roomData.y]
     if(roomData.rotation === 2) roomCorner = [roomData.x + roomData.width, 0, roomData.y]
-    if(roomData.rotation === 3) roomCorner =  [roomData.x + roomData.width, 0, roomData.y + roomData.width]
+    if(roomData.rotation === 3) roomCorner =  [roomData.x + roomData.width, 0, roomData.y + roomData.height]
     if(roomData.rotation === 4) roomCorner =  [roomData.x, 0, roomData.y + roomData.height]
     const realCoord = rotated.map((v, i) => v + roomCorner[i])
 

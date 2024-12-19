@@ -1,5 +1,5 @@
-import Settings from "../../Amaterasu/core/Settings"
-import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
+import Settings from "../../Amaterasu/core/Settings";
+import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
 
 /*  ------------------- Config ------------------
 
@@ -14,53 +14,63 @@ import DefaultConfig from "../../Amaterasu/core/DefaultConfig"
 //setup
 
 //markdown stuff
-const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).version
+const version = JSON.parse(
+  FileLib.read("eclipseAddons", "metadata.json")
+).version;
 
-const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md")
-const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAddons", "assets/changelog.md")}`
+const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md");
+const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read(
+  "eclipseAddons",
+  "assets/changelog.md"
+)}`;
 
-const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"]
+const schemes = [
+  "data/ColorScheme.json",
+  "data/scheme-vigil.json",
+  "data/scheme-nwjn.json",
+];
 
 //guis
-export const roomName = new Gui()
+export const roomName = new Gui();
 
 //config
 const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
-//general
-.addTextParagraph({
+  //general
+  .addTextParagraph({
     category: "General",
     configName: "Info",
     title: `&6&l&nEclipse Addons`,
     description: "&bMade by NEXD_",
     centered: true,
-    subcategory: ""
-})
+    subcategory: "",
+  })
 
-.addButton({
-    category: "General", 
+  .addButton({
+    category: "General",
     configName: "MyDiscord",
-    title: "Discord Server", 
-    description: "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
-    tags: ["discord"], 
+    title: "Discord Server",
+    description:
+      "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
+    tags: ["discord"],
     onClick(setting) {
-        ChatLib.command("ct copy coming soon", true)
-        ChatLib.chat("&6Copied Discord Link!")
-    }
-})
+      ChatLib.command("ct copy coming soon", true);
+      ChatLib.chat("&6Copied Discord Link!");
+    },
+  })
 
-//dungoens
+  //dungoens
 
-//dugeon trash
-.addSwitch({
-    category: "Dungeons", 
+  //dugeon trash
+  .addSwitch({
+    category: "Dungeons",
     configName: "highlightTrash",
     title: "Highligt Dugneon trash",
     description: "Highlights dungeon trash in your inventory",
-    subcategory: "General"
-})
+    subcategory: "General",
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "trashColor",
     title: "Highlight Color",
     description: "The color to highlight trash",
@@ -69,20 +79,20 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     value: [0, 255, 255, 255],
 
     shouldShow(data) {
-        return data.highlightTrash
-    }
-})
+      return data.highlightTrash;
+    },
+  })
 
-//room name
-.addSwitch({
-    category: "Dungeons", 
+  //room name
+  .addSwitch({
+    category: "Dungeons",
     configName: "showRoomName",
     title: "Show Room Name",
     description: "Shows the current rooms name",
-    subcategory: "Room Name"
-})
+    subcategory: "Room Name",
+  })
 
-.addButton({
+  .addButton({
     category: "Dungeons",
     configName: "editRoomName",
     title: "Room Name Location",
@@ -91,15 +101,15 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     placeHolder: "Edit",
 
     onClick() {
-        roomName.open()
+      roomName.open();
     },
 
     shouldShow(data) {
-        return data.showRoomName
-    }
-})
+      return data.showRoomName;
+    },
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "roomNameColor",
     title: "Background Color",
     description: "The Background Color of the room name",
@@ -108,322 +118,330 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     value: [0, 0, 0, 0],
 
     shouldShow(data) {
-        return data.showRoomName
-    }
-})
+      return data.showRoomName;
+    },
+  })
 
-//term waypoints
-.addSwitch({
+  //term waypoints
+  .addSwitch({
     configName: "termWaypoints",
     title: "Terminal waypoints",
     description: "Terminal Waypoints for P3 of f7",
     category: "Dungeons",
     subcatagory: "F7",
-    value: false
-})
+    value: false,
+  })
 
-//Secret routes
+  //Secret routes
 
-//general options
-.addSwitch({
+  //general options
+  .addSwitch({
     configName: "modEnabled",
     title: "Render Roughts",
     description: "Main toggle",
     category: "Routes",
     subcatagory: "General",
-    value: true
-})
+    value: true,
+  })
 
-.addSwitch({
+  .addSwitch({
     configName: "boxSecrets",
     title: "Box Secrets",
     description: "wether or not to box secrets",
     category: "Routes",
     subcatagory: "General",
-    value: true
-})
+    value: true,
+  })
 
-.addSwitch({
+  .addSwitch({
     configName: "showText",
     title: "ShowText",
     description: "wether or not to show text",
     category: "Routes",
     subcatagory: "General",
-    value: true
-})
+    value: true,
+  })
 
-//keybinds
+  //keybinds
 
-.addKeybind({
+  .addKeybind({
     category: "Routes",
     subcategory: "Keybinds",
     configName: "nextStep",
     title: "Next Step",
     description: "Goes to the next step",
-    value: 27
-})
+    value: 27,
+  })
 
-.addKeybind({
+  .addKeybind({
     category: "Routes",
     subcategory: "Keybinds",
     configName: "lastStep",
     title: "Last Step",
     description: "Goes back to the last step",
-    value: 26
-})
+    value: 26,
+  })
 
-.addKeybind({
+  .addKeybind({
     category: "Routes",
     subcategory: "Keybinds",
     configName: "resetStep",
     title: "Reset",
     description: "Resets the route",
-    value: 43
-})
+    value: 43,
+  })
 
-
-//line stuff
-.addDropDown({
+  //line stuff
+  .addDropDown({
     configName: "lineType",
     title: "Line Type",
     description: "Type of secret line",
     category: "Routes",
     subcategory: "Line",
-    options: ["Fire Particles", "Lines",],
-    value: 0
-})
+    options: ["Fire Particles", "Lines"],
+    value: 0,
+  })
 
-.addSlider({
+  .addSlider({
     configName: "lineWidth",
     title: "Line width",
     description: "Line width (not for particles)",
     category: "Routes",
     subcategory: "Line",
     options: [1, 5],
-    value: 2
-})
+    value: 2,
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "lineColor",
     title: "Line Color",
     description: "The color to use for the line.",
     category: "Routes",
     subcategory: "Line",
-    value: [255, 0, 0, 255]
-})
+    value: [255, 0, 0, 255],
+  })
 
-//boxcolors
-.addColorPicker({
+  //boxcolors
+  .addColorPicker({
     configName: "warpColor",
     title: "Etherwarp Color",
     description: "The color to use for the etherwarps.",
     category: "Routes",
     subcategory: "Colors",
-    value: [0, 0, 255, 255]
-})
+    value: [0, 0, 255, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "mineColor",
     title: "Stonk Color",
     description: "The color to use for the ghost blocks.",
     category: "Routes",
     subcategory: "Colors",
-    value: [255, 0, 255, 255]
-})
+    value: [255, 0, 255, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "tntColor",
     title: "Superboom Color",
     description: "The color to use for the Superbooms.",
     category: "Routes",
     subcategory: "Colors",
-    value: [255, 0, 0, 255]
-})
+    value: [255, 0, 0, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "clickColor",
     title: "Lever Color",
     description: "The color to use for levers and other interactions.",
     category: "Routes",
     subcategory: "Colors",
-    value: [255, 255, 0, 255]
-})
+    value: [255, 255, 0, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "secretColor",
     title: "Secret Color",
     description: "The color to use for Secrets.",
     category: "Routes",
     subcategory: "Colors",
-    value: [0, 255, 0, 255]
-})
+    value: [0, 255, 0, 255],
+  })
 
-//Secret waypoints
+  //Secret waypoints
 
-//general
-.addSwitch({
+  //general
+  .addSwitch({
     configName: "secretWaypoints",
     title: "Secret Waypoints",
     description: "Displays secret waypoints",
     category: "Waypoints",
-    subcatagory: "General"
-})
+    subcatagory: "General",
+  })
 
-.addSwitch({
+  .addSwitch({
     configName: "boxWSecrets",
     title: "Box Secrets",
     description: "wether or not to box secrets",
     category: "Waypoints",
     subcatagory: "General",
-    value: true
-})
+    value: true,
+  })
 
-.addSwitch({
+  .addSwitch({
     configName: "showWText",
     title: "ShowText",
     description: "wether or not to show text",
     category: "Waypoints",
     subcatagory: "General",
-    value: true
-})
+    value: true,
+  })
 
-//colors
+  //colors
 
-.addColorPicker({
+  .addColorPicker({
     configName: "chestColor",
     title: "Chest Color",
     description: "The color to use for chests.",
     category: "Waypoints",
     subcategory: "Colors",
-    value: [0, 255, 0, 255]
-})
+    value: [0, 255, 0, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "witherColor",
     title: "Wither Essence Color",
     description: "The color to use for the wither essence.",
     category: "Waypoints",
     subcategory: "Colors",
-    value: [255, 0, 255, 255]
-})
+    value: [255, 0, 255, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "itemColor",
     title: "Item Color",
     description: "The color to use for items.",
     category: "Waypoints",
     subcategory: "Colors",
-    value: [0, 0, 255, 255]
-})
+    value: [0, 0, 255, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "batColor",
     title: "Bat Color",
     description: "The color to use for bats.",
     category: "Waypoints",
     subcategory: "Colors",
-    value: [0, 255, 0, 255]
-})
+    value: [0, 255, 0, 255],
+  })
 
-.addColorPicker({
+  .addColorPicker({
     configName: "redstoneColor",
     title: "Redstone Key Color",
     description: "The color to use for the redstone keys.",
     category: "Waypoints",
     subcategory: "Colors",
-    value: [255, 0, 0, 255]
-})
+    value: [255, 0, 0, 255],
+  })
 
-//themeing
-.addSelection({
+  //themeing
+  .addSelection({
     category: "Theme",
     configName: "scheme",
     title: "Themes",
-    description: "Select which theme you want from these presets (needs apply after)",
-    options: ["Default", "Vigil", "nwjn"]
-})
+    description:
+      "Select which theme you want from these presets (needs apply after)",
+    options: ["Default", "Vigil", "nwjn"],
+  })
 
-.addButton({
+  .addButton({
     category: "Theme",
     configName: "apply",
     title: "Apply Changes",
-    description: "Need to click this for window to reload with selected changes",
+    description:
+      "Need to click this for window to reload with selected changes",
     placeHolder: "Apply",
     onClick(config) {
-        const currentScheme = schemes[config.settings.scheme]
-        const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))
-        scheme.Amaterasu.background.color = config.settings.bgColor
+      const currentScheme = schemes[config.settings.scheme];
+      const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
+      scheme.Amaterasu.background.color = config.settings.bgColor;
 
-        FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4))
-        
-        config
-            .setPos(config.settings.x, config.settings.y)
-            .setSize(config.settings.width, config.settings.height)
-            .setScheme(currentScheme)
-            .apply()
-    }
-})
+      FileLib.write(
+        "eclipseAddons",
+        currentScheme,
+        JSON.stringify(scheme, null, 4)
+      );
 
-.addColorPicker({
+      config
+        .setPos(config.settings.x, config.settings.y)
+        .setSize(config.settings.width, config.settings.height)
+        .setScheme(currentScheme)
+        .apply();
+    },
+  })
+
+  .addColorPicker({
     category: "Theme",
     configName: "bgColor",
     title: "Change Background Color",
     description: "Changes the color and alpha of the background",
-    value: [0, 0, 0, 80]
-})
+    value: [0, 0, 0, 80],
+  })
 
-.addSlider({
+  .addSlider({
     category: "Theme",
     configName: "x",
     title: "Change X",
     description: "Changes the starting X coordinate of the Config (in percent)",
     options: [0, 75],
-    value: 20
-})
+    value: 20,
+  })
 
-.addSlider({
+  .addSlider({
     category: "Theme",
     configName: "y",
     title: "Change Y",
     description: "Changes the starting Y coordinate of the Config (in percent)",
     options: [0, 75],
-    value: 20
-})
+    value: 20,
+  })
 
-.addSlider({
+  .addSlider({
     category: "Theme",
     configName: "width",
     title: "Change Width",
     description: "Changes the width of the Config (in percent)",
     options: [25, 100],
-    value: 60
-})
+    value: 60,
+  })
 
-.addSlider({
+  .addSlider({
     category: "Theme",
     configName: "height",
     title: "Change Height",
     description: "Changes the height of the Config (in percent)",
     options: [25, 100],
-    value: 60
-})
+    value: 60,
+  });
 
-const config = new Settings("eclipseAddons", defaultConf, "data/ColorScheme.json")
+const config = new Settings(
+  "eclipseAddons",
+  defaultConf,
+  "data/ColorScheme.json"
+)
 
-.addMarkdown("Changelog", CHANGELOG)
-.addMarkdown("Credits", CREDITS)
+  .addMarkdown("Changelog", CHANGELOG)
+  .addMarkdown("Credits", CREDITS);
 
+const currentScheme = schemes[config.settings.scheme];
+const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
+scheme.Amaterasu.background.color = config.settings.bgColor;
 
-const currentScheme = schemes[config.settings.scheme]
-const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme))
-scheme.Amaterasu.background.color = config.settings.bgColor
-
-FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4))
+FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4));
 
 config
-    .setPos(config.settings.x, config.settings.y)
-    .setSize(config.settings.width, config.settings.height)
-    .setScheme(currentScheme)
-    .apply()
+  .setPos(config.settings.x, config.settings.y)
+  .setSize(config.settings.width, config.settings.height)
+  .setScheme(currentScheme)
+  .apply();
 
-export default () => config.settings
+export default () => config.settings;
