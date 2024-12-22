@@ -79,7 +79,10 @@ register("step", () => {
   if (settings().showRoomName) {
     let roomId = getRoomID();
 
-    if (!roomId) return;
+    if (!roomId) {
+      currRoomName = "Room Not Found";
+      return;
+    }
 
     if (lastRoomId !== roomId) {
       lastRoomId = roomId;

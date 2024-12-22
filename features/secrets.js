@@ -29,7 +29,11 @@ register("step", () => {
   if (settings().secretWaypoints) {
     let roomId = getRoomID();
 
-    if (!roomId) return;
+    if (!roomId) {
+      currRoomData = null;
+      secretsData = null;
+      return;
+    }
 
     if (lastRoomId !== roomId) {
       lastRoomId = roomId;
