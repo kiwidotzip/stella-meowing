@@ -683,7 +683,7 @@ register("step", () => {
 register("playerInteract", (action) => {
   //normal interacts
   if (currRouteData !== null && !recording) {
-    if (step < currRouteData.length) {
+    if (step < currRouteData.length || step >= 0) {
       if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
       if (currRouteData[step].secret.type !== "interact") return;
 
@@ -821,7 +821,6 @@ register("packetReceived", (packet) => {
   let pos = [e.getX(), e.getY(), e.getZ()];
 
   if (!name || !secretItems.has(name.removeFormatting())) {
-    ChatLib.chat("Not a secret");
     return;
   }
 
