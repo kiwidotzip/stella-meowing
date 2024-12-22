@@ -1,3 +1,5 @@
+import { chunkLoaded } from "./utils";
+
 /*  ------------ Dungeon Utilities --------------
 
     Dungeon related utilites
@@ -70,6 +72,9 @@ export const getCore = () => {
   if (!getPos()) return;
 
   let [x, z] = getPos();
+
+  if (!chunkLoaded(x, 68, z)) return;
+
   let blockIds = "";
   for (let y = 140; y >= 12; y--) {
     let block = World.getBlockAt(x, y, z);

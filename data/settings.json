@@ -52,7 +52,7 @@
             {
                 "type": 6,
                 "name": "termWaypoints",
-                "value": true
+                "value": false
             }
         ]
     },

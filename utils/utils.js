@@ -289,3 +289,15 @@ export const highlightSlot = (
   );
   Renderer.finishDraw();
 };
+
+/**
+ * Checks if the chunk at the specified coordinate is loaded.
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @returns
+ */
+export const chunkLoaded = (x, y, z) => {
+  if (!World || !World.getWorld()) return false;
+  return World.getChunk(x, y, z).chunk.func_177410_o();
+};
