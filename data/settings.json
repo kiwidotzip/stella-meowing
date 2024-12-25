@@ -167,7 +167,7 @@
             {
                 "type": 6,
                 "name": "secretWaypoints",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,

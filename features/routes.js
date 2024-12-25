@@ -275,69 +275,198 @@ register("renderWorld", () => {
   if (settings().modEnabled && !recording) {
     if (!currRouteData) return;
     if (step < currRouteData.length || step >= 0) {
-      for (var i = 0; i < currRouteData[step].locations.length; i++) {
-        let [x, y, z] = getRealCoord(
-          currRouteData[step].locations[i],
-          currRoomData
-        );
+      Object.entries(currRouteData[step]).forEach(([type, points]) => {
+        if (type != "secret") {
+          let index = 0;
+          points.forEach((pos) => {
+            if (type === "locations") {
+              let [x, y, z] = getRealCoord(pos, currRoomData);
 
-        if (i === 0 && step === 0) {
-          drawString(
-            "Start",
-            x + 0.5,
-            y + 1.5,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-        }
+              if (index === 0 && step === 0) {
+                drawString(
+                  "Start",
+                  x + 0.5,
+                  y + 1.5,
+                  z + 0.5,
+                  0xffffff,
+                  true,
+                  0.03,
+                  false
+                );
+              }
 
-        if (i + 1 < currRouteData[step].locations.length) {
-          let [x2, y2, z2] = getRealCoord(
-            currRouteData[step].locations[i + 1],
+              if (index + 1 < currRouteData[step].locations.length) {
+                let [x2, y2, z2] = getRealCoord(
+                  currRouteData[step].locations[index + 1],
+                  currRoomData
+                );
+                let [r, g, b] = [
+                  settings().lineColor[0] / 255,
+                  settings().lineColor[1] / 255,
+                  settings().lineColor[2] / 255,
+                ];
+
+                if (settings().lineType === 1) {
+                  drawLine(
+                    x + 0.5,
+                    y + 0.5,
+                    z + 0.5,
+                    x2 + 0.5,
+                    y2 + 0.5,
+                    z2 + 0.5,
+                    r,
+                    g,
+                    b,
+                    settings().lineWidth
+                  );
+                }
+              }
+            }
+
+            if (type === "mines") {
+              let [x, y, z] = getRealCoord(pos, currRoomData);
+              let [r, g, b] = [
+                settings().mineColor[0] / 255,
+                settings().mineColor[1] / 255,
+                settings().mineColor[2] / 255,
+              ];
+
+              drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+
+              if (index === 0) {
+                if (settings().showText)
+                  drawString(
+                    "Break",
+                    x + 0.5,
+                    y + 0.6,
+                    z + 0.5,
+                    0xffffff,
+                    true,
+                    0.03,
+                    false
+                  );
+              }
+            }
+
+            if (type === "etherwarps") {
+              let [x, y, z] = getRealCoord(pos, currRoomData);
+              let [r, g, b] = [
+                settings().warpColor[0] / 255,
+                settings().warpColor[1] / 255,
+                settings().warpColor[2] / 255,
+              ];
+
+              drawFilledBox(
+                x + 0.5,
+                y,
+                z + 0.5,
+                1,
+                1,
+                r,
+                g,
+                b,
+                30 / 255,
+                false
+              );
+              drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+              if (settings().showText)
+                drawString(
+                  "Warp",
+                  x + 0.5,
+                  y + 0.6,
+                  z + 0.5,
+                  0xffffff,
+                  true,
+                  0.03,
+                  false
+                );
+            }
+
+            if (type === "tnts") {
+              let [x, y, z] = getRealCoord(pos, currRoomData);
+              let [r, g, b] = [
+                settings().tntColor[0] / 255,
+                settings().tntColor[1] / 255,
+                settings().tntColor[2] / 255,
+              ];
+
+              drawFilledBox(
+                x + 0.5,
+                y,
+                z + 0.5,
+                1,
+                1,
+                r,
+                g,
+                b,
+                30 / 255,
+                false
+              );
+              drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+              if (settings().showText)
+                drawString(
+                  "BOOM",
+                  x + 0.5,
+                  y + 0.6,
+                  z + 0.5,
+                  0xffffff,
+                  true,
+                  0.03,
+                  false
+                );
+            }
+
+            if (type === "interacts") {
+              let [x, y, z] = getRealCoord(pos, currRoomData);
+              let [r, g, b] = [
+                settings().clickColor[0] / 255,
+                settings().clickColor[1] / 255,
+                settings().clickColor[2] / 255,
+              ];
+
+              drawFilledBox(
+                x + 0.5,
+                y,
+                z + 0.5,
+                1,
+                1,
+                r,
+                g,
+                b,
+                30 / 255,
+                false
+              );
+              drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+              if (settings().showText)
+                drawString(
+                  "Click",
+                  x + 0.5,
+                  y + 0.6,
+                  z + 0.5,
+                  0xffffff,
+                  true,
+                  0.03,
+                  false
+                );
+            }
+
+            index++;
+          });
+        } else {
+          if (currRouteData[step].secret.type === null) return;
+          let [x, y, z] = getRealCoord(
+            currRouteData[step].secret.location,
             currRoomData
           );
           let [r, g, b] = [
-            settings().lineColor[0] / 255,
-            settings().lineColor[1] / 255,
-            settings().lineColor[2] / 255,
+            settings().secretColor[0] / 255,
+            settings().secretColor[1] / 255,
+            settings().secretColor[2] / 255,
           ];
 
-          if (settings().lineType === 1)
-            drawLine(
-              x + 0.5,
-              y + 0.5,
-              z + 0.5,
-              x2 + 0.5,
-              y2 + 0.5,
-              z2 + 0.5,
-              r,
-              g,
-              b,
-              settings().lineWidth
-            );
-        }
-      }
-
-      for (var i = 0; i < currRouteData[step].mines.length; i++) {
-        let [x, y, z] = getRealCoord(
-          currRouteData[step].mines[i],
-          currRoomData
-        );
-        let [r, g, b] = [
-          settings().mineColor[0] / 255,
-          settings().mineColor[1] / 255,
-          settings().mineColor[2] / 255,
-        ];
-
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-
-        if (i === 0) {
           if (settings().showText)
             drawString(
-              "Break",
+              currRouteData[step].secret.type,
               x + 0.5,
               y + 0.6,
               z + 0.5,
@@ -346,87 +475,163 @@ register("renderWorld", () => {
               0.03,
               false
             );
+          if (settings().boxSecrets) drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
         }
-      }
+      });
+    }
+  }
 
-      for (var i = 0; i < currRouteData[step].etherwarps.length; i++) {
+  //rendering for routes being recorded
+  if (recording) {
+    if (!recordingData.locations) return;
+    Object.entries(recordingData).forEach(([type, points]) => {
+      if (type != "secret") {
+        let index = 0;
+        points.forEach((pos) => {
+          if (type === "locations") {
+            let [x, y, z] = getRealCoord(pos, currRoomData);
+
+            if (index === 0 && step === 0) {
+              drawString(
+                "Start",
+                x + 0.5,
+                y + 1.5,
+                z + 0.5,
+                0xffffff,
+                true,
+                0.03,
+                false
+              );
+            }
+
+            if (index + 1 < recordingData.locations.length) {
+              let [x2, y2, z2] = getRealCoord(
+                recordingData.locations[index + 1],
+                currRoomData
+              );
+              let [r, g, b] = [
+                settings().lineColor[0] / 255,
+                settings().lineColor[1] / 255,
+                settings().lineColor[2] / 255,
+              ];
+
+              if (settings().lineType === 1) {
+                drawLine(
+                  x + 0.5,
+                  y + 0.5,
+                  z + 0.5,
+                  x2 + 0.5,
+                  y2 + 0.5,
+                  z2 + 0.5,
+                  r,
+                  g,
+                  b,
+                  settings().lineWidth
+                );
+              }
+            }
+          }
+
+          if (type === "mines") {
+            let [x, y, z] = getRealCoord(pos, currRoomData);
+            let [r, g, b] = [
+              settings().mineColor[0] / 255,
+              settings().mineColor[1] / 255,
+              settings().mineColor[2] / 255,
+            ];
+
+            drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+
+            if (index === 0) {
+              if (settings().showText)
+                drawString(
+                  "Break",
+                  x + 0.5,
+                  y + 0.6,
+                  z + 0.5,
+                  0xffffff,
+                  true,
+                  0.03,
+                  false
+                );
+            }
+          }
+
+          if (type === "etherwarps") {
+            let [x, y, z] = getRealCoord(pos, currRoomData);
+            let [r, g, b] = [
+              settings().warpColor[0] / 255,
+              settings().warpColor[1] / 255,
+              settings().warpColor[2] / 255,
+            ];
+
+            drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
+            drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+            if (settings().showText)
+              drawString(
+                "Warp",
+                x + 0.5,
+                y + 0.6,
+                z + 0.5,
+                0xffffff,
+                true,
+                0.03,
+                false
+              );
+          }
+
+          if (type === "tnts") {
+            let [x, y, z] = getRealCoord(pos, currRoomData);
+            let [r, g, b] = [
+              settings().tntColor[0] / 255,
+              settings().tntColor[1] / 255,
+              settings().tntColor[2] / 255,
+            ];
+
+            drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
+            drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+            if (settings().showText)
+              drawString(
+                "BOOM",
+                x + 0.5,
+                y + 0.6,
+                z + 0.5,
+                0xffffff,
+                true,
+                0.03,
+                false
+              );
+          }
+
+          if (type === "interacts") {
+            let [x, y, z] = getRealCoord(pos, currRoomData);
+            let [r, g, b] = [
+              settings().clickColor[0] / 255,
+              settings().clickColor[1] / 255,
+              settings().clickColor[2] / 255,
+            ];
+
+            drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
+            drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
+            if (settings().showText)
+              drawString(
+                "Click",
+                x + 0.5,
+                y + 0.6,
+                z + 0.5,
+                0xffffff,
+                true,
+                0.03,
+                false
+              );
+          }
+
+          index++;
+        });
+      } else {
+        if (Object.keys(route).length === 0) return;
         let [x, y, z] = getRealCoord(
-          currRouteData[step].etherwarps[i],
-          currRoomData
-        );
-        let [r, g, b] = [
-          settings().warpColor[0] / 255,
-          settings().warpColor[1] / 255,
-          settings().warpColor[2] / 255,
-        ];
-
-        drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "Warp",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-
-      for (var i = 0; i < currRouteData[step].tnts.length; i++) {
-        let [x, y, z] = getRealCoord(currRouteData[step].tnts[i], currRoomData);
-        let [r, g, b] = [
-          settings().tntColor[0] / 255,
-          settings().tntColor[1] / 255,
-          settings().tntColor[2] / 255,
-        ];
-
-        drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "BOOM",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-
-      for (var i = 0; i < currRouteData[step].interacts.length; i++) {
-        let [x, y, z] = getRealCoord(
-          currRouteData[step].interacts[i],
-          currRoomData
-        );
-        let [r, g, b] = [
-          settings().clickColor[0] / 255,
-          settings().clickColor[1] / 255,
-          settings().clickColor[2] / 255,
-        ];
-
-        drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "Click",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-
-      if (currRouteData[step].secret.type !== null) {
-        let [x, y, z] = getRealCoord(
-          currRouteData[step].secret.location,
+          route[roomRID][step - 1].secret.location,
           currRoomData
         );
         let [r, g, b] = [
@@ -437,7 +642,7 @@ register("renderWorld", () => {
 
         if (settings().showText)
           drawString(
-            currRouteData[step].secret.type,
+            route[roomRID][step - 1].secret.type,
             x + 0.5,
             y + 0.6,
             z + 0.5,
@@ -448,181 +653,7 @@ register("renderWorld", () => {
           );
         if (settings().boxSecrets) drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
       }
-    }
-  }
-
-  //rendering for routes being recorded
-  if (recording) {
-    if (recordingData.locations !== null) {
-      for (var i = 0; i < recordingData.locations.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.locations[i], currRoomData);
-
-        if (i === 0 && step === 0) {
-          drawString(
-            "Start",
-            x + 0.5,
-            y + 1.5,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-        }
-
-        if (i + 1 < recordingData.locations.length) {
-          let [x2, y2, z2] = getRealCoord(
-            recordingData.locations[i + 1],
-            currRoomData
-          );
-          let [r, g, b] = [
-            settings().lineColor[0] / 255,
-            settings().lineColor[1] / 255,
-            settings().lineColor[2] / 255,
-          ];
-
-          if (settings().lineType === 1)
-            drawLine(
-              x + 0.5,
-              y + 0.5,
-              z + 0.5,
-              x2 + 0.5,
-              y2 + 0.5,
-              z2 + 0.5,
-              r,
-              g,
-              b,
-              settings().lineWidth
-            );
-        }
-      }
-    }
-
-    if (recordingData.etherwarps !== null) {
-      for (var i = 0; i < recordingData.etherwarps.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.etherwarps[i], currRoomData);
-        let [r, g, b] = [
-          settings().warpColor[0] / 255,
-          settings().warpColor[1] / 255,
-          settings().warpColor[2] / 255,
-        ];
-
-        drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "Warp",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-    }
-
-    if (recordingData.tnts !== null) {
-      for (var i = 0; i < recordingData.tnts.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.tnts[i], currRoomData);
-        let [r, g, b] = [
-          settings().tntColor[0] / 255,
-          settings().tntColor[1] / 255,
-          settings().tntColor[2] / 255,
-        ];
-
-        drawFilledBox(x + 0.5, y, z + 0.5, 1, 1, r, g, b, 30 / 255, false);
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "BOOM",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-    }
-
-    if (recordingData.interacts !== null) {
-      for (var i = 0; i < recordingData.interacts.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.interacts[i], currRoomData);
-        let [r, g, b] = [
-          settings().clickColor[0] / 255,
-          settings().clickColor[1] / 255,
-          settings().clickColor[2] / 255,
-        ];
-
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-        if (settings().showText)
-          drawString(
-            "Click",
-            x + 0.5,
-            y + 0.6,
-            z + 0.5,
-            0xffffff,
-            true,
-            0.03,
-            false
-          );
-      }
-    }
-
-    if (recordingData.mines !== null) {
-      for (var i = 0; i < recordingData.mines.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.mines[i], currRoomData);
-        let [r, g, b] = [
-          settings().mineColor[0] / 255,
-          settings().mineColor[1] / 255,
-          settings().mineColor[2] / 255,
-        ];
-
-        drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-
-        if (i === 0) {
-          if (settings().showText)
-            drawString(
-              "Break",
-              x + 0.5,
-              y + 0.6,
-              z + 0.5,
-              0xffffff,
-              true,
-              0.03,
-              false
-            );
-        }
-      }
-    }
-
-    if (Object.keys(route).length !== 0) {
-      let [x, y, z] = getRealCoord(
-        route[roomRID][step - 1].secret.location,
-        currRoomData
-      );
-      let [r, g, b] = [
-        settings().secretColor[0] / 255,
-        settings().secretColor[1] / 255,
-        settings().secretColor[2] / 255,
-      ];
-
-      if (settings().showText)
-        drawString(
-          route[roomRID][step - 1].secret.type,
-          x + 0.5,
-          y + 0.6,
-          z + 0.5,
-          0xffffff,
-          true,
-          0.03,
-          false
-        );
-      if (settings().boxSecrets) drawBoxAtBlock(x, y, z, r, g, b, 1, 1);
-    }
+    });
   }
 });
 
@@ -636,7 +667,7 @@ register("step", () => {
     !recording
   ) {
     if (!currRouteData) return;
-    if (step < currRouteData.length) {
+    if (step < currRouteData.length || step >= 0) {
       for (var i = 0; i < currRouteData[step].locations.length; i++) {
         let [x, y, z] = getRealCoord(
           currRouteData[step].locations[i],
@@ -658,22 +689,21 @@ register("step", () => {
 
   //recording line
   if (recording) {
-    if (recordingData.locations !== null) {
-      for (var i = 0; i < recordingData.locations.length; i++) {
-        let [x, y, z] = getRealCoord(recordingData.locations[i], currRoomData);
+    if (recordingData.locations === null) return;
+    for (var i = 0; i < recordingData.locations.length; i++) {
+      let [x, y, z] = getRealCoord(recordingData.locations[i], currRoomData);
 
-        if (i + 1 < recordingData.locations.length) {
-          let [x2, y2, z2] = getRealCoord(
-            recordingData.locations[i + 1],
-            currRoomData
+      if (i + 1 < recordingData.locations.length) {
+        let [x2, y2, z2] = getRealCoord(
+          recordingData.locations[i + 1],
+          currRoomData
+        );
+
+        if (settings().lineType === 0)
+          drawLineParticles(
+            [x + 1, y + 0.5, z + 1],
+            [x2 + 1, y2 + 0.5, z2 + 1]
           );
-
-          if (settings().lineType === 0)
-            drawLineParticles(
-              [x + 1, y + 0.5, z + 1],
-              [x2 + 1, y2 + 0.5, z2 + 1]
-            );
-        }
       }
     }
   }
