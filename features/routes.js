@@ -82,6 +82,8 @@ function reset() {
 
 //adds a recording point
 function addPoint(realpos, type) {
+  if (!currRoomData) return;
+
   let pos = getRoomCoord(realpos, currRoomData);
 
   if (type === "location") {
@@ -660,6 +662,8 @@ register("renderWorld", () => {
 
 //draws particle lines
 register("step", () => {
+  if (!currRoomData) return;
+
   //normal line
   if (
     settings().modEnabled &&
@@ -712,6 +716,8 @@ register("step", () => {
 
 //checks if a player is opening current secret
 register("playerInteract", (action) => {
+  if (!currRoomData) return;
+
   //normal interacts
   if (currRouteData !== null && !recording) {
     if (step < currRouteData.length || step >= 0) {
@@ -792,6 +798,7 @@ register("playerInteract", (action) => {
 //adds points for varias actions
 register("soundPlay", (pos, name) => {
   if (!recording) return;
+  if (!currRoomData) return;
 
   let nameSplitted = name.split(".");
 
@@ -855,6 +862,8 @@ register("packetReceived", (packet) => {
     return;
   }
 
+  if (!currRoomData) return;
+
   //normal item detection
   if (currRouteData !== null && !recording) {
     if (step < currRouteData.length) {
@@ -916,6 +925,7 @@ register("packetReceived", (packet) => {
 //bat detection (easyest part imo)
 register("renderWorld", () => {
   if (recording) return;
+  if (!currRoomData) return;
 
   if (!currRouteData) return;
   if (step < currRouteData.length) {
@@ -937,6 +947,8 @@ register("renderWorld", () => {
 //draws line points for route recording
 register("step", () => {
   if (!recording) return;
+  if (!currRoomData) return;
+
   let loc = [
     Math.round(Player.getX() + 0.25) - 1,
     Math.round(Player.getY()),
