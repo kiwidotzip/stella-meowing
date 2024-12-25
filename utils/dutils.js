@@ -6,7 +6,7 @@ import { chunkLoaded } from "./utils";
 
     ------------------- To Do -------------------
 
-    - Nothing :D
+    - Switch coord conversion to bm stuff
 
     --------------------------------------------- */
 
@@ -150,6 +150,9 @@ export const getRouteData = () => {
   return null;
 };
 
+
+//soopy coord conversion
+/*
 //used to get highest block
 export const getRoofAt = (x, z) => {
   let y = 255;
@@ -289,6 +292,7 @@ export const getTopBlockAt2 = (x, z, y) => {
   return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId();
 };
 
+
 //rotates coordnates
 export const rotateCoords = ([x, y, z], degree) => {
   if (degree == 1) return [x, y, z];
@@ -341,3 +345,60 @@ export const getRealCoord = ([x, y, z], roomData) => {
 
   return realCoord;
 };
+*/
+
+
+//bm coord conversion
+
+findRotationAndCorner() {
+  // Roof height is needed to find stained clay
+  //if (!this.roofHeight) return
+  let type = getRoomData().type
+  if (type == "fairy") {
+      let rotation = 0
+      let [x, z] = getPos()
+
+      let corner = [x-15.5, 0, z-15.5]
+      return [rotation, corner]
+  }
+
+  let components = getPos()
+
+  const minX = Math.min(...components.map(a => a.worldX))
+  const maxX = Math.max(...components.map(a => a.worldX))
+  const minY = Math.min(...components.map(a => a.worldY))
+  const maxY = Math.max(...components.map(a => a.worldY))
+
+  // Corners of the room, in clockwise order from top left
+  const spots = [
+      [minX - 15, minY - 15],
+      [maxX + 15, minY - 15],
+      [maxX + 15, maxY + 15],
+      [minX - 15, maxY + 15]
+  ]
+
+  for (let i = 0; i < spots.length; i++) {
+      let [x, z] = spots[i]
+
+      if (!chunkLoaded(x, this.roofHeight, z)) return
+
+      // Looking for blue stained hardened clay at the corner of the room
+      let block = World.getBlockAt(x, this.roofHeight, z)
+      if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
+
+      this.rotation = i
+      this.corner = [x+0.5, 0, z+0.5]
+      return
+  }
+}
+
+getRoomCoord(coord, ints=true) {
+  if (this.rotation == null || !this.corner) return null
+
+  const cornerCoord = ints ? this.corner.map(Math.floor) : this.corner
+  const roomCoord = rotateCoords(coord.map((v, i) => v - cornerCoord[i]), this.rotation)
+
+  if (ints) return roomCoord.map(Math.floor)
+  
+  return roomCoord
+}
