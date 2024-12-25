@@ -270,6 +270,7 @@ register("renderWorld", () => {
   }
 
   if (!indungeon) return;
+  if (!currRoomData) return;
 
   //route rendering
   if (settings().modEnabled && !recording) {
@@ -916,20 +917,19 @@ register("packetReceived", (packet) => {
 register("renderWorld", () => {
   if (recording) return;
 
-  if (currRouteData !== null) {
-    if (step < currRouteData.length) {
-      if (currRouteData[step].secret.type !== "bat") return;
+  if (!currRouteData) return;
+  if (step < currRouteData.length) {
+    if (currRouteData[step].secret.type !== "bat") return;
 
-      let pos = [Player.getX(), Player.getY(), Player.getZ()];
-      let secretPos = getRealCoord(
-        currRouteData[step].secret.location,
-        currRoomData
-      );
-      let distance = calcDistance(pos, secretPos);
+    let pos = [Player.getX(), Player.getY(), Player.getZ()];
+    let secretPos = getRealCoord(
+      currRouteData[step].secret.location,
+      currRoomData
+    );
+    let distance = calcDistance(pos, secretPos);
 
-      if (distance < 4) {
-        step++;
-      }
+    if (distance < 5) {
+      step++;
     }
   }
 });

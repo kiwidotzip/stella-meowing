@@ -50,6 +50,7 @@ register("renderWorld", () => {
   if (!settings().secretWaypoints) return;
   if (!secretsData) return;
   if (!secretsData.secret_coords) return;
+  if (!currRoomData) return;
 
   Object.entries(secretsData.secret_coords).forEach(([type, secrets]) => {
     secrets.forEach((pos) => {
