@@ -147,10 +147,7 @@ function addPoint(realpos, type) {
   if (type === "secretInteract") {
     if (Object.keys(route).length !== 0) {
       if (route[roomRID][step - 1].secret.type === "interact") {
-        let [x, y, z] = getRealCoord(
-          route[roomRID][step - 1].secret.location,
-          currRoomData
-        );
+        let [x, y, z] = route[roomRID][step - 1].secret.location;
         if (x === pos[0] && y === pos[1] && z === pos[2]) return;
       }
     }
@@ -241,7 +238,11 @@ function saveRoute(force) {
 //gets room data
 register("step", () => {
   let roomId = getRoomID();
-  if (!roomId) return;
+  if (!roomId) {
+    currRoomData = null;
+    currRouteData = null;
+    return;
+  }
 
   if (lastRoomId !== roomId) {
     lastRoomId = roomId;
@@ -716,14 +717,16 @@ register("step", () => {
 
 //checks if a player is opening current secret
 register("playerInteract", (action) => {
+  if (!indungeon) return;
   if (!currRoomData) return;
+  if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
 
   //normal interacts
-  if (currRouteData !== null && !recording) {
+  if (!recording) {
+    if (!currRouteData) return;
+    if (currRouteData[step].secret.type === null) return;
+    if (currRouteData[step].secret.type !== "interact") return;
     if (step < currRouteData.length || step >= 0) {
-      if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
-      if (currRouteData[step].secret.type !== "interact") return;
-
       let secretPos = getRealCoord(
         currRouteData[step].secret.location,
         currRoomData
@@ -759,38 +762,37 @@ register("playerInteract", (action) => {
 
   //recording interacts
   if (recording) {
-    if (recording) {
-      if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
+    //ChatLib.chat("working");
 
-      let pos = [
-        Player.lookingAt().getX(),
-        Player.lookingAt().getY(),
-        Player.lookingAt().getZ(),
-      ];
-      let id = Player.lookingAt().getType().getID();
+    let pos = [
+      Player.lookingAt().getX(),
+      Player.lookingAt().getY(),
+      Player.lookingAt().getZ(),
+    ];
 
-      if (id === 54) {
-        // Chest
-        addPoint(pos, "secretInteract");
-        pushToRoute();
-      }
+    let id = Player.lookingAt().getType().getID();
 
-      if (id === 146) {
-        // Trapped chest (mimic?)
-        addPoint(pos, "secretInteract");
-        pushToRoute();
-      }
+    if (id === 54) {
+      // Chest
+      addPoint(pos, "secretInteract");
+      pushToRoute();
+    }
 
-      if (id === 144) {
-        // Skull (wither ess or redstone key)
-        addPoint(pos, "secretInteract");
-        pushToRoute();
-      }
+    if (id === 146) {
+      // Trapped chest (mimic?)
+      addPoint(pos, "secretInteract");
+      pushToRoute();
+    }
 
-      if (id === 69) {
-        // Lever
-        addPoint(pos, "interact");
-      }
+    if (id === 144) {
+      // Skull (wither ess or redstone key)
+      addPoint(pos, "secretInteract");
+      pushToRoute();
+    }
+
+    if (id === 69) {
+      // Lever
+      addPoint(pos, "interact");
     }
   }
 });
@@ -865,8 +867,10 @@ register("packetReceived", (packet) => {
   if (!currRoomData) return;
 
   //normal item detection
-  if (currRouteData !== null && !recording) {
+  if (!recording) {
+    if (!currRouteData) return;
     if (step < currRouteData.length) {
+      if (currRouteData[step].secret.type === null) return;
       if (currRouteData[step].secret.type !== "item") return;
 
       let secretPos = getRealCoord(
