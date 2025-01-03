@@ -96,7 +96,7 @@ export const getRoomID = () => {
   if (!roomCore) return;
 
   for (var i = 0; i < rooms.length; i++) {
-    for (var j = 0; j < 5; j++) {
+    for (var j = 0; j < Object.values(rooms[i].cores).length; j++) {
       if (roomCore === rooms[i].cores[j]) {
         return rooms[i].id;
       }
@@ -112,7 +112,7 @@ export const getRoomName = () => {
   if (!roomCore) return;
 
   for (var i = 0; i < rooms.length; i++) {
-    for (var j = 0; j < 5; j++) {
+    for (var j = 0; j < Object.values(rooms[i].cores).length; j++) {
       if (roomCore === rooms[i].cores[j]) {
         return rooms[i].name;
       }
@@ -127,7 +127,7 @@ export const getRoomData = () => {
   if (!roomCore) return;
 
   for (var i = 0; i < rooms.length; i++) {
-    for (var j = 0; j < 5; j++) {
+    for (var j = 0; j < Object.values(rooms[i].cores).length; j++) {
       if (roomCore === rooms[i].cores[j]) {
         return rooms[i];
       }

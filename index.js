@@ -1,5 +1,4 @@
 import settings from "./utils/config";
-import "./features/termwaypoints";
 import "./features/firstInstall";
 import "./features/secrets";
 import "./features/routes";

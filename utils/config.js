@@ -122,16 +122,6 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     },
   })
 
-  //term waypoints
-  .addSwitch({
-    configName: "termWaypoints",
-    title: "Terminal waypoints",
-    description: "Terminal Waypoints for P3 of f7",
-    category: "Dungeons",
-    subcatagory: "F7",
-    value: false,
-  })
-
   //Secret routes
 
   //general options

@@ -36,6 +36,10 @@ let trashItems = [
   "Commander",
   "Knight",
   "Rune",
+  "Diary",
+  "Beating Heart",
+  "Tripwire Hook",
+  "Lever",
 ];
 
 let shops = ["Booster Cookie", "Ophelia", "Trades"];
