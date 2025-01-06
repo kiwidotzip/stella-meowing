@@ -48,11 +48,6 @@
                     0,
                     0
                 ]
-            },
-            {
-                "type": 6,
-                "name": "termWaypoints",
-                "value": true
             }
         ]
     },
