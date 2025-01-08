@@ -1,9 +1,9 @@
 import settings from "./utils/config";
-import "./features/firstInstall";
+//import "./features/firstInstall";
 import "./features/blockoverlay";
-import "./features/secrets";
+//import "./features/secrets";
 import "./features/routes";
-import "./features/dungeon";
+//import "./features/dungeon";
 
 /*  ------------------- Index -------------------
 

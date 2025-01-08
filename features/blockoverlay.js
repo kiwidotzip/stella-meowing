@@ -1,55 +1,369 @@
-import { drawBoxAtBlock, drawLine } from "../utils/renderUtils";
+import { renderBoxOutline } from "../utils/bloomRenderUtils";
+import settings from "../utils/config";
 
-colors = [
-  [255, 0, 0],
-  [255, 255, 0],
-  [0, 255, 0],
-  [0, 255, 255],
-  [0, 0, 255],
-  [255, 0, 255],
-];
-/*
+let chroma = [];
 
-function drawGayLine(x, y, z, x2, y2, z2, steps) {
-  for (let i = 0; i < colors.length; i++) {
-    let a = i;
-    let b = i + 1;
+register("step", (i) => {
+  if (!settings().overlayEnabled) return;
+  if (!settings().chromaHighlight) return;
 
-    if (a > colors.length - 1) a -= colors.length;
-    if (b > colors.length - 1) b -= colors.length;
-
-    let sr = colors[b][0] - colors[a][0] / steps;
-    let sg = colors[b][1] - colors[a][1] / steps;
-    let sb = colors[b][2] - colors[a][2] / steps;
-
-    for (let j = 0; j < steps; j++) {
-      let r = (colors[a][0] + sr * j) / 255;
-      let g = (colors[a][1] + sg * j) / 255;
-      let b = (colors[a][2] + sb * j) / 255;
-
-      let fx1 =
-        j * ((x2 - x) / (colors.length * steps)) +
-        i * ((x2 - x) / colors.length);
-      let fx2 =
-        j * ((x2 - x) / (colors.length * steps)) +
-        i * ((x2 - x) / colors.length) +
-        (x2 - x) / (colors.length * steps);
-
-      drawLine(fx1, y, z, fx2, y2, z2, 1, 0, 0, 1);
-    }
-  }
-}
-*/
+  let speed = 11 - settings().chromaOverlaySpeed;
+  chroma = Object.values(Renderer.getRainbowColors(i, speed));
+}).setFps(30);
 
 register("renderWorld", () => {
-  let [x, y, z] = [
-    Player.lookingAt().getX(),
-    Player.lookingAt().getY(),
-    Player.lookingAt().getZ(),
+  if (!settings().overlayEnabled) return;
+
+  let block = Player.lookingAt();
+
+  if (!block) return;
+  if (!block?.type) return;
+  if (block?.getID() === 0) return;
+
+  let [x, y, z] = [block.getX(), block.getY(), block.getZ()];
+  let [r, g, b, a] = [
+    settings().blockHighlightColor[0],
+    settings().blockHighlightColor[1],
+    settings().blockHighlightColor[2],
+    settings().blockHighlightColor[3],
   ];
 
-  drawBoxAtBlock(x, y, z, 1, 1, 1, 1, 1, 1);
+  let lw = settings().overlayLineWidth;
 
-  //drawGayLine(x, y, z, x + 1, y, z, 3);
-  drawLine(x, y, z, x + 1, y, z, 1, 1, 1, 1);
+  if (settings().chromaHighlight) [r, g, b] = chroma;
+
+  //slab logic
+  if (block?.type?.getRegistryName()?.toString()?.includes("slab")) {
+    if (block?.type?.getRegistryName()?.toString()?.includes("double")) {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        1.01,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else {
+      if (block?.getMetadata() > 7) {
+        renderBoxOutline(
+          x + 0.5,
+          y + 0.495,
+          z + 0.5,
+          1.005,
+          1.005,
+          0.51,
+          r / 255,
+          g / 255,
+          b / 255,
+          a / 255,
+          lw,
+          false
+        );
+      } else {
+        renderBoxOutline(
+          x + 0.5,
+          y - 0.005,
+          z + 0.5,
+          1.005,
+          1.005,
+          0.51,
+          r / 255,
+          g / 255,
+          b / 255,
+          a / 255,
+          lw,
+          false
+        );
+      }
+    }
+  }
+
+  //stair logic
+  else if (block?.type?.getRegistryName()?.toString()?.includes("stairs")) {
+    if (block?.getMetadata() === 0) {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.75,
+        y + 0.505,
+        z + 0.5,
+        1.005,
+        0.505,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 1) {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.25,
+        y + 0.505,
+        z + 0.5,
+        1.005,
+        0.505,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 2) {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.505,
+        z + 0.75,
+        0.505,
+        1.005,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 3) {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.505,
+        z + 0.25,
+        0.505,
+        1.005,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 4) {
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.505,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.75,
+        y - 1.005,
+        z + 0.5,
+        1.005,
+        0.505,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 5) {
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.505,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.25,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        0.505,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 6) {
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.505,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.75,
+        0.505,
+        1.005,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else if (block?.getMetadata() === 7) {
+      renderBoxOutline(
+        x + 0.5,
+        y + 0.105,
+        z + 0.5,
+        1.005,
+        1.005,
+        0.51,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.25,
+        0.505,
+        1.005,
+        0.5,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    } else {
+      renderBoxOutline(
+        x + 0.5,
+        y - 0.005,
+        z + 0.5,
+        1.005,
+        1.005,
+        1.01,
+        r / 255,
+        g / 255,
+        b / 255,
+        a / 255,
+        lw,
+        false
+      );
+    }
+  }
+
+  //default block logic
+  else {
+    renderBoxOutline(
+      x + 0.5,
+      y - 0.005,
+      z + 0.5,
+      1.005,
+      1.005,
+      1.01,
+      r / 255,
+      g / 255,
+      b / 255,
+      a / 255,
+      lw,
+      false
+    );
+  }
 });
+
+register("command", () => {
+  ChatLib.chat(Player.lookingAt());
+  ChatLib.chat(Player.lookingAt().getMetadata());
+}).setName("testing");

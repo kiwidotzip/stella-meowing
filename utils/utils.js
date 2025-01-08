@@ -301,3 +301,20 @@ export const chunkLoaded = (x, y, z) => {
   if (!World || !World.getWorld()) return false;
   return World.getChunk(x, y, z).chunk.func_177410_o();
 };
+
+/**
+ *
+ * @param {Block} ctBlock
+ * @returns {Number[]} - A 6-long array of numbers with the [x0, y0, z0, x1, y1, z1] corners of the block's bounding box.
+ */
+export const getBlockBoundingBox = (ctBlock) => {
+  const mcBlock = ctBlock.type.mcBlock;
+  return [
+    ctBlock.getX() + mcBlock.func_149704_x(),
+    ctBlock.getY() + mcBlock.func_149665_z(),
+    ctBlock.getZ() + mcBlock.func_149706_B(),
+    ctBlock.getX() + mcBlock.func_149753_y(),
+    ctBlock.getY() + mcBlock.func_149669_A(),
+    ctBlock.getZ() + mcBlock.func_149693_C(),
+  ];
+};

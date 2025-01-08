@@ -48,6 +48,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
   .addButton({
     category: "General",
+    subcategory: "",
     configName: "MyDiscord",
     title: "Discord Server",
     description:
@@ -331,6 +332,68 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     category: "Waypoints",
     subcategory: "Colors",
     value: [255, 0, 0, 255],
+  })
+
+  //block overlay
+  .addSwitch({
+    category: "Msc.",
+    configName: "overlayEnabled",
+    title: "Render Block Overlay",
+    description: "Highlights the block you are looking at",
+    subcategory: "Block Overlay",
+  })
+
+  .addColorPicker({
+    configName: "blockHighlightColor",
+    title: "Block Highlight Color",
+    description: "The color to highlight blocks",
+    category: "Msc.",
+    subcategory: "Block Overlay",
+    value: [0, 255, 255, 255],
+
+    shouldShow(data) {
+      return data.overlayEnabled;
+    },
+  })
+
+  .addSwitch({
+    configName: "chromaHighlight",
+    title: "chromaOverlay",
+    description: "Makes the outline chroma",
+    category: "Msc.",
+    subcatagory: "Block Overlay",
+
+    shouldShow(data) {
+      return data.overlayEnabled;
+    },
+  })
+
+  .addSlider({
+    configName: "chromaOverlaySpeed",
+    title: "Chroma Speed",
+    description: "The speed of the chroma effect",
+    category: "Msc.",
+    subcategory: "Block Overlay",
+    options: [1, 10],
+    value: 1,
+
+    shouldShow(data) {
+      return data.overlayEnabled && data.chromaHighlight;
+    },
+  })
+
+  .addSlider({
+    configName: "overlayLineWidth",
+    title: "line width",
+    description: "Line width for the outline",
+    category: "Msc.",
+    subcategory: "Block Overlay",
+    options: [1, 5],
+    value: 3,
+
+    shouldShow(data) {
+      return data.overlayEnabled;
+    },
   })
 
   //themeing

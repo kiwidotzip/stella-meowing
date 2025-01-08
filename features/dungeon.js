@@ -40,6 +40,8 @@ let trashItems = [
   "Beating Heart",
   "Tripwire Hook",
   "Lever",
+  "Conjuring",
+  "Skeletor",
 ];
 
 let shops = ["Booster Cookie", "Ophelia", "Trades"];

@@ -227,6 +227,41 @@
         ]
     },
     {
+        "category": "Msc.",
+        "settings": [
+            {
+                "type": 6,
+                "name": "overlayEnabled",
+                "value": true
+            },
+            {
+                "type": 5,
+                "name": "blockHighlightColor",
+                "value": [
+                    0,
+                    255,
+                    255,
+                    255
+                ]
+            },
+            {
+                "type": 6,
+                "name": "chromaHighlight",
+                "value": true
+            },
+            {
+                "type": 1,
+                "name": "chromaOverlaySpeed",
+                "value": 1
+            },
+            {
+                "type": 1,
+                "name": "overlayLineWidth",
+                "value": 3
+            }
+        ]
+    },
+    {
         "category": "Theme",
         "settings": [
             {

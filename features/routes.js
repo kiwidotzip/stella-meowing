@@ -8,7 +8,6 @@ import {
   getRoomCoord,
   routes,
   getCore,
-  getPos,
 } from "../utils/dutils";
 import { drawBoxAtBlock, drawFilledBox, drawLine } from "../utils/renderUtils";
 import { calcDistance, drawLineParticles, drawString } from "../utils/utils";
@@ -237,6 +236,8 @@ function saveRoute(force) {
 
 //gets room data
 register("step", () => {
+  if (!inDungeon()) return;
+
   let roomId = getRoomID();
   if (!roomId) {
     currRoomData = null;
