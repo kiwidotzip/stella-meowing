@@ -260,14 +260,14 @@ export const renderBoxOutline = (
   );
 };
 
-export const renderFilledBox = (x, y, z, w, h, r, g, b, a, phase = true) => {
+export const renderFilledBox = (x, y, z, l, w, h, r, g, b, a, phase = true) => {
   renderFilledBoxFromCorners(
     x - w / 2,
     y,
-    z - w / 2,
+    z - l / 2,
     x + w / 2,
     y + h,
-    z + w / 2,
+    z + l / 2,
     r,
     g,
     b,
@@ -299,12 +299,12 @@ export const renderBlockHitbox = (
 ) => {
   const [x0, y0, z0, x1, y1, z1] = getBlockBoundingBox(ctBlock);
   renderBoxFromCorners(
-    x0,
-    y0,
-    z0,
-    x1,
-    y1,
-    z1,
+    x0 - 0.001,
+    y0 - 0.001,
+    z0 - 0.001,
+    x1 + 0.001,
+    y1 + 0.001,
+    z1 + 0.001,
     r,
     g,
     b,

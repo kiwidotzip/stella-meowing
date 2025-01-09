@@ -246,6 +246,21 @@
             },
             {
                 "type": 6,
+                "name": "fillBlockOverlay",
+                "value": true
+            },
+            {
+                "type": 5,
+                "name": "blockFillColor",
+                "value": [
+                    0,
+                    255,
+                    52,
+                    30
+                ]
+            },
+            {
+                "type": 6,
                 "name": "chromaHighlight",
                 "value": true
             },

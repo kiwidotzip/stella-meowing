@@ -357,6 +357,31 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
   })
 
   .addSwitch({
+    configName: "fillBlockOverlay",
+    title: "Fill blocks",
+    description: "Fills the blocks with the color",
+    category: "Msc.",
+    subcatagory: "Block Overlay",
+
+    shouldShow(data) {
+      return data.overlayEnabled;
+    },
+  })
+
+  .addColorPicker({
+    configName: "blockFillColor",
+    title: "Block Fill Color",
+    description: "The color to fill blocks",
+    category: "Msc.",
+    subcategory: "Block Overlay",
+    value: [0, 255, 255, 30],
+
+    shouldShow(data) {
+      return data.overlayEnabled && data.fillBlockOverlay;
+    },
+  })
+
+  .addSwitch({
     configName: "chromaHighlight",
     title: "chromaOverlay",
     description: "Makes the outline chroma",

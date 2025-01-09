@@ -1,3 +1,4 @@
+import { renderBlockHitbox } from "../utils/bloomRenderUtils";
 import { renderBoxOutline } from "../utils/bloomRenderUtils";
 import settings from "../utils/config";
 
@@ -28,64 +29,22 @@ register("renderWorld", () => {
     settings().blockHighlightColor[3],
   ];
 
+  let [fr, fg, fb, fa] = [
+    settings().blockFillColor[0],
+    settings().blockFillColor[1],
+    settings().blockFillColor[2],
+    settings().blockFillColor[3],
+  ];
+
   let lw = settings().overlayLineWidth;
 
-  if (settings().chromaHighlight) [r, g, b] = chroma;
-
-  //slab logic
-  if (block?.type?.getRegistryName()?.toString()?.includes("slab")) {
-    if (block?.type?.getRegistryName()?.toString()?.includes("double")) {
-      renderBoxOutline(
-        x + 0.5,
-        y - 0.005,
-        z + 0.5,
-        1.005,
-        1.005,
-        1.01,
-        r / 255,
-        g / 255,
-        b / 255,
-        a / 255,
-        lw,
-        false
-      );
-    } else {
-      if (block?.getMetadata() > 7) {
-        renderBoxOutline(
-          x + 0.5,
-          y + 0.495,
-          z + 0.5,
-          1.005,
-          1.005,
-          0.51,
-          r / 255,
-          g / 255,
-          b / 255,
-          a / 255,
-          lw,
-          false
-        );
-      } else {
-        renderBoxOutline(
-          x + 0.5,
-          y - 0.005,
-          z + 0.5,
-          1.005,
-          1.005,
-          0.51,
-          r / 255,
-          g / 255,
-          b / 255,
-          a / 255,
-          lw,
-          false
-        );
-      }
-    }
+  if (settings().chromaHighlight) {
+    [r, g, b] = chroma;
+    [fr, fg, fb] = chroma;
   }
 
   //stair logic
-  else if (block?.type?.getRegistryName()?.toString()?.includes("stairs")) {
+  if (block?.type?.getRegistryName()?.toString()?.includes("stairs")) {
     if (block?.getMetadata() === 0) {
       renderBoxOutline(
         x + 0.5,
@@ -326,40 +285,34 @@ register("renderWorld", () => {
         lw,
         false
       );
-    } else {
-      renderBoxOutline(
-        x + 0.5,
-        y - 0.005,
-        z + 0.5,
-        1.005,
-        1.005,
-        1.01,
-        r / 255,
-        g / 255,
-        b / 255,
-        a / 255,
-        lw,
-        false
-      );
     }
   }
 
   //default block logic
   else {
-    renderBoxOutline(
-      x + 0.5,
-      y - 0.005,
-      z + 0.5,
-      1.005,
-      1.005,
-      1.01,
+    renderBlockHitbox(
+      block,
       r / 255,
       g / 255,
       b / 255,
       a / 255,
+      false,
       lw,
       false
     );
+
+    if (settings().fillBlockOverlay) {
+      renderBlockHitbox(
+        block,
+        fr / 255,
+        fg / 255,
+        fb / 255,
+        fa / 255,
+        false,
+        0,
+        true
+      );
+    }
   }
 });
 
