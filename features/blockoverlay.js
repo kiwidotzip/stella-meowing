@@ -568,8 +568,3 @@ registerWhen(
     ),
     () => settings().overlayEnabled
 );
-
-register("command", () => {
-    ChatLib.chat(Player.lookingAt());
-    ChatLib.chat(Player.lookingAt().getMetadata());
-}).setName("testing");
