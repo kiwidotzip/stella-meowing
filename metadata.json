@@ -1,8 +1,8 @@
 {
-  "name": "Eclipse Addons",
-  "creator": "NEXD_",
-  "description": "A fun ct module with variouse skyblock features",
-  "version": "1.0.5",
-  "entry": "index.js",
-  "requires": ["Amaterasu"]
+    "name": "Eclipse Addons",
+    "creator": "NEXD_",
+    "description": "A fun ct module with variouse skyblock features",
+    "version": "1.0.5",
+    "entry": "index.js",
+    "requires": ["Amaterasu"]
 }
