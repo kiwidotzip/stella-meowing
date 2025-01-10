@@ -1,6 +1,10 @@
-import { renderBlockHitbox } from "../utils/bloomRenderUtils";
-import { renderBoxOutline } from "../utils/bloomRenderUtils";
+import { registerWhen } from "../utils/utils";
 import settings from "../utils/config";
+import {
+    renderBlockHitbox,
+    renderBoxOutline,
+    renderFilledBox,
+} from "../utils/bloomRenderUtils";
 
 let chroma = [];
 
@@ -14,6 +18,8 @@ register("step", (i) => {
 
 register("renderWorld", () => {
     if (!settings().overlayEnabled) return;
+
+    let fill = settings().fillBlockOverlay;
 
     let block = Player.lookingAt();
 
@@ -75,6 +81,36 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.75,
+                    y + 0.505,
+                    z + 0.5,
+                    1.005,
+                    0.505,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 1) {
             renderBoxOutline(
                 x + 0.5,
@@ -105,6 +141,36 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.25,
+                    y + 0.505,
+                    z + 0.5,
+                    1.005,
+                    0.505,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 2) {
             renderBoxOutline(
                 x + 0.5,
@@ -135,6 +201,36 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.505,
+                    z + 0.75,
+                    0.505,
+                    1.005,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 3) {
             renderBoxOutline(
                 x + 0.5,
@@ -165,10 +261,40 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.505,
+                    z + 0.25,
+                    0.505,
+                    1.005,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 4) {
             renderBoxOutline(
                 x + 0.5,
-                y + 0.505,
+                y + 0.495,
                 z + 0.5,
                 1.005,
                 1.005,
@@ -183,7 +309,7 @@ register("renderWorld", () => {
 
             renderBoxOutline(
                 x + 0.75,
-                y - 1.005,
+                y - 0.005,
                 z + 0.5,
                 1.005,
                 0.505,
@@ -195,10 +321,40 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.495,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.75,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    0.505,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 5) {
             renderBoxOutline(
                 x + 0.5,
-                y + 0.505,
+                y + 0.495,
                 z + 0.5,
                 1.005,
                 1.005,
@@ -225,10 +381,40 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.495,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.25,
+                    y - 0.005,
+                    z + 0.5,
+                    1.005,
+                    0.505,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 6) {
             renderBoxOutline(
                 x + 0.5,
-                y + 0.505,
+                y + 0.495,
                 z + 0.5,
                 1.005,
                 1.005,
@@ -255,10 +441,40 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.495,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.75,
+                    0.505,
+                    1.005,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         } else if (block?.getMetadata() === 7) {
             renderBoxOutline(
                 x + 0.5,
-                y + 0.105,
+                y + 0.495,
                 z + 0.5,
                 1.005,
                 1.005,
@@ -285,6 +501,36 @@ register("renderWorld", () => {
                 lw,
                 false
             );
+
+            if (fill) {
+                renderFilledBox(
+                    x + 0.5,
+                    y + 0.495,
+                    z + 0.5,
+                    1.005,
+                    1.005,
+                    0.51,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+
+                renderFilledBox(
+                    x + 0.5,
+                    y - 0.005,
+                    z + 0.25,
+                    0.505,
+                    1.005,
+                    0.5,
+                    fr / 255,
+                    fg / 255,
+                    fb / 255,
+                    fa / 255,
+                    false
+                );
+            }
         }
     }
 
@@ -301,7 +547,7 @@ register("renderWorld", () => {
             false
         );
 
-        if (settings().fillBlockOverlay) {
+        if (fill) {
             renderBlockHitbox(
                 block,
                 fr / 255,
@@ -315,6 +561,13 @@ register("renderWorld", () => {
         }
     }
 });
+
+registerWhen(
+    register(net.minecraftforge.client.event.DrawBlockHighlightEvent, (event) =>
+        cancel(event)
+    ),
+    () => settings().overlayEnabled
+);
 
 register("command", () => {
     ChatLib.chat(Player.lookingAt());

@@ -299,12 +299,12 @@ export const renderBlockHitbox = (
 ) => {
     const [x0, y0, z0, x1, y1, z1] = getBlockBoundingBox(ctBlock);
     renderBoxFromCorners(
-        x0 - 0.001,
-        y0 - 0.001,
-        z0 - 0.001,
-        x1 + 0.001,
-        y1 + 0.001,
-        z1 + 0.001,
+        x0 - 0.002,
+        y0 - 0.002,
+        z0 - 0.002,
+        x1 + 0.002,
+        y1 + 0.002,
+        z1 + 0.002,
         r,
         g,
         b,
