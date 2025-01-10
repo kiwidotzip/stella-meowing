@@ -1,6 +1,5 @@
 import {
     getRealCoord,
-    getRoomID,
     getRoomWorldData,
     getRouteData,
     getRoomData,
@@ -50,7 +49,6 @@ let rStep = new KeyBind("Reset Route", settings().resetStep, "Eclipse Addons");
 //general variables
 var lastRoomId = null;
 var currRouteData = null;
-var currRoomData = null;
 var step = 0;
 var indungeon = false;
 
@@ -81,9 +79,9 @@ function reset() {
 
 //adds a recording point
 function addPoint(realpos, type) {
-    if (!currRoomData) return;
+    let pos = getRoomCoord(realpos);
 
-    let pos = getRoomCoord(realpos, currRoomData);
+    if (!pos) return;
 
     if (type === "location") {
         recordingData.locations.push(pos);
@@ -236,11 +234,8 @@ function saveRoute(force) {
 
 //gets room data
 register("step", () => {
-    if (!inDungeon()) return;
-
-    let roomId = getRoomID();
+    let roomId = getRoomData();
     if (!roomId) {
-        currRoomData = null;
         currRouteData = null;
         return;
     }
@@ -248,7 +243,6 @@ register("step", () => {
     if (lastRoomId !== roomId) {
         lastRoomId = roomId;
 
-        currRoomData = getRoomWorldData();
         currRouteData = getRouteData();
         roomRID = getRoomData().rid;
         if (recording) {
@@ -269,13 +263,10 @@ register("renderWorld", () => {
         //reseting variables
         indungeon = false;
         currRouteData = null;
-        currRoomData = null;
         step = 0;
     }
 
     if (!indungeon) return;
-    if (!currRoomData) return;
-
     //route rendering
     if (settings().modEnabled && !recording) {
         if (!currRouteData) return;
@@ -284,9 +275,9 @@ register("renderWorld", () => {
                 if (type != "secret") {
                     let index = 0;
                     points.forEach((pos) => {
-                        if (type === "locations") {
-                            let [x, y, z] = getRealCoord(pos, currRoomData);
+                        let [x, y, z] = getRealCoord(pos);
 
+                        if (type === "locations") {
                             if (index === 0 && step === 0) {
                                 drawString(
                                     "Start",
@@ -305,8 +296,7 @@ register("renderWorld", () => {
                                 currRouteData[step].locations.length
                             ) {
                                 let [x2, y2, z2] = getRealCoord(
-                                    currRouteData[step].locations[index + 1],
-                                    currRoomData
+                                    currRouteData[step].locations[index + 1]
                                 );
                                 let [r, g, b] = [
                                     settings().lineColor[0] / 255,
@@ -332,7 +322,6 @@ register("renderWorld", () => {
                         }
 
                         if (type === "mines") {
-                            let [x, y, z] = getRealCoord(pos, currRoomData);
                             let [r, g, b] = [
                                 settings().mineColor[0] / 255,
                                 settings().mineColor[1] / 255,
@@ -357,7 +346,6 @@ register("renderWorld", () => {
                         }
 
                         if (type === "etherwarps") {
-                            let [x, y, z] = getRealCoord(pos, currRoomData);
                             let [r, g, b] = [
                                 settings().warpColor[0] / 255,
                                 settings().warpColor[1] / 255,
@@ -391,7 +379,6 @@ register("renderWorld", () => {
                         }
 
                         if (type === "tnts") {
-                            let [x, y, z] = getRealCoord(pos, currRoomData);
                             let [r, g, b] = [
                                 settings().tntColor[0] / 255,
                                 settings().tntColor[1] / 255,
@@ -425,7 +412,6 @@ register("renderWorld", () => {
                         }
 
                         if (type === "interacts") {
-                            let [x, y, z] = getRealCoord(pos, currRoomData);
                             let [r, g, b] = [
                                 settings().clickColor[0] / 255,
                                 settings().clickColor[1] / 255,
@@ -463,8 +449,7 @@ register("renderWorld", () => {
                 } else {
                     if (currRouteData[step].secret.type === null) return;
                     let [x, y, z] = getRealCoord(
-                        currRouteData[step].secret.location,
-                        currRoomData
+                        currRouteData[step].secret.location
                     );
                     let [r, g, b] = [
                         settings().secretColor[0] / 255,
@@ -497,9 +482,9 @@ register("renderWorld", () => {
             if (type != "secret") {
                 let index = 0;
                 points.forEach((pos) => {
-                    if (type === "locations") {
-                        let [x, y, z] = getRealCoord(pos, currRoomData);
+                    let [x, y, z] = getRealCoord(pos);
 
+                    if (type === "locations") {
                         if (index === 0 && step === 0) {
                             drawString(
                                 "Start",
@@ -515,8 +500,7 @@ register("renderWorld", () => {
 
                         if (index + 1 < recordingData.locations.length) {
                             let [x2, y2, z2] = getRealCoord(
-                                recordingData.locations[index + 1],
-                                currRoomData
+                                recordingData.locations[index + 1]
                             );
                             let [r, g, b] = [
                                 settings().lineColor[0] / 255,
@@ -542,7 +526,6 @@ register("renderWorld", () => {
                     }
 
                     if (type === "mines") {
-                        let [x, y, z] = getRealCoord(pos, currRoomData);
                         let [r, g, b] = [
                             settings().mineColor[0] / 255,
                             settings().mineColor[1] / 255,
@@ -567,7 +550,6 @@ register("renderWorld", () => {
                     }
 
                     if (type === "etherwarps") {
-                        let [x, y, z] = getRealCoord(pos, currRoomData);
                         let [r, g, b] = [
                             settings().warpColor[0] / 255,
                             settings().warpColor[1] / 255,
@@ -601,7 +583,6 @@ register("renderWorld", () => {
                     }
 
                     if (type === "tnts") {
-                        let [x, y, z] = getRealCoord(pos, currRoomData);
                         let [r, g, b] = [
                             settings().tntColor[0] / 255,
                             settings().tntColor[1] / 255,
@@ -635,7 +616,6 @@ register("renderWorld", () => {
                     }
 
                     if (type === "interacts") {
-                        let [x, y, z] = getRealCoord(pos, currRoomData);
                         let [r, g, b] = [
                             settings().clickColor[0] / 255,
                             settings().clickColor[1] / 255,
@@ -673,8 +653,7 @@ register("renderWorld", () => {
             } else {
                 if (Object.keys(route).length === 0) return;
                 let [x, y, z] = getRealCoord(
-                    route[roomRID][step - 1].secret.location,
-                    currRoomData
+                    route[roomRID][step - 1].secret.location
                 );
                 let [r, g, b] = [
                     settings().secretColor[0] / 255,
@@ -702,8 +681,6 @@ register("renderWorld", () => {
 
 //draws particle lines
 register("step", () => {
-    if (!currRoomData) return;
-
     //normal line
     if (
         settings().modEnabled &&
@@ -714,14 +691,10 @@ register("step", () => {
         if (!currRouteData) return;
         if (step < currRouteData.length || step >= 0) {
             for (var i = 0; i < currRouteData[step].locations.length; i++) {
-                let [x, y, z] = getRealCoord(
-                    currRouteData[step].locations[i],
-                    currRoomData
-                );
+                let [x, y, z] = getRealCoord(currRouteData[step].locations[i]);
                 if (i + 1 < currRouteData[step].locations.length) {
                     let [x2, y2, z2] = getRealCoord(
-                        currRouteData[step].locations[i + 1],
-                        currRoomData
+                        currRouteData[step].locations[i + 1]
                     );
                     drawLineParticles(
                         [x + 1, y + 0.5, z + 1],
@@ -736,16 +709,10 @@ register("step", () => {
     if (recording) {
         if (recordingData.locations === null) return;
         for (var i = 0; i < recordingData.locations.length; i++) {
-            let [x, y, z] = getRealCoord(
-                recordingData.locations[i],
-                currRoomData
-            );
+            let [x, y, z] = getRealCoord(recordingData.locations[i]);
 
             if (i + 1 < recordingData.locations.length) {
-                let [x2, y2, z2] = getRealCoord(
-                    recordingData.locations[i + 1],
-                    currRoomData
-                );
+                let [x2, y2, z2] = getRealCoord(recordingData.locations[i + 1]);
 
                 if (settings().lineType === 0)
                     drawLineParticles(
@@ -760,7 +727,6 @@ register("step", () => {
 //checks if a player is opening current secret
 register("playerInteract", (action) => {
     if (!indungeon) return;
-    if (!currRoomData) return;
     if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
 
     let block = Player.lookingAt();
@@ -778,10 +744,7 @@ register("playerInteract", (action) => {
         if (currRouteData[step].secret.type === null) return;
         if (currRouteData[step].secret.type !== "interact") return;
         if (step < currRouteData.length || step >= 0) {
-            let secretPos = getRealCoord(
-                currRouteData[step].secret.location,
-                currRoomData
-            );
+            let secretPos = getRealCoord(currRouteData[step].secret.location);
 
             if (
                 pos[0] === secretPos[0] &&
@@ -835,7 +798,6 @@ register("playerInteract", (action) => {
 //adds points for varias actions
 register("soundPlay", (pos, name) => {
     if (!recording) return;
-    if (!currRoomData) return;
 
     let nameSplitted = name.split(".");
 
@@ -899,8 +861,6 @@ register("packetReceived", (packet) => {
         return;
     }
 
-    if (!currRoomData) return;
-
     //normal item detection
     if (!recording) {
         if (!currRouteData) return;
@@ -908,13 +868,10 @@ register("packetReceived", (packet) => {
             if (currRouteData[step].secret.type === null) return;
             if (currRouteData[step].secret.type !== "item") return;
 
-            let secretPos = getRealCoord(
-                currRouteData[step].secret.location,
-                currRoomData
-            );
+            let secretPos = getRealCoord(currRouteData[step].secret.location);
             let distance = calcDistance(pos, secretPos);
 
-            ChatLib.chat(distance);
+            //ChatLib.chat(distance);
 
             if (distance < 5) {
                 step++;
@@ -941,8 +898,7 @@ register("packetReceived", (packet) => {
         if (Object.keys(route).length !== 0) {
             // ChatLib.chat("distance check")
             let secretPos = getRealCoord(
-                route[roomRID][step - 1].secret.location,
-                currRoomData
+                route[roomRID][step - 1].secret.location
             );
             //ChatLib.chat(JSON.stringify(secretPos,undefined,2))
             let distance = calcDistance(posRound, secretPos);
@@ -968,17 +924,13 @@ register("packetReceived", (packet) => {
 //bat detection (easyest part imo)
 register("renderWorld", () => {
     if (recording) return;
-    if (!currRoomData) return;
 
     if (!currRouteData) return;
     if (step < currRouteData.length) {
         if (currRouteData[step].secret.type !== "bat") return;
 
         let pos = [Player.getX(), Player.getY(), Player.getZ()];
-        let secretPos = getRealCoord(
-            currRouteData[step].secret.location,
-            currRoomData
-        );
+        let secretPos = getRealCoord(currRouteData[step].secret.location);
         let distance = calcDistance(pos, secretPos);
 
         if (distance < 5) {
@@ -990,7 +942,6 @@ register("renderWorld", () => {
 //draws line points for route recording
 register("step", () => {
     if (!recording) return;
-    if (!currRoomData) return;
 
     let loc = [
         Math.round(Player.getX() + 0.25) - 1,
@@ -1067,7 +1018,7 @@ register("command", (...args) => {
         ChatLib.chat(JSON.stringify(getRoomData(), undefined, 2));
         ChatLib.chat(JSON.stringify(getRoomWorldData(), undefined, 2));
         ChatLib.chat(JSON.stringify(getCore(), undefined, 2));
-        ChatLib.chat(JSON.stringify(getRoomID(), undefined, 2));
+        ChatLib.chat(JSON.stringify(getRoomData().id, undefined, 2));
     } else if (args[0] === "route") {
         ChatLib.chat(JSON.stringify(getRouteData(), undefined, 2));
     } else if (args[0] === "help") {

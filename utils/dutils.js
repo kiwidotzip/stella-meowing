@@ -90,37 +90,6 @@ export const getCore = () => {
     return hashCode(blockIds);
 };
 
-//kinda self explanitory
-export const getRoomID = () => {
-    let roomCore = getCore();
-    if (!roomCore) return;
-
-    for (var i = 0; i < rooms.length; i++) {
-        for (var j = 0; j < Object.values(rooms[i].cores).length; j++) {
-            if (roomCore === rooms[i].cores[j]) {
-                return rooms[i].id;
-            }
-        }
-    }
-
-    return null;
-};
-
-//gets room name based on room id
-export const getRoomName = () => {
-    let roomCore = getCore();
-    if (!roomCore) return;
-
-    for (var i = 0; i < rooms.length; i++) {
-        for (var j = 0; j < Object.values(rooms[i].cores).length; j++) {
-            if (roomCore === rooms[i].cores[j]) {
-                return rooms[i].name;
-            }
-        }
-    }
-    return "Room Not Found";
-};
-
 //pulls room data from the roomData.json file
 export const getRoomData = () => {
     let roomCore = getCore();
@@ -321,7 +290,13 @@ export const unRotateCoords = ([x, y, z], degree) => {
 };
 
 //translates relitive room coords to real world coords
-export const getRoomCoord = ([x, y, z], roomData) => {
+export const getRoomCoord = (pos) => {
+    let roomData = getRoomWorldData();
+    if (!roomData) return [0, 0, 0];
+
+    if (!pos) return [0, 0, 0];
+    let [x, y, z] = pos;
+
     let roomCorner = null;
     let coord = [x, y, z];
     if (roomData.rotation === 1) roomCorner = [roomData.x, 0, roomData.y];
@@ -343,7 +318,13 @@ export const getRoomCoord = ([x, y, z], roomData) => {
     return roomCoord;
 };
 
-export const getRealCoord = ([x, y, z], roomData) => {
+export const getRealCoord = (pos) => {
+    let roomData = getRoomWorldData();
+    if (!roomData) return [0, 0, 0];
+
+    if (!pos) return [0, 0, 0];
+    let [x, y, z] = pos;
+
     let roomCorner = null;
     const rotated = rotateCoords([x, y, z], roomData.rotation);
     if (roomData.rotation === 1) roomCorner = [roomData.x, 0, roomData.y];

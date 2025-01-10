@@ -1,5 +1,5 @@
 import { highlightSlot, renderCenteredString } from "../utils/utils";
-import { getRoomName, getRoomID, inDungeon } from "../utils/dutils";
+import { getRoomData, inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
 
@@ -89,7 +89,7 @@ const renderRoomName = () => {
 //gets current room name
 register("step", () => {
     if (settings().showRoomName) {
-        let roomId = getRoomID();
+        let roomId = getRoomData();
 
         if (!roomId) {
             currRoomName = "Room Not Found";
@@ -99,7 +99,7 @@ register("step", () => {
         if (lastRoomId !== roomId) {
             lastRoomId = roomId;
 
-            currRoomName = getRoomName();
+            currRoomName = getRoomData().name;
         }
     }
 }).setFps(20);
@@ -114,8 +114,6 @@ register("renderOverlay", () => {
     if (settings().showRoomName && inDungeon()) {
         renderRoomName();
     }
-
-    if (!inDungeon) currRoomName = "Room Not Found";
 });
 
 //update guis

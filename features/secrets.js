@@ -1,10 +1,4 @@
-import {
-    getRoomData,
-    getRoomWorldData,
-    getRealCoord,
-    inDungeon,
-    getRoomID,
-} from "../utils/dutils";
+import { getRoomData, getRealCoord, inDungeon } from "../utils/dutils";
 import { drawBoxAtBlock } from "../utils/renderUtils";
 import { drawString } from "../utils/utils";
 import settings from "../utils/config";
@@ -21,24 +15,18 @@ import settings from "../utils/config";
 
 //variables
 var lastRoomId = null;
-var currRoomData = null;
 var secretsData = null;
 
 //gets current room data
 register("step", () => {
     if (settings().secretWaypoints) {
-        let roomId = getRoomID();
+        let roomId = getRoomData();
 
-        if (!roomId) {
-            currRoomData = null;
-            secretsData = null;
-            return;
-        }
+        if (!roomId) return;
 
         if (lastRoomId !== roomId) {
             lastRoomId = roomId;
 
-            currRoomData = getRoomWorldData();
             secretsData = getRoomData();
         }
     }
@@ -50,11 +38,10 @@ register("renderWorld", () => {
     if (!settings().secretWaypoints) return;
     if (!secretsData) return;
     if (!secretsData.secret_coords) return;
-    if (!currRoomData) return;
 
     Object.entries(secretsData.secret_coords).forEach(([type, secrets]) => {
         secrets.forEach((pos) => {
-            const secretPos = getRealCoord(pos, currRoomData);
+            const secretPos = getRealCoord(pos);
 
             if (!secretPos) return;
             let [x, y, z] = secretPos;
