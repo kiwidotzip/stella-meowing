@@ -128,7 +128,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     //general options
     .addSwitch({
         configName: "modEnabled",
-        title: "Render Roughts",
+        title: "Render Routes",
         description: "Main toggle",
         category: "Routes",
         subcatagory: "General",
@@ -138,7 +138,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
     .addSwitch({
         configName: "boxSecrets",
         title: "Box Secrets",
-        description: "wether or not to box secrets",
+        description: "Wether or not to box secrets",
         category: "Routes",
         subcatagory: "General",
         value: true,
