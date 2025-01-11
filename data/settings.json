@@ -36,6 +36,11 @@
                 "value": true
             },
             {
+                "type": 6,
+                "name": "chromaRoomName",
+                "value": true
+            },
+            {
                 "type": 2,
                 "name": "editRoomName"
             },

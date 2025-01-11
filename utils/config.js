@@ -93,6 +93,18 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         subcategory: "Room Name",
     })
 
+    .addSwitch({
+        category: "Dungeons",
+        configName: "chromaRoomName",
+        title: "Chroma room name",
+        description: "Makes the name chroma",
+        subcategory: "Room Name",
+
+        shouldShow(data) {
+            return data.showRoomName;
+        },
+    })
+
     .addButton({
         category: "Dungeons",
         configName: "editRoomName",

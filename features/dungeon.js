@@ -2,6 +2,7 @@ import { highlightSlot, renderCenteredString } from "../utils/utils";
 import { getRoomData, inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
+import Shader from "../shaders/shader";
 
 /*  --------------- secret routes ---------------
 
@@ -55,6 +56,15 @@ const rGui = new PogObject("eclipseAddons", {
 lastRoomId = null;
 currRoomName = "Room Not Found";
 
+//shader loading
+const chromaShader = new Shader(
+    FileLib.read("eclipseAddons", "shaders/chroma/chromat.frag"),
+    FileLib.read("eclipseAddons", "shaders/chroma/chromat.vert")
+);
+
+let totalTicks = 0;
+register("tick", (t) => (totalTicks = t));
+
 //functions
 const renderRoomNameEditGui = () => {
     renderCenteredString(
@@ -82,7 +92,27 @@ const renderRoomName = () => {
             width + 2,
             height
         );
-    Renderer.drawString(currRoomName, 0, 0);
+
+    if (settings().chromaRoomName) {
+        chromaShader.bind();
+
+        chromaShader.uniform1f(
+            "chromaSize",
+            (30 * Client.getMinecraft().field_71443_c) / 100
+        );
+        chromaShader.uniform1f(
+            "timeOffset",
+            (totalTicks + Tessellator.partialTicks) * (6 / 360)
+        );
+        chromaShader.uniform1f("saturation", 1);
+
+        Renderer.drawString(currRoomName, 0, 0);
+
+        chromaShader.unbind();
+    } else {
+        Renderer.drawString(currRoomName, 0, 0);
+    }
+
     Renderer.retainTransforms(false);
 };
 
