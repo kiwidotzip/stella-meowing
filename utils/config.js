@@ -395,13 +395,25 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
     .addSwitch({
         configName: "chromaHighlight",
-        title: "chromaOverlay",
+        title: "Chroma overlay",
         description: "Makes the outline chroma",
         category: "Msc.",
         subcatagory: "Block Overlay",
 
         shouldShow(data) {
             return data.overlayEnabled;
+        },
+    })
+
+    .addSwitch({
+        configName: "oldChroma",
+        title: "Old chroma overlay",
+        description: "Makes the outline chroma but worse",
+        category: "Msc.",
+        subcatagory: "Block Overlay",
+
+        shouldShow(data) {
+            return data.overlayEnabled && data.chromaHighlight;
         },
     })
 
