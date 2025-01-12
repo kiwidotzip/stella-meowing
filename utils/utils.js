@@ -1,11 +1,8 @@
 const MCTessellator = net.minecraft.client.renderer.Tessellator.func_178181_a();
-const DefaultVertexFormats =
-    net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+const DefaultVertexFormats = net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 const WorldRenderer = MCTessellator.func_178180_c();
 const EnumParticleTypes = Java.type("net.minecraft.util.EnumParticleTypes");
-const GuiContainer = Java.type(
-    "net.minecraft.client.gui.inventory.GuiContainer"
-);
+const GuiContainer = Java.type("net.minecraft.client.gui.inventory.GuiContainer");
 
 /*  ------------- General Utilities -------------
 
@@ -32,18 +29,7 @@ const GuiContainer = Java.type(
  * @param {Boolean} shadow whether to render shadow
  * @param {Boolean} depth whether to render through walls
  */
-export function drawString(
-    text,
-    x,
-    y,
-    z,
-    color = 0xffffff,
-    renderBlackBox = true,
-    scale = 1,
-    increase = true,
-    shadow = true,
-    depth = true
-) {
+export function drawString(text, x, y, z, color = 0xffffff, renderBlackBox = true, scale = 1, increase = true, shadow = true, depth = true) {
     ({ x, y, z } = Tessellator.getRenderPos(x, y, z));
 
     const lText = text.addColor();
@@ -51,25 +37,14 @@ export function drawString(
     const lScale = increase
         ? scale * 0.45 * (Math.sqrt(x ** 2 + y ** 2 + z ** 2) / 120) //increase up to 120 blocks away
         : scale;
-    const xMulti =
-        Client.getMinecraft().field_71474_y.field_74320_O == 2 ? -1 : 1; //perspective
+    const xMulti = Client.getMinecraft().field_71474_y.field_74320_O == 2 ? -1 : 1; //perspective
 
     GlStateManager.func_179131_c(1, 1, 1, 0.5); // color
     GlStateManager.func_179094_E(); // pushmatrix
 
     GlStateManager.func_179137_b(x, y, z); // translate
-    GlStateManager.func_179114_b(
-        -Renderer.getRenderManager().field_78735_i,
-        0,
-        1,
-        0
-    ); // rotate
-    GlStateManager.func_179114_b(
-        Renderer.getRenderManager().field_78732_j * xMulti,
-        1,
-        0,
-        0
-    ); // rotate
+    GlStateManager.func_179114_b(-Renderer.getRenderManager().field_78735_i, 0, 1, 0); // rotate
+    GlStateManager.func_179114_b(Renderer.getRenderManager().field_78732_j * xMulti, 1, 0, 0); // rotate
 
     GlStateManager.func_179152_a(-lScale, -lScale, lScale); // scale
     GlStateManager.func_179140_f(); //disableLighting
@@ -82,8 +57,7 @@ export function drawString(
 
     const lines = lText.split("\n");
     const l = lines.length;
-    const maxWidth =
-        Math.max(...lines.map((it) => Renderer.getStringWidth(it))) / 2;
+    const maxWidth = Math.max(...lines.map((it) => Renderer.getStringWidth(it))) / 2;
 
     if (renderBlackBox) {
         GlStateManager.func_179090_x(); //disableTexture2D
@@ -105,13 +79,7 @@ export function drawString(
     }
 
     lines.forEach((it, idx) => {
-        Renderer.getFontRenderer().func_175065_a(
-            it,
-            -Renderer.getStringWidth(it) / 2,
-            idx * 9,
-            color,
-            shadow
-        ); // drawString
+        Renderer.getFontRenderer().func_175065_a(it, -Renderer.getStringWidth(it) / 2, idx * 9, color, shadow); // drawString
     });
 
     GlStateManager.func_179131_c(1, 1, 1, 1); // color
@@ -133,21 +101,10 @@ export function drawString(
  * @param {Color} forceColor - Force the text to be a certain Java Color.
  * @returns
  */
-export const renderCenteredString = (
-    string,
-    x,
-    y,
-    scale,
-    splitWords = false,
-    javaColor = null
-) => {
+export const renderCenteredString = (string, x, y, scale, splitWords = false, javaColor = null) => {
     if (!string || !x || !y) return;
     Renderer.retainTransforms(true);
-    string = Array.isArray(string)
-        ? string
-        : splitWords
-        ? string.split(" ")
-        : [string];
+    string = Array.isArray(string) ? string : splitWords ? string.split(" ") : [string];
     let vertOffset = string.length * 7 + 2 * (string.length - 1);
     let [r, g, b, a] = [];
     if (javaColor) {
@@ -161,11 +118,7 @@ export const renderCenteredString = (
     Renderer.translate(0, -vertOffset / 2);
     for (let i = 0; i < string.length; i++) {
         if (javaColor) Renderer.colorize(r, g, b, a);
-        Renderer.drawStringWithShadow(
-            string[i],
-            -Renderer.getStringWidth(string[i]) / 2,
-            i * 7 + 2 * i
-        );
+        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i]) / 2, i * 7 + 2 * i);
     }
     Renderer.retainTransforms(false);
 };
@@ -210,28 +163,18 @@ export function drawLineParticles(loc1, loc2) {
     for (let i = 0; i < maxPoints; i++) {
         let actualI = i + Math.random();
         let a = actualI / maxPoints;
-        let loc = [
-            loc1[0] * a + loc2[0] * (1 - a) - 0.5,
-            loc1[1] * a + loc2[1] * (1 - a) + 0.1,
-            loc1[2] * a + loc2[2] * (1 - a) - 0.5,
-        ];
+        let loc = [loc1[0] * a + loc2[0] * (1 - a) - 0.5, loc1[1] * a + loc2[1] * (1 - a) + 0.1, loc1[2] * a + loc2[2] * (1 - a) - 0.5];
 
         let a2 = (actualI + 0.02) / maxPoints;
-        let loc3 = [
-            loc1[0] * a2 + loc2[0] * (1 - a2) - 0.5,
-            loc1[1] * a2 + loc2[1] * (1 - a2) + 0.1,
-            loc1[2] * a2 + loc2[2] * (1 - a2) - 0.5,
-        ];
+        let loc3 = [loc1[0] * a2 + loc2[0] * (1 - a2) - 0.5, loc1[1] * a2 + loc2[1] * (1 - a2) + 0.1, loc1[2] * a2 + loc2[2] * (1 - a2) - 0.5];
         loc3 = loc3.map((a, i) => loc[i] - a);
 
         spawnParticleAtLocation(loc, loc3, "FLAME");
     }
 }
 
-const guiContainerLeftField =
-    GuiContainer.class.getDeclaredField("field_147003_i");
-const guiContainerTopField =
-    GuiContainer.class.getDeclaredField("field_147009_r");
+const guiContainerLeftField = GuiContainer.class.getDeclaredField("field_147003_i");
+const guiContainerTopField = GuiContainer.class.getDeclaredField("field_147009_r");
 guiContainerLeftField.setAccessible(true);
 guiContainerTopField.setAccessible(true);
 
@@ -261,16 +204,7 @@ export const getSlotRenderPosition = (slotNumber, mcGuiContainer) => {
  * @param {Boolean} aboveItem - Hightlight in front of the item in the slot
  * @param {Number} z - The z position for the highlight to be rendered. Will override the aboveItem parameter if used.
  */
-export const highlightSlot = (
-    gui,
-    slotIndex,
-    r,
-    g,
-    b,
-    a,
-    aboveItem = false,
-    z = null
-) => {
+export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z = null) => {
     if (!(gui instanceof GuiContainer)) return;
 
     const [x, y] = getSlotRenderPosition(slotIndex, gui);
@@ -280,13 +214,7 @@ export const highlightSlot = (
     if (z !== null) zPosition = z;
 
     Renderer.translate(x, y, zPosition);
-    Renderer.drawRect(
-        Renderer.color(r * 255, g * 255, b * 255, a * 255),
-        0,
-        0,
-        16,
-        16
-    );
+    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
     Renderer.finishDraw();
 };
 
@@ -326,8 +254,7 @@ const checkingTriggers = []; // [[trigger, func]]
  * @param {Function} checkFunc
  * @returns
  */
-export const registerWhen = (trigger, checkFunc) =>
-    checkingTriggers.push([trigger.unregister(), checkFunc]);
+export const registerWhen = (trigger, checkFunc) => checkingTriggers.push([trigger.unregister(), checkFunc]);
 
 register("tick", () => {
     for (let i = 0; i < checkingTriggers.length; i++) {

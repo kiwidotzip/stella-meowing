@@ -57,23 +57,14 @@ lastRoomId = null;
 currRoomName = "Room Not Found";
 
 //shader loading
-const chromaShader = new Shader(
-    FileLib.read("eclipseAddons", "shaders/chroma/chromat.frag"),
-    FileLib.read("eclipseAddons", "shaders/chroma/chromat.vert")
-);
+const chromaShader = new Shader(FileLib.read("eclipseAddons", "shaders/chroma/chromat.frag"), FileLib.read("eclipseAddons", "shaders/chroma/chromat.vert"));
 
 let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));
 
 //functions
 const renderRoomNameEditGui = () => {
-    renderCenteredString(
-        "&6Scroll &rto change the scale",
-        Renderer.screen.getWidth() / 2,
-        Renderer.screen.getHeight() / 3,
-        1,
-        false
-    );
+    renderCenteredString("&6Scroll &rto change the scale", Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3, 1, false);
 };
 
 const renderRoomName = () => {
@@ -84,26 +75,13 @@ const renderRoomName = () => {
     Renderer.retainTransforms(true);
     Renderer.translate(rGui.X, rGui.Y);
     Renderer.scale(rGui.scale, rGui.scale);
-    if (a !== 0)
-        Renderer.drawRect(
-            Renderer.color(r, g, b, a),
-            -1,
-            -1,
-            width + 2,
-            height
-        );
+    if (a !== 0) Renderer.drawRect(Renderer.color(r, g, b, a), -1, -1, width + 2, height);
 
     if (settings().chromaRoomName) {
         chromaShader.bind();
 
-        chromaShader.uniform1f(
-            "chromaSize",
-            (30 * Client.getMinecraft().field_71443_c) / 100
-        );
-        chromaShader.uniform1f(
-            "timeOffset",
-            (totalTicks + Tessellator.partialTicks) * (6 / 360)
-        );
+        chromaShader.uniform1f("chromaSize", (30 * Client.getMinecraft().field_71443_c) / 100);
+        chromaShader.uniform1f("timeOffset", (totalTicks + Tessellator.partialTicks) * (6 / 360));
         chromaShader.uniform1f("saturation", 1);
 
         Renderer.drawString(currRoomName, 0, 0);
@@ -166,21 +144,11 @@ register("scrolled", (mx, my, dir) => {
 register("guiRender", (mx, mt, gui) => {
     if (!settings().highlightTrash) return;
     let inv = Player.getContainer();
-    let [r, g, b, a] = [
-        settings().trashColor[0] / 255,
-        settings().trashColor[1] / 255,
-        settings().trashColor[2] / 255,
-        settings().trashColor[3] / 255,
-    ];
+    let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
     if (!shops.some((k) => inv?.getName()?.includes(k))) return;
     for (let i = 0; i < inv.getSize(); i++) {
         if (!inv?.getStackInSlot(i)?.getName()) continue;
-        if (
-            !trashItems.some((j) =>
-                inv?.getStackInSlot(i)?.getName().includes(j)
-            )
-        )
-            continue;
+        if (!trashItems.some((j) => inv?.getStackInSlot(i)?.getName().includes(j))) continue;
         highlightSlot(gui, i, r, g, b, a, false);
     }
 });

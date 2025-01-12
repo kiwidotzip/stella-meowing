@@ -61,10 +61,7 @@ const BufferUtils = Java.type("org.lwjgl.BufferUtils");
  * @param {string?} vertSrc
  */
 function Shader(fragSrc, vertSrc) {
-    if (!(this instanceof Shader))
-        throw new TypeError(
-            "Class constructor Shader cannot be invoked without 'new'"
-        );
+    if (!(this instanceof Shader)) throw new TypeError("Class constructor Shader cannot be invoked without 'new'");
     if (mainThread !== Thread.currentThread()) {
         print(new Error("Shader: not in main thread, delaying initialization"));
         Client.scheduleTask(() => Shader.apply(this, arguments));
@@ -74,8 +71,7 @@ function Shader(fragSrc, vertSrc) {
     /** @type {Map<string, number>} */
     this.uniformLocCache = new Map();
     this.progId = glCreateProgram();
-    if (this.progId === 0)
-        throw "Error while creating program: " + glGetError();
+    if (this.progId === 0) throw "Error while creating program: " + glGetError();
     allShaders.set(this.progId, this);
 
     if (fragSrc) this.addFragmentShader(fragSrc);
@@ -94,33 +90,20 @@ Shader.prototype.addFragmentShader = function addFragmentShader(fragSrc) {
     this.checkProgramId();
 
     const fragId = glCreateShader(GL_FRAGMENT_SHADER);
-    if (fragId === 0)
-        throw "Error while creating fragment shader: " + glGetError();
+    if (fragId === 0) throw "Error while creating fragment shader: " + glGetError();
 
     glShaderSource(fragId, fragSrc);
     glCompileShader(fragId);
-    if (glGetShaderi(fragId, GL_COMPILE_STATUS) !== 1)
-        throw (
-            "Error compiling fragment shader: " +
-            glGetShaderInfoLog(fragId, MAX_ERROR_LOG)
-        );
+    if (glGetShaderi(fragId, GL_COMPILE_STATUS) !== 1) throw "Error compiling fragment shader: " + glGetShaderInfoLog(fragId, MAX_ERROR_LOG);
 
     glAttachShader(this.progId, fragId);
     glLinkProgram(this.progId);
     this.uniformLocCache.clear();
     glDeleteShader(fragId);
-    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1)
-        throw (
-            "Error linking fragment shader: " +
-            glGetProgramInfoLog(this.progId, MAX_ERROR_LOG)
-        );
+    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking fragment shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 
     glValidateProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1)
-        throw (
-            "Error validating fragment shader: " +
-            glGetProgramInfoLog(this.progId, MAX_ERROR_LOG)
-        );
+    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating fragment shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 };
 /**
  * @param {string} vertSrc
@@ -129,33 +112,20 @@ Shader.prototype.addVertexShader = function addVertexShader(vertSrc) {
     this.checkProgramId();
 
     const vertId = glCreateShader(GL_VERTEX_SHADER);
-    if (vertId === 0)
-        throw "Error while creating vertex shader: " + glGetError();
+    if (vertId === 0) throw "Error while creating vertex shader: " + glGetError();
 
     glShaderSource(vertId, vertSrc);
     glCompileShader(vertId);
-    if (glGetShaderi(vertId, GL_COMPILE_STATUS) !== 1)
-        throw (
-            "Error compiling vertex shader: " +
-            glGetShaderInfoLog(vertId, MAX_ERROR_LOG)
-        );
+    if (glGetShaderi(vertId, GL_COMPILE_STATUS) !== 1) throw "Error compiling vertex shader: " + glGetShaderInfoLog(vertId, MAX_ERROR_LOG);
 
     glAttachShader(this.progId, vertId);
     glLinkProgram(this.progId);
     this.uniformLocCache.clear();
     glDeleteShader(vertId);
-    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1)
-        throw (
-            "Error linking vertex shader: " +
-            glGetProgramInfoLog(this.progId, MAX_ERROR_LOG)
-        );
+    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 
     glValidateProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1)
-        throw (
-            "Error validating vertex shader: " +
-            glGetProgramInfoLog(this.progId, MAX_ERROR_LOG)
-        );
+    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 };
 Shader.prototype.bind = function bind() {
     this.checkProgramId();
@@ -181,14 +151,7 @@ Shader.prototype.delete = Shader.prototype.dispose;
 Shader.prototype.getUniformLocation = function getUniformLocation(name) {
     this.checkProgramId();
     if (typeof name === "number") return name;
-    return (
-        this.uniformLocCache.get(name) ??
-        (this.uniformLocCache.set(
-            name,
-            glGetUniformLocation(this.progId, name)
-        ),
-        this.uniformLocCache.get(name))
-    );
+    return this.uniformLocCache.get(name) ?? (this.uniformLocCache.set(name, glGetUniformLocation(this.progId, name)), this.uniformLocCache.get(name));
 };
 /**
  * @param {string | number} location
@@ -267,10 +230,8 @@ function coereceBuffer(input, create) {
     }
     return input;
 }
-const coereceFloatBuffer = (input) =>
-    coereceBuffer(input, BufferUtils.createFloatBuffer);
-const coereceIntBuffer = (input) =>
-    coereceBuffer(input, BufferUtils.createIntBuffer);
+const coereceFloatBuffer = (input) => coereceBuffer(input, BufferUtils.createFloatBuffer);
+const coereceIntBuffer = (input) => coereceBuffer(input, BufferUtils.createIntBuffer);
 /**
  * @param {string | number} location
  * @param {number[] | any} values java.nio.FloatBuffer
@@ -332,48 +293,24 @@ Shader.prototype.uniform4iv = function uniform4iv(location, values) {
  * @param {boolean} transpose
  * @param {number[] | any} matrices java.nio.FloatBuffer
  */
-Shader.prototype.uniformMatrix2fv = function uniformMatrix2fv(
-    location,
-    transpose,
-    matrices
-) {
-    glUniformMatrix2fv(
-        this.getUniformLocation(location),
-        transpose,
-        coereceFloatBuffer(matrices)
-    );
+Shader.prototype.uniformMatrix2fv = function uniformMatrix2fv(location, transpose, matrices) {
+    glUniformMatrix2fv(this.getUniformLocation(location), transpose, coereceFloatBuffer(matrices));
 };
 /**
  * @param {string | number} location
  * @param {boolean} transpose
  * @param {number[] | any} matrices java.nio.FloatBuffer
  */
-Shader.prototype.uniformMatrix3fv = function uniformMatrix3fv(
-    location,
-    transpose,
-    matrices
-) {
-    glUniformMatrix3fv(
-        this.getUniformLocation(location),
-        transpose,
-        coereceFloatBuffer(matrices)
-    );
+Shader.prototype.uniformMatrix3fv = function uniformMatrix3fv(location, transpose, matrices) {
+    glUniformMatrix3fv(this.getUniformLocation(location), transpose, coereceFloatBuffer(matrices));
 };
 /**
  * @param {string | number} location
  * @param {boolean} transpose
  * @param {number[] | any} matrices java.nio.FloatBuffer
  */
-Shader.prototype.uniformMatrix4fv = function uniformMatrix4fv(
-    location,
-    transpose,
-    matrices
-) {
-    glUniformMatrix4fv(
-        this.getUniformLocation(location),
-        transpose,
-        coereceFloatBuffer(matrices)
-    );
+Shader.prototype.uniformMatrix4fv = function uniformMatrix4fv(location, transpose, matrices) {
+    glUniformMatrix4fv(this.getUniformLocation(location), transpose, coereceFloatBuffer(matrices));
 };
 
 export default Shader;

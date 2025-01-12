@@ -12,9 +12,7 @@
 
 if (!GlStateManager) {
     var GL11 = Java.type("org.lwjgl.opengl.GL11"); // Using var so it goes to global scope
-    var GlStateManager = Java.type(
-        "net.minecraft.client.renderer.GlStateManager"
-    );
+    var GlStateManager = Java.type("net.minecraft.client.renderer.GlStateManager");
 }
 
 let ret = {
@@ -43,17 +41,7 @@ let ret = {
         GL11.glDepthMask(true);
         GL11.glDisable(GL11.GL_BLEND);
     },
-    drawBoxAtBlock: function (
-        x,
-        y,
-        z,
-        colorR,
-        colorG,
-        colorB,
-        w = 1,
-        h = 1,
-        a = 1
-    ) {
+    drawBoxAtBlock: function (x, y, z, colorR, colorG, colorB, w = 1, h = 1, a = 1) {
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glLineWidth(3);
@@ -62,12 +50,7 @@ let ret = {
         GL11.glDepthMask(false);
         Tessellator.pushMatrix();
 
-        Tessellator.begin(GL11.GL_LINE_STRIP).colorize(
-            colorR,
-            colorG,
-            colorB,
-            a
-        );
+        Tessellator.begin(GL11.GL_LINE_STRIP).colorize(colorR, colorG, colorB, a);
 
         Tessellator.pos(x + w, y + h, z + w);
         Tessellator.pos(x + w, y + h, z);

@@ -14,21 +14,12 @@ import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
 //setup
 
 //markdown stuff
-const version = JSON.parse(
-    FileLib.read("eclipseAddons", "metadata.json")
-).version;
+const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).version;
 
 const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md");
-const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read(
-    "eclipseAddons",
-    "assets/changelog.md"
-)}`;
+const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAddons", "assets/changelog.md")}`;
 
-const schemes = [
-    "data/ColorScheme.json",
-    "data/scheme-vigil.json",
-    "data/scheme-nwjn.json",
-];
+const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"];
 
 //guis
 export const roomName = new Gui();
@@ -51,8 +42,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         subcategory: "",
         configName: "MyDiscord",
         title: "Discord Server",
-        description:
-            "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
+        description: "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
         tags: ["discord"],
         onClick(setting) {
             ChatLib.command("ct copy coming soon", true);
@@ -450,8 +440,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Theme",
         configName: "scheme",
         title: "Themes",
-        description:
-            "Select which theme you want from these presets (needs apply after)",
+        description: "Select which theme you want from these presets (needs apply after)",
         options: ["Default", "Vigil", "nwjn"],
     })
 
@@ -459,27 +448,16 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Theme",
         configName: "apply",
         title: "Apply Changes",
-        description:
-            "Need to click this for window to reload with selected changes",
+        description: "Need to click this for window to reload with selected changes",
         placeHolder: "Apply",
         onClick(config) {
             const currentScheme = schemes[config.settings.scheme];
-            const scheme = JSON.parse(
-                FileLib.read("eclipseAddons", currentScheme)
-            );
+            const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
             scheme.Amaterasu.background.color = config.settings.bgColor;
 
-            FileLib.write(
-                "eclipseAddons",
-                currentScheme,
-                JSON.stringify(scheme, null, 4)
-            );
+            FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4));
 
-            config
-                .setPos(config.settings.x, config.settings.y)
-                .setSize(config.settings.width, config.settings.height)
-                .setScheme(currentScheme)
-                .apply();
+            config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
         },
     })
 
@@ -495,8 +473,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Theme",
         configName: "x",
         title: "Change X",
-        description:
-            "Changes the starting X coordinate of the Config (in percent)",
+        description: "Changes the starting X coordinate of the Config (in percent)",
         options: [0, 75],
         value: 20,
     })
@@ -505,8 +482,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Theme",
         configName: "y",
         title: "Change Y",
-        description:
-            "Changes the starting Y coordinate of the Config (in percent)",
+        description: "Changes the starting Y coordinate of the Config (in percent)",
         options: [0, 75],
         value: 20,
     })
@@ -529,14 +505,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         value: 60,
     });
 
-const config = new Settings(
-    "eclipseAddons",
-    defaultConf,
-    "data/ColorScheme.json"
-)
-
-    .addMarkdown("Changelog", CHANGELOG)
-    .addMarkdown("Credits", CREDITS);
+const config = new Settings("eclipseAddons", defaultConf, "data/ColorScheme.json").addMarkdown("Changelog", CHANGELOG).addMarkdown("Credits", CREDITS);
 
 const currentScheme = schemes[config.settings.scheme];
 const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
@@ -544,10 +513,6 @@ scheme.Amaterasu.background.color = config.settings.bgColor;
 
 FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4));
 
-config
-    .setPos(config.settings.x, config.settings.y)
-    .setSize(config.settings.width, config.settings.height)
-    .setScheme(currentScheme)
-    .apply();
+config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
 
 export default () => config.settings;
