@@ -72,6 +72,7 @@ function Shader(fragSrc, vertSrc) {
     this.uniformLocCache = new Map();
     this.progId = glCreateProgram();
     if (this.progId === 0) throw "Error while creating program: " + glGetError();
+
     allShaders.set(this.progId, this);
 
     if (fragSrc) this.addFragmentShader(fragSrc);
@@ -90,28 +91,23 @@ Shader.prototype.addFragmentShader = function addFragmentShader(fragSrc) {
     this.checkProgramId();
 
     const fragId = glCreateShader(GL_FRAGMENT_SHADER);
-    print(glGetError() + " 93");
     if (fragId === 0) throw "Error while creating fragment shader: " + glGetError();
 
     glShaderSource(fragId, fragSrc);
-    print(glGetError() + " 97");
     glCompileShader(fragId);
-    print(glGetError() + " 99");
     if (glGetShaderi(fragId, GL_COMPILE_STATUS) !== 1) throw "Error compiling fragment shader: " + glGetShaderInfoLog(fragId, MAX_ERROR_LOG);
 
     glAttachShader(this.progId, fragId);
-    print(glGetError() + " 103");
     glLinkProgram(this.progId);
-    print(glGetError() + " 105");
+    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
+    //GL20.glIsProgram(this.progId);
+    //print(GL20.glIsProgram(this.progId));
     this.uniformLocCache.clear();
     glDeleteShader(fragId);
-    print(glGetError() + " 108");
     if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking fragment shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 
     glValidateProgram(this.progId);
-    print(glGetError() + " 112");
     if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating fragment shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
-    print(glGetError() + " 114");
 };
 /**
  * @param {string} vertSrc
@@ -123,34 +119,32 @@ Shader.prototype.addVertexShader = function addVertexShader(vertSrc) {
     if (vertId === 0) throw "Error while creating vertex shader: " + glGetError();
 
     glShaderSource(vertId, vertSrc);
-    print(glGetError() + " 126");
     glCompileShader(vertId);
-    print(glGetError() + " 128");
     if (glGetShaderi(vertId, GL_COMPILE_STATUS) !== 1) throw "Error compiling vertex shader: " + glGetShaderInfoLog(vertId, MAX_ERROR_LOG);
 
-    print(glGetError() + " 131");
     glAttachShader(this.progId, vertId);
-    print(glGetError() + " 133");
     glLinkProgram(this.progId);
-    print(glGetError() + " 135");
+    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
+
+    //print(GL20.glIsProgram(this.progId));
     this.uniformLocCache.clear();
     glDeleteShader(vertId);
-    print(glGetError() + " 138");
     if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 
     glValidateProgram(this.progId);
-    print(glGetError());
     if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
 };
 Shader.prototype.bind = function bind() {
     this.checkProgramId();
+    glValidateProgram(this.progId);
+    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
     glUseProgram(this.progId);
-    print(glGetError() + " 148");
 };
 Shader.prototype.unbind = function unbind() {
     this.checkProgramId();
+    glValidateProgram(this.progId);
+    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
     glUseProgram(0);
-    print(glGetError() + " 153");
 };
 Shader.prototype.dispose = function dispose() {
     allShaders.delete(this.progId);
@@ -158,7 +152,6 @@ Shader.prototype.dispose = function dispose() {
     this.progId = 0;
     this.uniformLocCache.clear();
     (Object.freeze || Function.prototype).call(this);
-    print(glGetError() + " 161");
 };
 Shader.prototype.delete = Shader.prototype.dispose;
 
