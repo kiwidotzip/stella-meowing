@@ -53,7 +53,6 @@ register("renderWorld", () => {
             chromaShader.bind();
 
             chromaShader.uniform3f("playerWorldPosition", viewPos.x, viewPos.y, viewPos.z);
-
             chromaShader.uniform1f("chromaSize", (30 * Client.getMinecraft().field_71443_c) / 1000);
             chromaShader.uniform1f("timeOffset", (totalTicks + Tessellator.partialTicks) * (6 / 360) * settings().chromaOverlaySpeed);
             chromaShader.uniform1f("saturation", 1);

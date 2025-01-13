@@ -272,7 +272,7 @@
             {
                 "type": 6,
                 "name": "oldChroma",
-                "value": false
+                "value": true
             },
             {
                 "type": 1,
