@@ -39,7 +39,7 @@ import {
     glUniformMatrix4fv,
     glUseProgram,
     glValidateProgram,
-} from "./gl";
+} from "./potato";
 
 /** @type {Map<number, Shader>} */
 const allShaders = new Map();
@@ -72,7 +72,6 @@ function Shader(fragSrc, vertSrc) {
     this.uniformLocCache = new Map();
     this.progId = glCreateProgram();
     if (this.progId === 0) throw "Error while creating program: " + glGetError();
-
     allShaders.set(this.progId, this);
 
     if (fragSrc) this.addFragmentShader(fragSrc);
@@ -99,9 +98,6 @@ Shader.prototype.addFragmentShader = function addFragmentShader(fragSrc) {
 
     glAttachShader(this.progId, fragId);
     glLinkProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
-    //GL20.glIsProgram(this.progId);
-    //print(GL20.glIsProgram(this.progId));
     this.uniformLocCache.clear();
     glDeleteShader(fragId);
     if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking fragment shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
@@ -124,9 +120,6 @@ Shader.prototype.addVertexShader = function addVertexShader(vertSrc) {
 
     glAttachShader(this.progId, vertId);
     glLinkProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
-
-    //print(GL20.glIsProgram(this.progId));
     this.uniformLocCache.clear();
     glDeleteShader(vertId);
     if (glGetProgrami(this.progId, GL_LINK_STATUS) !== 1) throw "Error linking vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
@@ -136,14 +129,10 @@ Shader.prototype.addVertexShader = function addVertexShader(vertSrc) {
 };
 Shader.prototype.bind = function bind() {
     this.checkProgramId();
-    glValidateProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
     glUseProgram(this.progId);
 };
 Shader.prototype.unbind = function unbind() {
     this.checkProgramId();
-    glValidateProgram(this.progId);
-    if (glGetProgrami(this.progId, GL_VALIDATE_STATUS) !== 1) throw "Error validating vertex shader: " + glGetProgramInfoLog(this.progId, MAX_ERROR_LOG);
     glUseProgram(0);
 };
 Shader.prototype.dispose = function dispose() {
