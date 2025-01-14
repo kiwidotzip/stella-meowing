@@ -39,7 +39,7 @@ import {
     glUniformMatrix4fv,
     glUseProgram,
     glValidateProgram,
-} from "./potato";
+} from "./gl";
 
 /** @type {Map<number, Shader>} */
 const allShaders = new Map();
