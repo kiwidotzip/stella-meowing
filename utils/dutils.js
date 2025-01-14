@@ -1,4 +1,4 @@
-import { chunkLoaded } from "./utils";
+import { chunkLoaded, getScoreboard } from "./utils";
 
 /*  ------------ Dungeon Utilities --------------
 
@@ -14,7 +14,7 @@ import { chunkLoaded } from "./utils";
 export const rooms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/roomdata.json"));
 
 //load routes
-export var routes = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/routes/routes.json"));
+export let routes = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/routes/routes.json"));
 
 //checks if your in dungeons based on the scorebord
 export const inDungeon = () => {
@@ -24,6 +24,20 @@ export const inDungeon = () => {
     if (cataMatch) return true;
 
     return false;
+};
+
+export const getFloor = () => {
+    let text = getScoreboard();
+    let cataMatch = null;
+
+    for (i = 0; i < text.length; i++) {
+        cataMatch = text[i].match(/ombs \((\w+)\)$/);
+        if (cataMatch) break;
+    }
+
+    if (!cataMatch) return "nothing";
+
+    return cataMatch[1];
 };
 
 //thanks bm

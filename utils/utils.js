@@ -247,6 +247,13 @@ export const getBlockBoundingBox = (ctBlock) => {
     ];
 };
 
+export const getScoreboard = (formatted = false) => {
+    if (!World.getWorld()) return null;
+    let sb = Scoreboard.getLines().map((a) => a.getName());
+    if (formatted) return Scoreboard.getLines();
+    return sb.map((a) => ChatLib.removeFormatting(a));
+};
+
 const checkingTriggers = []; // [[trigger, func]]
 /**
  * Registers and unregisters the trigger depending on the result of the checkFunc. Use with render triggers to reduce lag when they are not being used.

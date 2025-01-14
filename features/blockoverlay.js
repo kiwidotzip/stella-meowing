@@ -3,6 +3,16 @@ import settings from "../utils/config";
 import { renderBlockHitbox, renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
 import Shader from "../shaders/shader";
 
+/*  --------------- Block Overlay ---------------
+
+    Silly rainbow blocks
+
+    ------------------- To Do -------------------
+
+    - Nothing :D
+
+    --------------------------------------------- */
+
 //old chroma
 let chroma = [];
 
