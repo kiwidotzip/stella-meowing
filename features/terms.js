@@ -1,6 +1,5 @@
-import { drawString, calcDistance, getTabList } from "../utils/utils";
+import { drawString, calcDistance } from "../utils/utils";
 import { inDungeon, getFloor } from "../utils/dutils";
-import { onChatPacket } from "../utils/events";
 import settings from "../utils/config";
 
 /*  -------------- Terminal Things ---------------
@@ -77,45 +76,38 @@ register("renderWorld", () => {
     });
 });
 
-register("tick", (ticks) => {
-    if (ticks % 10) return;
-    if (!inDungeon()) return this.reset();
-
-    let tabList = getTabList(false);
-    if (!tabList || tabList.length < 60) return;
-
-    doPartyStuff(tabList);
-});
-
+//terminal tracker
 const completed = new Map(); // "player": {terminal: 0, device: 0, lever: 0}
 
-// Set everything to 0 when P3 starts
-onChatPacket(() => {
+//reset
+register("chat", () => {
     completed.clear();
-    party.forEach((player) => {
-        completed.set(player, { terminal: 0, device: 0, lever: 0 });
-    });
 }).setCriteria("[BOSS] Goldor: Who dares trespass into my domain?");
 
-// Listen for completed terms/devices/levers
-onChatPacket((player, type) => {
-    if (!settings().termTracker || !completed.has(player)) return;
-    const data = completed.get(player);
-    data[type]++;
-}).setCriteria(/^(\w{1,16}) (?:activated|completed) a (\w+)! \(\d\/\d\)$/);
+//add compleated stuff
+register("chat", (name, type, start, end) => {
+    if (!settings().termTracker) return;
+    if (name.includes(">")) return;
 
-// Print the completed stuff to chat
+    let data = completed.get(name) || {
+        terminal: 0,
+        device: 0,
+        lever: 0,
+    };
+
+    data[type]++;
+    completed.set(name, data);
+}).setCriteria("${name} activated a ${type}! (${start}/${end})");
+
+//Print to chat
 register("chat", () => {
     if (!settings().termTracker) return;
-    //completed.forEach((data, player) => {
-    //let formatted = player;
-    //ChatLib.chat(`${formatted} &8| &6${data.terminal} &aTerminals &8| &6${data.device} &aDevices &8| &6${data.lever} &aLevers`);
-    ChatLib.chat("allz");
-    //});
+    completed.forEach((data, name) => {
+        ChatLib.chat("&b[EA] &6" + name + " &7completed &f" + data.terminal + "&7 terms, &f" + data.device + "&7 devices, and &f" + data.lever + " &7levers!");
+    });
 }).setCriteria("The Core entrance is opening!");
 
+//Reset on world unload
 register("worldUnload", () => {
     completed.clear();
 });
-
-registerChat();
