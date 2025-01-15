@@ -66,7 +66,7 @@ register("renderWorld", () => {
                 let pdistance = calcDistance(playerPos, pos);
                 if (pdistance < 50) {
                     if (termLabels[number]) {
-                        drawString(termLabels[number], x + 0.5, y + 2.5, z + 0.5, 0xffffff, true, 2, true);
+                        if (settings().termClass) drawString(termLabels[number], x + 0.5, y + 2.5, z + 0.5, 0xffffff, true, 2, true);
                     }
 
                     drawString(number.toString(), x + 0.5, y + 1.5, z + 0.5, 0xffffff, true, 2, true);

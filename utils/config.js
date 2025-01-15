@@ -161,6 +161,18 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         },
     })
 
+    .addSwitch({
+        category: "Dungeons",
+        configName: "termClass",
+        title: "Show Class",
+        description: "Showes related class (for callin terms)",
+        subcategory: "Terminals",
+
+        shouldShow(data) {
+            return data.termNumbers;
+        },
+    })
+
     //terminal tracker
     .addSwitch({
         category: "Dungeons",
