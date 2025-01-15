@@ -33,10 +33,19 @@
 
 <h2 align="center">Installation Steps (hopefully coming soon)</h2>
 
+## **Automatic**
 1. Download Chattriggers.  
 2. /ct import eclipseAddons.  
 3. Have fun!
 
+## **Manual**
+1. Download Chattrigers
+2. Download latest release from [here](https://github.com/Eclipse-5214/eclipseAddons/releases)
+3. /ct files
+4. unzip in folder
+5. /ct reload
+6. Have fun!
+   
 ---
 
 <h2 align="center">Credits</h2>
