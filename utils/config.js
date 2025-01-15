@@ -143,7 +143,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Dungeons",
         configName: "termNumbers",
         title: "Terminal Numbers",
-        description: "Number the terminals in dungeons (for callin terms)",
+        description: "Number the terminals in dungeons (for calling terms)",
         subcategory: "Terminals",
     })
 
@@ -165,7 +165,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         category: "Dungeons",
         configName: "termClass",
         title: "Show Class",
-        description: "Showes related class (for callin terms)",
+        description: "Displays related class",
         subcategory: "Terminals",
 
         shouldShow(data) {

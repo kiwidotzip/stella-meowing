@@ -70,6 +70,11 @@
             },
             {
                 "type": 6,
+                "name": "termClass",
+                "value": false
+            },
+            {
+                "type": 6,
                 "name": "termTracker",
                 "value": true
             }
