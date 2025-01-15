@@ -48,16 +48,28 @@ register("renderWorld", () => {
     if (getFloor() !== "F7") return;
     if (!inDungeon()) return;
 
+    //Thanks Kiwidotzip!
+    const termLabels = {
+        1: "Tank",
+        2: "Mage",
+        3: "Berserk",
+        4: "Archer",
+    };
+
     let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
     let term = settings().termNumber + 1;
 
     Object.entries(terms).forEach(([number, parts]) => {
-        if (number === term || term === 5) {
+        if (number == term || term == 5) {
             parts.forEach((pos) => {
                 let [x, y, z] = pos;
 
                 let pdistance = calcDistance(playerPos, pos);
                 if (pdistance < 50) {
+                    if (termLabels[number]) {
+                        drawString(termLabels[number], x + 0.5, y + 2.5, z + 0.5, 0xffffff, true, 2, true);
+                    }
+
                     drawString(number.toString(), x + 0.5, y + 1.5, z + 0.5, 0xffffff, true, 2, true);
                 }
             });
@@ -105,3 +117,5 @@ register("chat", () => {
 register("worldUnload", () => {
     completed.clear();
 });
+
+registerChat();
