@@ -38,7 +38,7 @@
             {
                 "type": 6,
                 "name": "chromaRoomName",
-                "value": false
+                "value": true
             },
             {
                 "type": 2,
@@ -272,7 +272,7 @@
             {
                 "type": 6,
                 "name": "oldChroma",
-                "value": true
+                "value": false
             },
             {
                 "type": 1,
