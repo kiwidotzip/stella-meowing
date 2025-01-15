@@ -254,6 +254,11 @@ export const getScoreboard = (formatted = false) => {
     return sb.map((a) => ChatLib.removeFormatting(a));
 };
 
+export const getTabList = (formatted = false) => {
+    if (formatted) return TabList.getNames();
+    return TabList.getNames().map((a) => a.removeFormatting());
+};
+
 const checkingTriggers = []; // [[trigger, func]]
 /**
  * Registers and unregisters the trigger depending on the result of the checkFunc. Use with render triggers to reduce lag when they are not being used.

@@ -15,7 +15,6 @@ import "./features/dungeon";
 
     - finish routes stuff
     - add profit calculator
-    - add numbered terminal waypoints
 
     --------------------------------------------- */
 

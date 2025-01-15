@@ -61,17 +61,17 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": false
+                "value": true
             },
             {
                 "type": 7,
                 "name": "termNumber",
-                "value": 0
+                "value": 1
             },
             {
                 "type": 6,
                 "name": "termTracker",
-                "value": false
+                "value": true
             }
         ]
     },

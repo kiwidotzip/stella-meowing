@@ -1,8 +1,6 @@
-import { drawString, calcDistance } from "../utils/utils";
+import { drawString, calcDistance, getTabList } from "../utils/utils";
 import { inDungeon, getFloor } from "../utils/dutils";
-//import Party from "../../BloomCore/Party"
-//import Dungeon from "../../BloomCore/dungeons/Dungeon"
-//import { onChatPacket } from "../../BloomCore/utils/Events"
+import { onChatPacket } from "../utils/events";
 import settings from "../utils/config";
 
 /*  -------------- Terminal Things ---------------
@@ -19,6 +17,31 @@ import settings from "../utils/config";
     --------------------------------------------- */
 
 const terms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/termwaypoints.json"));
+
+let party = new Set();
+
+function doPartyStuff(tabList) {
+    // Party and Classes
+    const lines = Array(5)
+        .fill()
+        .map((_, i) => tabList[i * 4 + 1]);
+    // Matches the name and class of every player in the party
+    // [74] UnclaimedBloom6 (Mage XXXIX)
+    const matches = lines.reduce((a, b) => {
+        // https://regex101.com/r/cUzJoK/7
+        const match = b.match(/^.?\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
+        if (!match) return a;
+        let [_, sbLevel, player, dungeonClass, classLevel] = match;
+        return a.concat([[player, dungeonClass, classLevel]]);
+    }, []);
+
+    party.clear();
+    matches.forEach((a) => {
+        let [player, dungeonClass, classLevel] = a;
+        if (!["DEAD", "EMPTY"].includes(dungeonClass)) this.classes[player] = dungeonClass;
+        party.add(player);
+    });
+}
 
 register("renderWorld", () => {
     if (!settings().termNumbers) return;
@@ -42,35 +65,43 @@ register("renderWorld", () => {
     });
 });
 
-/*
+register("tick", (ticks) => {
+    if (ticks % 10) return;
+    if (!inDungeon()) return this.reset();
+
+    let tabList = getTabList(false);
+    if (!tabList || tabList.length < 60) return;
+
+    doPartyStuff(tabList);
+});
+
 const completed = new Map(); // "player": {terminal: 0, device: 0, lever: 0}
 
 // Set everything to 0 when P3 starts
 onChatPacket(() => {
     completed.clear();
-    Dungeon.party.forEach((player) => {
+    party.forEach((player) => {
         completed.set(player, { terminal: 0, device: 0, lever: 0 });
     });
 }).setCriteria("[BOSS] Goldor: Who dares trespass into my domain?");
 
 // Listen for completed terms/devices/levers
 onChatPacket((player, type) => {
-    if (!Config.terminalTracker || !completed.has(player)) return;
+    if (!settings().termTracker || !completed.has(player)) return;
     const data = completed.get(player);
     data[type]++;
 }).setCriteria(/^(\w{1,16}) (?:activated|completed) a (\w+)! \(\d\/\d\)$/);
 
 // Print the completed stuff to chat
 register("chat", () => {
-    if (!Config.terminalTracker) return;
-    completed.forEach((data, player) => {
-        let formatted = player;
-        if (Object.keys(Party.members).includes(player)) formatted = Party.members[player];
-        ChatLib.chat(`${formatted} &8| &6${data.terminal} &aTerminals &8| &6${data.device} &aDevices &8| &6${data.lever} &aLevers`);
-    });
+    if (!settings().termTracker) return;
+    //completed.forEach((data, player) => {
+    //let formatted = player;
+    //ChatLib.chat(`${formatted} &8| &6${data.terminal} &aTerminals &8| &6${data.device} &aDevices &8| &6${data.lever} &aLevers`);
+    ChatLib.chat("allz");
+    //});
 }).setCriteria("The Core entrance is opening!");
 
 register("worldUnload", () => {
     completed.clear();
 });
-*/
