@@ -50,6 +50,19 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         },
     })
 
+    .addButton({
+        category: "General",
+        subcategory: "",
+        configName: "MyGithub",
+        title: "Github",
+        description: "The source code for all this :D",
+        tags: ["discord"],
+        onClick(setting) {
+            ChatLib.command("ct copy https://github.com/Eclipse-5214/eclipseAddons", true);
+            ChatLib.chat("&6Copied Discord Link!");
+        },
+    })
+
     //dungoens
 
     //dugeon trash
@@ -123,6 +136,38 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         shouldShow(data) {
             return data.showRoomName;
         },
+    })
+
+    //terminal numbers
+    .addSwitch({
+        category: "Dungeons",
+        configName: "termNumbers",
+        title: "Terminal Numbers",
+        description: "Number the terminals in dungeons (for callin terms)",
+        subcategory: "Terminals",
+    })
+
+    .addDropDown({
+        configName: "termNumber",
+        title: "Number",
+        description: "What terminal number you want to call",
+        category: "Dungeons",
+        subcategory: "Terminals",
+        options: ["1", "2", "3", "4", "All"],
+        value: 4,
+
+        shouldShow(data) {
+            return data.termNumbers;
+        },
+    })
+
+    //terminal tracker
+    .addSwitch({
+        category: "Dungeons",
+        configName: "termTracker",
+        title: "Terminal Tracker",
+        description: "Tracks terminals, devices, and levers",
+        subcategory: "Terminals",
     })
 
     //Secret routes

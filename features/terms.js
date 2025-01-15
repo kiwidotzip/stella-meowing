@@ -1,10 +1,9 @@
-import { drawString, calcDistance, getScoreboard } from "../utils/utils";
-import { drawBoxAtBlock } from "../utils/renderUtils";
+import { drawString, calcDistance } from "../utils/utils";
 import { inDungeon, getFloor } from "../utils/dutils";
 //import Party from "../../BloomCore/Party"
 //import Dungeon from "../../BloomCore/dungeons/Dungeon"
 //import { onChatPacket } from "../../BloomCore/utils/Events"
-//import Config from "../Config"
+import settings from "../utils/config";
 
 /*  -------------- Terminal Things ---------------
 
@@ -15,28 +14,31 @@ import { inDungeon, getFloor } from "../utils/dutils";
 
     ------------------- To Do -------------------
 
-    - Nothing :D
+    - Make bloom's code work
 
     --------------------------------------------- */
 
 const terms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/termwaypoints.json"));
 
 register("renderWorld", () => {
+    if (!settings().termNumbers) return;
     if (getFloor() !== "F7") return;
     if (!inDungeon()) return;
 
     let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
+    let term = settings().termNumber + 1;
 
     Object.entries(terms).forEach(([number, parts]) => {
-        parts.forEach((pos) => {
-            let [x, y, z] = pos;
+        if (number === term || term === 5) {
+            parts.forEach((pos) => {
+                let [x, y, z] = pos;
 
-            let pdistance = calcDistance(playerPos, pos);
-            if (pdistance < 50) {
-                drawString(number.toString(), x + 0.5, y + 1.5, z + 0.5, 0xffffff, true, 2, true);
-                drawBoxAtBlock(x, y, z, 1, 0, 1, 1, 1);
-            }
-        });
+                let pdistance = calcDistance(playerPos, pos);
+                if (pdistance < 50) {
+                    drawString(number.toString(), x + 0.5, y + 1.5, z + 0.5, 0xffffff, true, 2, true);
+                }
+            });
+        }
     });
 });
 

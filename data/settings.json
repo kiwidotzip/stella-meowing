@@ -9,6 +9,10 @@
             {
                 "type": 2,
                 "name": "MyDiscord"
+            },
+            {
+                "type": 2,
+                "name": "MyGithub"
             }
         ]
     },
@@ -53,6 +57,21 @@
                     0,
                     0
                 ]
+            },
+            {
+                "type": 6,
+                "name": "termNumbers",
+                "value": false
+            },
+            {
+                "type": 7,
+                "name": "termNumber",
+                "value": 0
+            },
+            {
+                "type": 6,
+                "name": "termTracker",
+                "value": false
             }
         ]
     },

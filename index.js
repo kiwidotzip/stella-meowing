@@ -1,7 +1,7 @@
 import settings from "./utils/config";
 import "./features/firstInstall";
 import "./features/blockOverlay";
-//import "./features/terms";
+import "./features/terms";
 import "./features/secrets";
 import "./features/routes";
 import "./features/dungeon";
