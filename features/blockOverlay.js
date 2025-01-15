@@ -166,5 +166,3 @@ registerWhen(
     register(net.minecraftforge.client.event.DrawBlockHighlightEvent, (event) => cancel(event)),
     () => settings().overlayEnabled
 );
-
-//test
