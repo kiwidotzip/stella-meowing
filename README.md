@@ -17,10 +17,19 @@
 <p>Here are some of the standout features that <em>Eclipse Addons</em> has so far</p>
 
 ### **Dungeons**
-- Dungeon Routes (kinda like BLC, but I need someone to record routes)
+- Dungeon Routes (kinda like BLC)
   --> ( https://www.youtube.com/watch?v=FKndGLs0G1Y ) check this video to see it in action!
+- 70+ default routes!
 - The ability to record your own routes!
-- Secret Waypoints 
+- Secret Waypoints
+- Terminal Numbers
+- Terminal Tracker
+- Room name GUI
+
+## **General**
+- Block Overlay
+- Highlight Dugeon Trash
+- Cool Chroma
 
 <h2 align="center">Installation Steps (hopefully coming soon)</h2>
 
