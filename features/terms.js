@@ -7,7 +7,7 @@ import settings from "../utils/config";
     Numbers the terminals in dungeon
     (for calling terms)
 
-    Blooms terminal tracker (WIP)
+    terminal tracker
 
     ------------------- To Do -------------------
 
@@ -16,31 +16,6 @@ import settings from "../utils/config";
     --------------------------------------------- */
 
 const terms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/termwaypoints.json"));
-
-let party = new Set();
-
-function doPartyStuff(tabList) {
-    // Party and Classes
-    const lines = Array(5)
-        .fill()
-        .map((_, i) => tabList[i * 4 + 1]);
-    // Matches the name and class of every player in the party
-    // [74] UnclaimedBloom6 (Mage XXXIX)
-    const matches = lines.reduce((a, b) => {
-        // https://regex101.com/r/cUzJoK/7
-        const match = b.match(/^.?\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
-        if (!match) return a;
-        let [_, sbLevel, player, dungeonClass, classLevel] = match;
-        return a.concat([[player, dungeonClass, classLevel]]);
-    }, []);
-
-    party.clear();
-    matches.forEach((a) => {
-        let [player, dungeonClass, classLevel] = a;
-        if (!["DEAD", "EMPTY"].includes(dungeonClass)) this.classes[player] = dungeonClass;
-        party.add(player);
-    });
-}
 
 register("renderWorld", () => {
     if (!settings().termNumbers) return;
