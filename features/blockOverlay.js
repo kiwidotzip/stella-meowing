@@ -1,7 +1,7 @@
 import { registerWhen } from "../utils/utils";
 import settings from "../utils/config";
 import { renderBlockHitbox, renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
-import Shader from "../shaders/shader";
+import Shader from "../../ShaderLib/index";
 
 /*  --------------- Block Overlay ---------------
 

@@ -2,7 +2,7 @@ import { highlightSlot, renderCenteredString } from "../utils/utils";
 import { getRoomData, inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
-import Shader from "../shaders/shader";
+import Shader from "../../ShaderLib/index";
 
 /*  --------------- secret routes ---------------
 
