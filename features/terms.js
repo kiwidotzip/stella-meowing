@@ -60,7 +60,7 @@ register("chat", () => {
 }).setCriteria("[BOSS] Goldor: Who dares trespass into my domain?");
 
 //add compleated stuff
-register("chat", (name, type, start, end) => {
+register("chat", (name, type) => {
     if (!settings().termTracker) return;
     if (name.includes(">")) return;
 
@@ -72,7 +72,9 @@ register("chat", (name, type, start, end) => {
 
     data[type]++;
     completed.set(name, data);
-}).setCriteria("${name} activated a ${type}! (${start}/${end})");
+    //fix
+    //SteijnZ completed a device! (5/7) (22.697s | 120.63s)
+}).setCriteria(/^(\w{1,16}) (?:activated|completed) a (\w+)! \(\d\/\d\)$/);
 
 //Print to chat
 register("chat", () => {
