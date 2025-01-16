@@ -1,12 +1,11 @@
--   §aAdded: Keybinds
--   §aAdded: Secret item Filtering
--   §aAdded: Themeing
 -   §aAdded: Room Name gui
--   §aAdded: Some secret routes
+-   §aAdded: Block overlay
 -   §aAdded: Dungeon trash highlighting
+-   §aAdded: Terminal numbers / classes
+-   §aAdded: Terminal tracker
 
--   §eImproved: Performace and module structure
+-   §eImproved: A bunch of routes
 
--   §eFixed: A silly bug where nothing would work with a full party
+-   §eFixed: Rendering breaking sometimes
 
--   §cRemoved: Debug stuff
+-   §cRemoved: Terminal waypoints
