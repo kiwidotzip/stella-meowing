@@ -1,7 +1,7 @@
-import { registerWhen } from "../utils/utils";
-import settings from "../utils/config";
 import { renderBlockHitbox, renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
+import { registerWhen } from "../utils/utils";
 import Shader from "../../ShaderLib/index";
+import settings from "../utils/config";
 
 const DrawBlockHighlightEvent = net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
