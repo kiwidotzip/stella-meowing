@@ -1,4 +1,4 @@
-import { highlightSlot, renderCenteredString } from "../utils/utils";
+import { highlightSlot, renderCenteredString, registerWhen } from "../utils/utils";
 import { getRoomData, inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
@@ -142,14 +142,16 @@ register("scrolled", (mx, my, dir) => {
 });
 
 //highlihgt trash
-register("guiRender", (mx, mt, gui) => {
-    if (!settings().highlightTrash) return;
-    let inv = Player.getContainer();
-    let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
-    if (!shops.some((k) => inv?.getName()?.includes(k))) return;
-    for (let i = 0; i < inv.getSize(); i++) {
-        if (!inv?.getStackInSlot(i)?.getName()) continue;
-        if (!trashItems.some((j) => inv?.getStackInSlot(i)?.getName().includes(j))) continue;
-        highlightSlot(gui, i, r, g, b, a, false);
-    }
-});
+registerWhen(
+    register("guiRender", (mx, mt, gui) => {
+        let inv = Player.getContainer();
+        let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
+        if (!shops.some((k) => inv?.getName()?.includes(k))) return;
+        for (let i = 0; i < inv.getSize(); i++) {
+            if (!inv?.getStackInSlot(i)?.getName()) continue;
+            if (!trashItems.some((j) => inv?.getStackInSlot(i)?.getName().includes(j))) continue;
+            highlightSlot(gui, i, r, g, b, a, false);
+        }
+    }),
+    () => settings().highlightTrash
+);

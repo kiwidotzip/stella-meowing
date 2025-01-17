@@ -18,14 +18,13 @@ const DrawBlockHighlightEvent = net.minecraftforge.client.event.DrawBlockHighlig
 //old chroma
 let chroma = [];
 
-register("step", (i) => {
-    if (!settings().overlayEnabled) return;
-    if (!settings().chromaHighlight) return;
-    if (!settings().oldChroma) return;
-
-    const speed = 11 - settings().chromaOverlaySpeed;
-    chroma = Object.values(Renderer.getRainbowColors(i, speed));
-}).setFps(30);
+registerWhen(
+    register("step", (i) => {
+        const speed = 11 - settings().chromaOverlaySpeed;
+        chroma = Object.values(Renderer.getRainbowColors(i, speed));
+    }).setFps(30),
+    () => settings().oldChroma
+);
 
 //new chroma
 const chromaShader = new Shader(FileLib.read("eclipseAddons", "shaders/chroma/chroma3D.frag"), FileLib.read("eclipseAddons", "shaders/chroma/chroma3D.vert"));
