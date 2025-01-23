@@ -399,57 +399,51 @@ registerWhen(
 );
 
 //draws particle lines
-registerWhen(
-    register("step", () => {
-        //normal line
-        if (settings().modEnabled && settings().lineType === 0 && indungeon && !recording) {
-            if (!currRouteData) return;
-            if (step < currRouteData.length || step >= 0) {
-                for (var i = 0; i < currRouteData[step].locations.length; i++) {
-                    let [x, y, z] = getRealCoord(currRouteData[step].locations[i]);
-                    if (i + 1 < currRouteData[step].locations.length) {
-                        let [x2, y2, z2] = getRealCoord(currRouteData[step].locations[i + 1]);
-                        drawLineParticles([x + 1, y + 0.5, z + 1], [x2 + 1, y2 + 0.5, z2 + 1]);
-                    }
+register("step", () => {
+    //normal line
+    if (settings().modEnabled && settings().lineType === 0 && indungeon && !recording) {
+        if (!currRouteData) return;
+        if (step < currRouteData.length || step >= 0) {
+            for (var i = 0; i < currRouteData[step].locations.length; i++) {
+                let [x, y, z] = getRealCoord(currRouteData[step].locations[i]);
+                if (i + 1 < currRouteData[step].locations.length) {
+                    let [x2, y2, z2] = getRealCoord(currRouteData[step].locations[i + 1]);
+                    drawLineParticles([x + 1, y + 0.5, z + 1], [x2 + 1, y2 + 0.5, z2 + 1]);
                 }
             }
         }
+    }
 
-        //recording line
-        if (recording) {
-            if (recordingData.locations === null) return;
-            for (var i = 0; i < recordingData.locations.length; i++) {
-                let [x, y, z] = getRealCoord(recordingData.locations[i]);
+    //recording line
+    if (recording) {
+        if (recordingData.locations === null) return;
+        for (var i = 0; i < recordingData.locations.length; i++) {
+            let [x, y, z] = getRealCoord(recordingData.locations[i]);
 
-                if (i + 1 < recordingData.locations.length) {
-                    let [x2, y2, z2] = getRealCoord(recordingData.locations[i + 1]);
+            if (i + 1 < recordingData.locations.length) {
+                let [x2, y2, z2] = getRealCoord(recordingData.locations[i + 1]);
 
-                    if (settings().lineType === 0) drawLineParticles([x + 1, y + 0.5, z + 1], [x2 + 1, y2 + 0.5, z2 + 1]);
-                }
+                if (settings().lineType === 0) drawLineParticles([x + 1, y + 0.5, z + 1], [x2 + 1, y2 + 0.5, z2 + 1]);
             }
         }
-    }).setFps(5),
-    () => settings().modEnabled
-);
+    }
+}).setFps(5);
 
 //draws recordsing line
-registerWhen(
-    register("step", () => {
-        if (!recording) return;
+register("step", () => {
+    if (!recording) return;
 
-        let loc = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
+    let loc = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
 
-        let distance = null;
+    let distance = null;
 
-        if (playerloc !== null) distance = calcDistance(loc, playerloc);
+    if (playerloc !== null) distance = calcDistance(loc, playerloc);
 
-        if (distance > 2 || playerloc === null) {
-            playerloc = loc;
-            addPoint(loc, "location");
-        }
-    }).setFps(2),
-    () => recording
-);
+    if (distance > 2 || playerloc === null) {
+        playerloc = loc;
+        addPoint(loc, "location");
+    }
+}).setFps(2);
 
 //checks if a player is opening current secret
 registerWhen(
