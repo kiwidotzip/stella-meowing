@@ -86,7 +86,7 @@
             {
                 "type": 6,
                 "name": "modEnabled",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,
@@ -191,7 +191,7 @@
             {
                 "type": 6,
                 "name": "secretWaypoints",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,
@@ -261,7 +261,7 @@
             {
                 "type": 6,
                 "name": "overlayEnabled",
-                "value": true
+                "value": false
             },
             {
                 "type": 5,

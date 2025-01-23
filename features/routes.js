@@ -229,17 +229,6 @@ register("step", () => {
 //draws boxes
 registerWhen(
     register("renderWorld", () => {
-        if (inDungeon()) {
-            indungeon = true;
-        } else {
-            //reseting variables
-            indungeon = false;
-            currRouteData = null;
-            step = 0;
-        }
-
-        if (!indungeon) return;
-
         //route rendering
         if (!recording) {
             if (!currRouteData) return;
@@ -401,7 +390,7 @@ registerWhen(
 //draws particle lines
 register("step", () => {
     //normal line
-    if (settings().modEnabled && settings().lineType === 0 && indungeon && !recording) {
+    if (settings().modEnabled && settings().lineType === 0 && !recording) {
         if (!currRouteData) return;
         if (step < currRouteData.length || step >= 0) {
             for (var i = 0; i < currRouteData[step].locations.length; i++) {
@@ -448,7 +437,6 @@ register("step", () => {
 //checks if a player is opening current secret
 registerWhen(
     register("playerInteract", (action) => {
-        if (!indungeon) return;
         if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
 
         let block = Player.lookingAt();
