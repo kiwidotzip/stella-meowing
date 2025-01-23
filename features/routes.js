@@ -239,7 +239,7 @@ registerWhen(
                         points.forEach((pos) => {
                             let [x, y, z] = getRealCoord(pos);
 
-                            if (type === "locations") {
+                            if (type === "locations" && settings().lineType !== 2) {
                                 if (index === 0 && step === 0) {
                                     drawString("Start", x + 0.5, y + 1.5, z + 0.5, 0xffffff, true, 0.03, false);
                                 }

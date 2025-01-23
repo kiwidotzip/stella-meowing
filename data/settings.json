@@ -86,7 +86,7 @@
             {
                 "type": 6,
                 "name": "modEnabled",
-                "value": false
+                "value": true
             },
             {
                 "type": 6,
