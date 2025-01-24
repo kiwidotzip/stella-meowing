@@ -248,7 +248,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         description: "Type of secret line",
         category: "Routes",
         subcategory: "Line",
-        options: ["Fire Particles", "Lines"],
+        options: ["Fire Particles", "Lines", "None"],
         value: 0,
     })
 
