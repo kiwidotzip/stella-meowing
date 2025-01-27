@@ -1,7 +1,8 @@
 import { getRoomData, getRealCoord } from "../../roomsAPI/utils/utils";
-import { drawString, registerWhen } from "../utils/utils";
+import { registerWhen } from "../../BloomCore/utils/Utils";
 import { drawBoxAtBlock } from "../utils/renderUtils";
-import { inDungeon } from "../utils/dutils";
+import { drawString } from "../utils/utils";
+import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import settings from "../utils/config";
 
 /*  ------------- Secret Waypoints --------------
@@ -39,7 +40,7 @@ registerWhen(
 //desplays waypoints
 registerWhen(
     register("renderWorld", () => {
-        if (!inDungeon()) return;
+        if (!Dungeon.inDungeon) return;
         if (!secretsData) return;
         if (!secretsData.secret_coords) return;
 

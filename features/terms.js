@@ -1,5 +1,6 @@
-import { drawString, calcDistance, registerWhen } from "../utils/utils";
-import { inDungeon, getFloor } from "../utils/dutils";
+import { registerWhen } from "../../BloomCore/utils/Utils";
+import { drawString, calcDistance } from "../utils/utils";
+import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import settings from "../utils/config";
 
 /*  -------------- Terminal Things ---------------
@@ -19,8 +20,9 @@ const terms = JSON.parse(FileLib.read("eclipseAddons", "data/dungeons/termwaypoi
 
 registerWhen(
     register("renderWorld", () => {
-        if (getFloor() !== "F7") return;
-        if (!inDungeon()) return;
+        if (Dungeon.floor !== "F7") return;
+        if (!Dungeon.inDungeon) return;
+        if (!Dungeon.bossEntry) return;
 
         //Thanks Kiwidotzip!
         const termLabels = {

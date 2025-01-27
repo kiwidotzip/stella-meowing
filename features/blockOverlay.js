@@ -1,5 +1,5 @@
 import { renderBlockHitbox, renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
-import { registerWhen } from "../utils/utils";
+import { registerWhen } from "../../BloomCore/utils/Utils";
 import Shader from "../../ShaderLib/index";
 import settings from "../utils/config";
 

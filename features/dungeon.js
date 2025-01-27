@@ -1,9 +1,9 @@
-import { highlightSlot, renderCenteredString, registerWhen } from "../utils/utils";
+import { registerWhen, highlightSlot, renderCenteredString } from "../../BloomCore/utils/Utils";
 import { getRoomData } from "../../roomsAPI/utils/utils";
-import { inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
 import Shader from "../../ShaderLib/index";
+import Dungeon from "../../BloomCore/dungeons/Dungeon";
 
 /*  --------------- secret routes ---------------
 
@@ -121,7 +121,7 @@ register("renderOverlay", () => {
         renderRoomName();
     }
 
-    if (settings().showRoomName && inDungeon()) {
+    if (settings().showRoomName && Dungeon.inDungeon) {
         renderRoomName();
     }
 });

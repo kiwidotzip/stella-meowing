@@ -1,7 +1,9 @@
 import { getRealCoord, getRoomWorldData, getRoomData, getRoomCoord, getCore } from "../../roomsAPI/utils/utils";
-import { calcDistance, drawLineParticles, drawString, registerWhen } from "../utils/utils";
+import { calcDistance, drawLineParticles, drawString } from "../utils/utils";
 import { drawBoxAtBlock, drawFilledBox, drawLine } from "../utils/renderUtils";
-import { getRouteData, inDungeon, routes } from "../utils/dutils";
+import { getRouteData, routes } from "../utils/dutils";
+import { registerWhen } from "../../BloomCore/utils/Utils";
+import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import settings from "../utils/config";
 
 /*  --------------- secret routes ---------------
@@ -42,7 +44,6 @@ let rStep = new KeyBind("Reset Route", settings().resetStep, "Eclipse Addons");
 var lastRoomId = null;
 var currRouteData = null;
 var step = 0;
-var indungeon = false;
 
 //recording variables
 var route = {};
@@ -625,7 +626,7 @@ registerWhen(
 
 //keybind uses
 nStep.registerKeyPress(() => {
-    if (!inDungeon()) {
+    if (!Dungeon.inDungeon) {
         ChatLib.chat("&cError: Not in dungeon!");
         return;
     }
@@ -643,7 +644,7 @@ nStep.registerKeyPress(() => {
 });
 
 lStep.registerKeyPress(() => {
-    if (!inDungeon()) {
+    if (!Dungeon.inDungeon) {
         ChatLib.chat("&cError: Not in dungeon!");
         return;
     }
@@ -660,7 +661,7 @@ lStep.registerKeyPress(() => {
 });
 
 rStep.registerKeyPress(() => {
-    if (!inDungeon()) {
+    if (!Dungeon.inDungeon) {
         ChatLib.chat("&cError: Not in dungeon!");
         return;
     }
@@ -702,7 +703,7 @@ register("command", (...args) => {
 //route recording commands
 register("command", (...args) => {
     if (args[0] === "record") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
@@ -713,14 +714,14 @@ register("command", (...args) => {
             ChatLib.chat("&aRecording!");
         }
     } else if (args[0] === "stop") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
         if (!recording) ChatLib.chat("&cError: Not recording!");
         if (recording) stopRecording();
     } else if (args[0] === "save") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
@@ -729,7 +730,7 @@ register("command", (...args) => {
             saveRoute(false);
         }
     } else if (args[0] === "view") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
@@ -738,7 +739,7 @@ register("command", (...args) => {
             ChatLib.chat(JSON.stringify(route, undefined, 2));
         }
     } else if (args[0] === "bat") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
@@ -750,7 +751,7 @@ register("command", (...args) => {
             ChatLib.chat("&aAdded bat");
         }
     } else if (args[0] === "route_save_force") {
-        if (!inDungeon()) {
+        if (!Dungeon.inDungeon) {
             ChatLib.chat("&cError: Not in dungeon!");
             return;
         }
