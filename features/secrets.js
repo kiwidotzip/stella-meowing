@@ -1,6 +1,7 @@
-import { getRoomData, getRealCoord, inDungeon } from "../utils/dutils";
+import { getRoomData, getRealCoord } from "../../roomsAPI/utils/utils";
 import { drawString, registerWhen } from "../utils/utils";
 import { drawBoxAtBlock } from "../utils/renderUtils";
+import { inDungeon } from "../utils/dutils";
 import settings from "../utils/config";
 
 /*  ------------- Secret Waypoints --------------

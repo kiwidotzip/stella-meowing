@@ -1,5 +1,6 @@
 import { highlightSlot, renderCenteredString, registerWhen } from "../utils/utils";
-import { getRoomData, inDungeon } from "../utils/dutils";
+import { getRoomData } from "../../roomsAPI/utils/utils";
+import { inDungeon } from "../utils/dutils";
 import settings, { roomName } from "../utils/config";
 import PogObject from "../../PogData";
 import Shader from "../../ShaderLib/index";

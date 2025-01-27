@@ -219,18 +219,6 @@ export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z =
 };
 
 /**
- * Checks if the chunk at the specified coordinate is loaded.
- * @param {Number} x
- * @param {Number} y
- * @param {Number} z
- * @returns
- */
-export const chunkLoaded = (x, y, z) => {
-    if (!World || !World.getWorld()) return false;
-    return World.getChunk(x, y, z).chunk.func_177410_o();
-};
-
-/**
  *
  * @param {Block} ctBlock
  * @returns {Number[]} - A 6-long array of numbers with the [x0, y0, z0, x1, y1, z1] corners of the block's bounding box.

@@ -1,6 +1,7 @@
-import { getRealCoord, getRoomWorldData, getRouteData, getRoomData, inDungeon, getRoomCoord, routes, getCore } from "../utils/dutils";
+import { getRealCoord, getRoomWorldData, getRoomData, getRoomCoord, getCore } from "../../roomsAPI/utils/utils";
 import { calcDistance, drawLineParticles, drawString, registerWhen } from "../utils/utils";
 import { drawBoxAtBlock, drawFilledBox, drawLine } from "../utils/renderUtils";
+import { getRouteData, inDungeon, routes } from "../utils/dutils";
 import settings from "../utils/config";
 
 /*  --------------- secret routes ---------------
