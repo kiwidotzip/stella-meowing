@@ -1,3 +1,4 @@
+import { getRoomData } from "../../roomsAPI/utils/utils";
 import { getScoreboard } from "./utils";
 
 /*  ------------ Dungeon Utilities --------------
