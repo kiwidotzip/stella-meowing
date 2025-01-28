@@ -2,7 +2,6 @@ const MCTessellator = net.minecraft.client.renderer.Tessellator.func_178181_a();
 const DefaultVertexFormats = net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 const WorldRenderer = MCTessellator.func_178180_c();
 const EnumParticleTypes = Java.type("net.minecraft.util.EnumParticleTypes");
-const GuiContainer = Java.type("net.minecraft.client.gui.inventory.GuiContainer");
 
 /*  ------------- General Utilities -------------
 
