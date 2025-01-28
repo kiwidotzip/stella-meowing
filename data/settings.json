@@ -61,7 +61,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
@@ -86,7 +86,7 @@
             {
                 "type": 6,
                 "name": "modEnabled",
-                "value": false
+                "value": true
             },
             {
                 "type": 6,
@@ -116,7 +116,7 @@
             {
                 "type": 7,
                 "name": "lineType",
-                "value": 1
+                "value": 2
             },
             {
                 "type": 1,

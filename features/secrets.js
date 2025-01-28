@@ -16,8 +16,8 @@ import settings from "../utils/config";
     --------------------------------------------- */
 
 //variables
-var lastRoomId = null;
-var secretsData = null;
+let lastRoomId = null;
+let secretsData = null;
 
 //gets current room data
 registerWhen(
@@ -41,6 +41,7 @@ registerWhen(
 registerWhen(
     register("renderWorld", () => {
         if (!Dungeon.inDungeon) return;
+        if (Dungeon.bossEntry) return;
         if (!secretsData) return;
         if (!secretsData.secret_coords) return;
 

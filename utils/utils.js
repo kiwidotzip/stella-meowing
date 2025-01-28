@@ -88,41 +88,6 @@ export function drawString(text, x, y, z, color = 0xffffff, renderBlackBox = tru
     GlStateManager.func_179121_F(); // popMatrix
 }
 
-// Renders centered text at a position. Can split each word onto a new line.
-// If an array of strings is passed, it will render each item on a new line.
-/**
- * Renders text perfectly centered on the screen both horizontally and vertically. Supports color codes
- * or optionally, pass in a Java Color to force the text to render that color.
- * @param {String|String[]} string - The text to be rendered. If an array of strings is passed, each item will be rendered on a new line.
- * @param {Number} x - Left/Right on the screen.
- * @param {Number} y - Up/Down on the screen.
- * @param {Number} scale - Scale the text to make it larger/smaller.
- * @param {Boolean} splitWords - Split the string at each space and render on a new line.
- * @param {Color} forceColor - Force the text to be a certain Java Color.
- * @returns
- */
-export const renderCenteredString = (string, x, y, scale, splitWords = false, javaColor = null) => {
-    if (!string || !x || !y) return;
-    Renderer.retainTransforms(true);
-    string = Array.isArray(string) ? string : splitWords ? string.split(" ") : [string];
-    let vertOffset = string.length * 7 + 2 * (string.length - 1);
-    let [r, g, b, a] = [];
-    if (javaColor) {
-        r = javaColor.getRed();
-        g = javaColor.getGreen();
-        b = javaColor.getBlue();
-        a = javaColor.getAlpha();
-    }
-    Renderer.translate(x, y);
-    Renderer.scale(scale, scale);
-    Renderer.translate(0, -vertOffset / 2);
-    for (let i = 0; i < string.length; i++) {
-        if (javaColor) Renderer.colorize(r, g, b, a);
-        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i]) / 2, i * 7 + 2 * i);
-    }
-    Renderer.retainTransforms(false);
-};
-
 //calculates the distance between 2 points using the 3d distance formula
 export const calcDistance = (p1, p2) => {
     var a = p2[0] - p1[0];
@@ -172,51 +137,6 @@ export function drawLineParticles(loc1, loc2) {
         spawnParticleAtLocation(loc, loc3, "FLAME");
     }
 }
-
-const guiContainerLeftField = GuiContainer.class.getDeclaredField("field_147003_i");
-const guiContainerTopField = GuiContainer.class.getDeclaredField("field_147009_r");
-guiContainerLeftField.setAccessible(true);
-guiContainerTopField.setAccessible(true);
-
-/**
- *
- * @param {Number} slotNumber
- * @param {GuiContainer} mcGuiContainer
- * @returns {[Number, Number]}
- */
-export const getSlotRenderPosition = (slotNumber, mcGuiContainer) => {
-    const guiLeft = guiContainerLeftField.get(mcGuiContainer);
-    const guiTop = guiContainerTopField.get(mcGuiContainer);
-
-    const slot = mcGuiContainer.field_147002_h.func_75139_a(slotNumber);
-
-    return [guiLeft + slot.field_75223_e, guiTop + slot.field_75221_f];
-};
-
-/**
- *
- * @param {GuiContainer} gui - The GuiContainer to render inside of
- * @param {Number} slotIndex - The slot index
- * @param {Number} r - 0-1
- * @param {Number} g - 0-1
- * @param {Number} b - 0-1
- * @param {Number} a - 0-1
- * @param {Boolean} aboveItem - Hightlight in front of the item in the slot
- * @param {Number} z - The z position for the highlight to be rendered. Will override the aboveItem parameter if used.
- */
-export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z = null) => {
-    if (!(gui instanceof GuiContainer)) return;
-
-    const [x, y] = getSlotRenderPosition(slotIndex, gui);
-
-    let zPosition = 245;
-    if (aboveItem) zPosition = 241;
-    if (z !== null) zPosition = z;
-
-    Renderer.translate(x, y, zPosition);
-    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
-    Renderer.finishDraw();
-};
 
 /**
  *

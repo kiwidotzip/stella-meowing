@@ -41,13 +41,13 @@ let lStep = new KeyBind("Last Step", settings().lastStep, "Eclipse Addons");
 let rStep = new KeyBind("Reset Route", settings().resetStep, "Eclipse Addons");
 
 //general variables
-var lastRoomId = null;
-var currRouteData = null;
-var step = 0;
+let lastRoomId = null;
+let currRouteData = null;
+let step = 0;
 
 //recording variables
-var route = {};
-var recordingData = {
+let route = {};
+let recordingData = {
     locations: [],
     mines: [],
     etherwarps: [],
@@ -55,9 +55,9 @@ var recordingData = {
     interacts: [],
     secret: { type: null, location: null },
 };
-var playerloc = null;
-var roomRID = null;
-var recording = false;
+let playerloc = null;
+let roomRID = null;
+let recording = false;
 
 //functions for rendering
 
@@ -232,6 +232,9 @@ register("step", () => {
 registerWhen(
     register("renderWorld", () => {
         //route rendering
+        if (!Dungeon.inDungeon) return;
+        if (Dungeon.bossEntry) return;
+
         if (!recording) {
             if (!currRouteData) return;
             if (step < currRouteData.length || step >= 0) {
@@ -391,6 +394,8 @@ registerWhen(
 
 //draws particle lines
 register("step", () => {
+    if (!Dungeon.inDungeon) return;
+
     //normal line
     if (settings().modEnabled && settings().lineType === 0 && !recording) {
         if (!currRouteData) return;
@@ -440,6 +445,7 @@ register("step", () => {
 registerWhen(
     register("playerInteract", (action) => {
         if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
+        if (!Dungeon.inDungeon) return;
 
         let block = Player.lookingAt();
 
@@ -508,6 +514,8 @@ registerWhen(
 //adds points for varias actions
 registerWhen(
     register("soundPlay", (pos, name) => {
+        if (!Dungeon.inDungeon) return;
+
         let nameSplitted = name.split(".");
 
         if (name === "mob.enderdragon.hit") {
@@ -561,6 +569,8 @@ registerWhen(
         let entityID = packet.func_149354_c();
 
         if (!this.tempItemIdLocs.has(entityID)) return;
+
+        if (!Dungeon.inDungeon) return;
 
         let entity = tempItemIdLocs.get(entityID);
         let name = entity.func_92059_d()?.func_82833_r();
