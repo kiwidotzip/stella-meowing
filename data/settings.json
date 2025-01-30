@@ -61,12 +61,12 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": false
+                "value": true
             },
             {
                 "type": 7,
                 "name": "termNumber",
-                "value": 0
+                "value": 4
             },
             {
                 "type": 6,
@@ -86,7 +86,7 @@
             {
                 "type": 6,
                 "name": "modEnabled",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,
