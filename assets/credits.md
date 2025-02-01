@@ -10,4 +10,5 @@
 -   [Amaterasu](https://github.com/DocilElm/Amaterasu/) - Such a clean config library
 -   [BadAddons](https://github.com/mehdii000/BadAddons/) - Read Me insperation
 -   [ShaderLib](https://github.com/PerseusPotter/shaderlib/) - Chroma shader
+-   KiwiDotZip - teminal compititon (/ct import MeowAddons)
 -   Dr Pepper - idk its just good

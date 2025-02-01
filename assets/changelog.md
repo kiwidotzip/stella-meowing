@@ -1,11 +1,8 @@
--   §aAdded: Room Name gui
--   §aAdded: Block overlay
--   §aAdded: Dungeon trash highlighting
--   §aAdded: Terminal numbers / classes
--   §aAdded: Terminal tracker
+-   §aAdded: M7 roles
+-   §aAdded: Term Highlihg
+-   §aAdded: Class colors
+-   §aAdded: A reliance on bloomcore
 
--   §eImproved: A bunch of routes
+-   §eImproved: A bunch of optimization
 
 -   §eFixed: Rendering breaking sometimes
-
--   §cRemoved: Terminal waypoints
