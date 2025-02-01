@@ -66,9 +66,9 @@ const m7Labels = {
 
 registerWhen(
     register("renderWorld", () => {
-        //if (Dungeon.floor !== "F7") return;
-        //if (!Dungeon.inDungeon) return;
-        //if (!Dungeon.bossEntry) return;
+        if (Dungeon.floor !== "F7") return;
+        if (!Dungeon.inDungeon) return;
+        if (!Dungeon.bossEntry) return;
 
         let [r, g, b] = [settings().termColor[0] / 255, settings().termColor[1] / 255, settings().termColor[2] / 255];
 
