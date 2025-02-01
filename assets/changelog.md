@@ -4,5 +4,6 @@
 -   §aAdded: A reliance on bloomcore
 
 -   §eImproved: A bunch of optimization
+-   §eImproved: Beutified term numbers
 
 -   §eFixed: Rendering breaking sometimes

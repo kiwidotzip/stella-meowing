@@ -61,7 +61,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": false
+                "value": true
             },
             {
                 "type": 7,
