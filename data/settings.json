@@ -61,7 +61,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
@@ -70,8 +70,43 @@
             },
             {
                 "type": 6,
-                "name": "termClass",
+                "name": "highlightTerms",
+                "value": true
+            },
+            {
+                "type": 5,
+                "name": "termColor",
+                "value": [
+                    0,
+                    255,
+                    255,
+                    255
+                ]
+            },
+            {
+                "type": 6,
+                "name": "showTermClass",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "classColor",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "hideNumber",
                 "value": false
+            },
+            {
+                "type": 6,
+                "name": "m7Roles",
+                "value": true
+            },
+            {
+                "type": 7,
+                "name": "termClass",
+                "value": 4
             },
             {
                 "type": 6,

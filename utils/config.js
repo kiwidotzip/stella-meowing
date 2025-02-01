@@ -163,13 +163,88 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
 
     .addSwitch({
         category: "Dungeons",
-        configName: "termClass",
+        configName: "highlightTerms",
+        title: "Highlight Terms",
+        description: "Highlihgts the terminals",
+        subcategory: "Terminals",
+
+        shouldShow(data) {
+            return data.termNumbers;
+        },
+    })
+
+    .addColorPicker({
+        configName: "termColor",
+        title: "Highlight Color",
+        description: "The color to highlight the terminals",
+        category: "Dungeons",
+        subcategory: "Terminals",
+        value: [0, 255, 255, 255],
+
+        shouldShow(data) {
+            return data.termNumbers && data.highlightTerms;
+        },
+    })
+
+    .addSwitch({
+        category: "Dungeons",
+        configName: "showTermClass",
         title: "Show Class",
         description: "Displays related class",
         subcategory: "Terminals",
 
         shouldShow(data) {
             return data.termNumbers;
+        },
+    })
+
+    .addSwitch({
+        category: "Dungeons",
+        configName: "classColor",
+        title: "Highlight class Cclor",
+        description: "Highlihgts the terminals the color of the class",
+        subcategory: "Terminals",
+
+        shouldShow(data) {
+            return data.termNumbers && data.highlightTerms && data.showTermClass;
+        },
+    })
+
+    .addSwitch({
+        category: "Dungeons",
+        configName: "hideNumber",
+        title: "Hide number",
+        description: "Hides the terminal number",
+        subcategory: "Terminals",
+
+        shouldShow(data) {
+            return data.termNumbers && data.showTermClass;
+        },
+    })
+
+    .addSwitch({
+        category: "Dungeons",
+        configName: "m7Roles",
+        title: "M7 roles",
+        description: "Displays m7 roles instead",
+        subcategory: "Terminals",
+
+        shouldShow(data) {
+            return data.termNumbers && data.showTermClass;
+        },
+    })
+
+    .addDropDown({
+        configName: "termClass",
+        title: "M7 Class",
+        description: "What class you are playing",
+        category: "Dungeons",
+        subcategory: "Terminals",
+        options: ["Tank", "Mage", "Bers", "Arch", "All"],
+        value: 4,
+
+        shouldShow(data) {
+            return data.termNumbers && data.showTermClass && data.m7Roles;
         },
     })
 
