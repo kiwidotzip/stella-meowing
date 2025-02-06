@@ -61,7 +61,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
@@ -91,7 +91,7 @@
             {
                 "type": 6,
                 "name": "classColor",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,

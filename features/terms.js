@@ -1,10 +1,8 @@
+import { renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
 import { registerWhen } from "../../BloomCore/utils/Utils";
 import { drawString, calcDistance } from "../utils/utils";
-
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import settings from "../utils/config";
-import { renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
-import Settings from "../../Amaterasu/core/Settings";
 
 /*  -------------- Terminal Things ---------------
 
