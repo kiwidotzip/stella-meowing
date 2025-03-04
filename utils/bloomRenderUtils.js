@@ -1,4 +1,4 @@
-import { getBlockBoundingBox } from "./utils";
+import { getBlockBoundingBox } from "../../BloomCore/utils/Utils";
 
 const renderBoxOutlineFromCorners = (x0, y0, z0, x1, y1, z1, r, g, b, a, lineWidth = 2, phase = true) => {
     Tessellator.pushMatrix();

@@ -136,34 +136,3 @@ export function drawLineParticles(loc1, loc2) {
         spawnParticleAtLocation(loc, loc3, "FLAME");
     }
 }
-
-/**
- *
- * @param {Block} ctBlock
- * @returns {Number[]} - A 6-long array of numbers with the [x0, y0, z0, x1, y1, z1] corners of the block's bounding box.
- */
-export const getBlockBoundingBox = (ctBlock) => {
-    const mcBlock = ctBlock.type.mcBlock;
-    return [
-        ctBlock.getX() + mcBlock.func_149704_x(),
-        ctBlock.getY() + mcBlock.func_149665_z(),
-        ctBlock.getZ() + mcBlock.func_149706_B(),
-        ctBlock.getX() + mcBlock.func_149753_y(),
-        ctBlock.getY() + mcBlock.func_149669_A(),
-        ctBlock.getZ() + mcBlock.func_149693_C(),
-    ];
-};
-
-export const getScoreboard = (formatted = false) => {
-    if (!World.getWorld()) return null;
-    let sb = Scoreboard.getLines().map((a) => a.getName());
-    if (formatted) return Scoreboard.getLines();
-    return sb.map((a) => ChatLib.removeFormatting(a));
-};
-
-export const getTabList = (formatted = false) => {
-    if (formatted) return TabList.getNames();
-    return TabList.getNames().map((a) => a.removeFormatting());
-};
-
-const checkingTriggers = []; // [[trigger, func]]
