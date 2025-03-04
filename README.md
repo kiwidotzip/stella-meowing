@@ -6,6 +6,9 @@
   <a href="https://github.com/Eclipse-5214/eclipseAddons/releases" target="_blank">
     <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/eclipseAddons/total?color=4166f5&style=flat-square" />
   </a>
+  <a href="https://github.com/Eclipse-5214/eclipseAddons/">
+    <img src="https://tokei.rs/b1/github/Eclipse-5214/eclipseAddons/" alt="lines">
+  </a>
 </p>
 
 <p align="center" id="description"><em>Eclipse Addons</em> is a verry work in progress Skyblock Quality-of-Life (QoL) mod for ChatTriggers</p>
