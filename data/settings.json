@@ -61,7 +61,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": false
+                "value": true
             },
             {
                 "type": 7,
@@ -71,7 +71,7 @@
             {
                 "type": 6,
                 "name": "highlightTerms",
-                "value": true
+                "value": false
             },
             {
                 "type": 5,
@@ -86,7 +86,7 @@
             {
                 "type": 6,
                 "name": "showTermClass",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,
@@ -101,7 +101,7 @@
             {
                 "type": 6,
                 "name": "m7Roles",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
