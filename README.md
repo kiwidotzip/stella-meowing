@@ -7,7 +7,7 @@
     <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/eclipseAddons/total?color=4166f5&style=flat-square" />
   </a>
   <a href="https://github.com/Eclipse-5214/eclipseAddons/">
-    <img src="https://tokei.rs/b1/github/Eclipse-5214/eclipseAddons" alt="lines">
+    <img src="https://tokei.rs/b1/github/Eclipse-5214/eclipseAddons?category=code&style=flat-square" alt="lines">
   </a>
 </p>
 
