@@ -1,13 +1,13 @@
 ***
 <p align="center">
-  <a href="https://github.com/Eclipse-5214/eclipseAddons/releases" target="_blank">
-    <img alt="downloads" src="https://img.shields.io/github/v/release/Eclipse-5214/eclipseAddons?color=4166f5&style=flat-square" />
+  <a href="https://github.com/Eclipse-5214/stella/releases" target="_blank">
+    <img alt="downloads" src="https://img.shields.io/github/v/release/Eclipse-5214/stella?color=4166f5&style=flat-square" />
   </a>
-  <a href="https://github.com/Eclipse-5214/eclipseAddons/releases" target="_blank">
-    <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/eclipseAddons/total?color=4166f5&style=flat-square" />
+  <a href="https://github.com/Eclipse-5214/stella/releases" target="_blank">
+    <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/stella/total?color=4166f5&style=flat-square" />
   </a>
-  <a href="https://github.com/Eclipse-5214/eclipseAddons/">
-    <img src="https://tokei.rs/b1/github/Eclipse-5214/eclipseAddons?category=code&style=flat-square" alt="lines">
+  <a href="https://github.com/Eclipse-5214/stella/">
+    <img src="https://tokei.rs/b1/github/Eclipse-5214/stella?category=code&color=4166f5&style=flat-square" alt="lines">
   </a>
 </p>
 
