@@ -65,7 +65,7 @@ const termLabels = {
 
 registerWhen(
     register("renderWorld", () => {
-        //if (!Dungeon.inDungeon || Dungeon.floor !== "F7" || !Dungeon.bossEntry) return;
+        if (!Dungeon.inDungeon || Dungeon.floor !== "F7" || !Dungeon.bossEntry) return;
 
         let [r, g, b] = [settings().termColor[0] / 255, settings().termColor[1] / 255, settings().termColor[2] / 255];
         let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
