@@ -10,7 +10,7 @@ import PogObject from "../../PogData";
 
     --------------------------------------------- */
 
-const firstInstall = new PogObject("eclipseAddons", {
+const firstInstall = new PogObject("stella", {
     firstInstall: false,
 });
 
@@ -18,12 +18,12 @@ register("tick", () => {
     if (!firstInstall.firstInstall) {
         let message =
             `&b&l-----------------------------------------------------\n` +
-            `   &r&3Thank you for installing &b&lEclipse Addons&r&3!\n` +
+            `   &r&3Thank you for installing &b&lStella&r&3!\n` +
             `\n` +
             `   &r&3Commands\n` +
-            `   &r&d/ea help &3&l- &r&bFor a list of commands!\n` +
+            `   &r&d/sa help &3&l- &r&bFor a list of commands!\n` +
             `\n` +
-            `   &r&dGithub: https://github.com/Eclipse-5214/eclipseAddons\n` +
+            `   &r&dGithub: https://github.com/Eclipse-5214/stella\n` +
             `   &r&dDiscord: Coming Soon\n` +
             `&b&l-----------------------------------------------------`;
 

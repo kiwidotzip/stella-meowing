@@ -27,7 +27,7 @@ registerWhen(
 );
 
 //new chroma
-const chromaShader = new Shader(FileLib.read("eclipseAddons", "shaders/chroma/chroma3D.frag"), FileLib.read("eclipseAddons", "shaders/chroma/chroma3D.vert"));
+const chromaShader = new Shader(FileLib.read("stella", "shaders/chroma/chroma3D.frag"), FileLib.read("stella", "shaders/chroma/chroma3D.vert"));
 
 let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));

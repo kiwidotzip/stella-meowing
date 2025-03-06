@@ -14,10 +14,10 @@ import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
 //setup
 
 //markdown stuff
-const version = JSON.parse(FileLib.read("eclipseAddons", "metadata.json")).version;
+const version = JSON.parse(FileLib.read("stella", "metadata.json")).version;
 
-const CREDITS = FileLib.read("eclipseAddons", "assets/credits.md");
-const CHANGELOG = `# §bEclipse Addonss v${version}\n ${FileLib.read("eclipseAddons", "assets/changelog.md")}`;
+const CREDITS = FileLib.read("stella", "assets/credits.md");
+const CHANGELOG = `# §dStella v${version}\n ${FileLib.read("stella", "assets/changelog.md")}`;
 
 const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme-nwjn.json"];
 
@@ -25,13 +25,13 @@ const schemes = ["data/ColorScheme.json", "data/scheme-vigil.json", "data/scheme
 export const roomName = new Gui();
 
 //config
-const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
+const defaultConf = new DefaultConfig("stella", "data/settings.json")
 
     //general
     .addTextParagraph({
         category: "General",
         configName: "Info",
-        title: `&6&l&nEclipse Addons`,
+        title: `&6&l&dStella`,
         description: "&bMade by NEXD_",
         centered: true,
         subcategory: "",
@@ -58,7 +58,7 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         description: "The source code for all this :D",
         tags: ["discord"],
         onClick(setting) {
-            ChatLib.command("ct copy https://github.com/Eclipse-5214/eclipseAddons", true);
+            ChatLib.command("ct copy https://github.com/Eclipse-5214/stella", true);
             ChatLib.chat("&6Copied Discord Link!");
         },
     })
@@ -584,10 +584,10 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         placeHolder: "Apply",
         onClick(config) {
             const currentScheme = schemes[config.settings.scheme];
-            const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
+            const scheme = JSON.parse(FileLib.read("stella", currentScheme));
             scheme.Amaterasu.background.color = config.settings.bgColor;
 
-            FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4));
+            FileLib.write("stella", currentScheme, JSON.stringify(scheme, null, 4));
 
             config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
         },
@@ -637,13 +637,13 @@ const defaultConf = new DefaultConfig("eclipseAddons", "data/settings.json")
         value: 60,
     });
 
-const config = new Settings("eclipseAddons", defaultConf, "data/ColorScheme.json").addMarkdown("Changelog", CHANGELOG).addMarkdown("Credits", CREDITS);
+const config = new Settings("stella", defaultConf, "data/ColorScheme.json").addMarkdown("Changelog", CHANGELOG).addMarkdown("Credits", CREDITS);
 
 const currentScheme = schemes[config.settings.scheme];
-const scheme = JSON.parse(FileLib.read("eclipseAddons", currentScheme));
+const scheme = JSON.parse(FileLib.read("stella", currentScheme));
 scheme.Amaterasu.background.color = config.settings.bgColor;
 
-FileLib.write("eclipseAddons", currentScheme, JSON.stringify(scheme, null, 4));
+FileLib.write("stella", currentScheme, JSON.stringify(scheme, null, 4));
 
 config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
 

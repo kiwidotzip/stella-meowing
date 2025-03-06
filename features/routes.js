@@ -196,7 +196,7 @@ function saveRoute(force) {
         .replace(/}}],/g, "}}],\n    ")
         .replace("}}]}", "}}]\n}");
 
-    FileLib.write("eclipseAddons", "data/dungeons/routes/routes.json", routesFormatted);
+    FileLib.write("stella", "data/dungeons/routes/routes.json", routesFormatted);
     if (force) ChatLib.chat("&aOverwritten!");
     else ChatLib.chat("&aSaved!");
     stopRecording();

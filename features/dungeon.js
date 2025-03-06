@@ -49,7 +49,7 @@ let trashItems = [
 
 let shops = ["Booster Cookie", "Ophelia", "Trades"];
 
-const rGui = new PogObject("eclipseAddons", {
+const rGui = new PogObject("stella", {
     X: Renderer.screen.getWidth() / 2,
     Y: Renderer.screen.getHeight() / 2,
     scale: 1,
@@ -59,7 +59,7 @@ lastRoomId = null;
 currRoomName = "Room Not Found";
 
 //shader loading
-const chromaShader = new Shader(FileLib.read("eclipseAddons", "shaders/chroma/chromat.frag"), FileLib.read("eclipseAddons", "shaders/chroma/chromat.vert"));
+const chromaShader = new Shader(FileLib.read("stella", "shaders/chroma/chromat.frag"), FileLib.read("stella", "shaders/chroma/chromat.vert"));
 
 let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));
