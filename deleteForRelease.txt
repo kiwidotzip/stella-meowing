@@ -3,3 +3,6 @@ settings.json
 .data.json
 .git
 .DS_store
+
+logo
+https://i.imgur.com/uaTiLVS.png/
