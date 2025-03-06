@@ -29,9 +29,9 @@ const terms = {
     p2: [
         [68, 109, 121, 1, "T", "T"],
         [59, 120, 122, 2, "M", "M"],
-        [47, 109, 121, 3, "B", "B"],
-        [40, 124, 122, 4, "A", "A"],
-        [39, 108, 143, 5, "S", "S"],
+        [47, 109, 121, 3, "B", "S"],
+        [39, 108, 143, 4, "A", "A"],
+        [40, 124, 122, 5, "S", "B"],
     ],
 
     p3: [
@@ -56,31 +56,33 @@ const termLabels = {
     B: ["&7( &cBers &7)", [1, 85 / 255, 85 / 255]],
     A: ["&7( &2Arch &7)", [0, 170 / 255, 0]],
     S: ["&7( &6S&bt&ca&2c&dk &7)", [1, 1, 1]],
+    1: "T",
+    2: "M",
+    3: "B",
+    4: "A",
+    5: 5,
 };
 
 registerWhen(
     register("renderWorld", () => {
-        if (Dungeon.floor !== "F7") return;
-        if (!Dungeon.inDungeon) return;
-        if (!Dungeon.bossEntry) return;
+        //if (!Dungeon.inDungeon || Dungeon.floor !== "F7" || !Dungeon.bossEntry) return;
 
         let [r, g, b] = [settings().termColor[0] / 255, settings().termColor[1] / 255, settings().termColor[2] / 255];
-
         let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
+        let t = settings().termNumber + 1;
 
-        let termClass = settings().termClass;
-
-        if (settings().m7Roles) term = 5;
+        if (settings().m7Roles) t = termLabels[settings().termClass + 1];
 
         Object.entries(terms).forEach(([phase, data]) => {
             data.forEach((term) => {
                 let [x, y, z, n, c, m7] = term;
-
                 let text = "";
 
-                if (!settings().hideNumber || !settings().showTermClass) {
-                    text += "&l&8[ &f" + n.toString() + " &8]";
+                if ((settings().m7Roles && m7 !== "S") || (!settings().m7Roles && c !== "S")) {
+                    if (t !== n && t !== m7 && t !== 5) return;
                 }
+
+                if (!settings().hideNumber || !settings().showTermClass) text += "&l&8[ &f" + n.toString() + " &8]";
 
                 if (settings().showTermClass) {
                     if (!settings().m7Roles) text += "\n" + termLabels[c][0];
