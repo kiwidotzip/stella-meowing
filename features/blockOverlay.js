@@ -75,35 +75,27 @@ registerWhen(
         if (block?.type?.getRegistryName()?.toString()?.includes("stairs")) {
             if (meta === 0) {
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.75, y + 0.505, z + 0.5, 1.005, 0.505, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 1) {
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.25, y + 0.505, z + 0.5, 1.005, 0.505, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 2) {
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.5, y + 0.505, z + 0.75, 0.505, 1.005, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 3) {
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.5, y + 0.505, z + 0.25, 0.505, 1.005, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 4) {
                 renderBoxOutline(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.75, y - 0.005, z + 0.5, 1.005, 0.505, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 5) {
                 renderBoxOutline(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.25, y - 0.005, z + 0.5, 1.005, 0.505, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 6) {
                 renderBoxOutline(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.75, 0.505, 1.005, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             } else if (meta === 7) {
                 renderBoxOutline(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                 renderBoxOutline(x + 0.5, y - 0.005, z + 0.25, 0.505, 1.005, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
             }
 
@@ -112,35 +104,27 @@ registerWhen(
 
                 if (meta === 0) {
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.75, y + 0.505, z + 0.5, 1.005, 0.505, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 1) {
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.25, y + 0.505, z + 0.5, 1.005, 0.505, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 2) {
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.5, y + 0.505, z + 0.75, 0.505, 1.005, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 3) {
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.5, y + 0.505, z + 0.25, 0.505, 1.005, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 4) {
                     renderBoxOutline(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, r / 255, g / 255, b / 255, a / 255, lw, false);
-
                     renderBoxOutline(x + 0.75, y - 0.005, z + 0.5, 1.005, 0.505, 0.5, r / 255, g / 255, b / 255, a / 255, lw, false);
                 } else if (meta === 5) {
                     renderFilledBox(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.25, y - 0.005, z + 0.5, 1.005, 0.505, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 6) {
                     renderFilledBox(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.75, 0.505, 1.005, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 } else if (meta === 7) {
                     renderFilledBox(x + 0.5, y + 0.495, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
-
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.25, 0.505, 1.005, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);
                 }
             }
@@ -154,7 +138,6 @@ registerWhen(
 
             if (fill) {
                 if (settings().chromaHighlight && !settings().oldChroma) chromaShader.uniform1f("alpha", fa / 255);
-
                 renderBlockHitbox(block, fr / 255, fg / 255, fb / 255, fa / 255, false, 0, true);
             }
         }
