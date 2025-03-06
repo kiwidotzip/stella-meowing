@@ -11,13 +11,13 @@
   </a>
 </p>
 
-<p align="center" id="description"><em>Eclipse Addons</em> is a verry work in progress Skyblock Quality-of-Life (QoL) mod for ChatTriggers</p>
+<p align="center" id="description"><em>Stella</em> is a verry work in progress Skyblock Quality-of-Life (QoL) mod for ChatTriggers</p>
 
 ---
 
 <h2 align="center">Features List</h2>
 
-<p>Here are some of the standout features that <em>Eclipse Addons</em> has so far</p>
+<p>Here are some of the standout features that <em>Stella</em> has so far</p>
 
 ### **Dungeons**
 - Dungeon Routes (kinda like BLC)
@@ -38,12 +38,12 @@
 
 ## **Automatic**
 1. Download Chattriggers.  
-2. /ct import eclipseAddons.  
+2. /ct import stella.  
 3. Have fun!
 
 ## **Manual**
 1. Download Chattrigers
-2. Download latest release from [here](https://github.com/Eclipse-5214/eclipseAddons/releases)
+2. Download latest release from [here](https://github.com/Eclipse-5214/stella/releases)
 3. /ct files
 4. unzip in folder
 5. /ct reload
