@@ -104,7 +104,7 @@ register("chat", (name, type) => {
 register("chat", () => {
     if (!settings().termTracker) return;
     completed.forEach((data, name) => {
-        ChatLib.chat("&b[EA] &d" + name + " &7completed &f" + data.terminal + "&7 terms, &f" + data.device + "&7 devices, and &f" + data.lever + " &7levers!");
+        ChatLib.chat("&b[SA] &d" + name + " &7completed &f" + data.terminal + "&7 terms, &f" + data.device + "&7 devices, and &f" + data.lever + " &7levers!");
     });
 }).setCriteria("The Core entrance is opening!");
 
