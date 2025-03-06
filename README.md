@@ -1,13 +1,13 @@
 ***
 <p align="center">
   <a href="https://github.com/Eclipse-5214/stella/releases" target="_blank">
-    <img alt="downloads" src="https://img.shields.io/github/v/release/Eclipse-5214/stella?color=4166f5&style=flat-square" />
+    <img alt="downloads" src="https://img.shields.io/github/v/release/Eclipse-5214/stella?color=ad03fc&style=flat-square" />
   </a>
   <a href="https://github.com/Eclipse-5214/stella/releases" target="_blank">
-    <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/stella/total?color=4166f5&style=flat-square" />
+    <img alt="downloads" src="https://img.shields.io/github/downloads/Eclipse-5214/stella/total?color=ad03fc&style=flat-square" />
   </a>
   <a href="https://github.com/Eclipse-5214/stella/">
-    <img src="https://tokei.rs/b1/github/Eclipse-5214/stella?category=code&color=4166f5&style=flat-square" alt="lines">
+    <img src="https://tokei.rs/b1/github/Eclipse-5214/stella?category=code&color=ad03fc&style=flat-square" alt="lines">
   </a>
 </p>
 
