@@ -1,4 +1,6 @@
-![logo](https://i.imgur.com/uaTiLVS.png)
+<p align="center">
+  <img alt="logo" src="https://i.imgur.com/uaTiLVS.png" /
+</p>
 
 ***
 <p align="center">
