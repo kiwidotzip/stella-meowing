@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="logo" src="https://i.imgur.com/uaTiLVS.png" /
+</p>
+
 ***
 <p align="center">
   <a href="https://github.com/Eclipse-5214/stella/releases" target="_blank">
