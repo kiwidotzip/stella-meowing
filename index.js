@@ -89,4 +89,4 @@ register("gameLoad", () => {
 
 register("command", () => {
     checkUpdate();
-}).setName("meowupdate");
+}).setName("stellaupdate");

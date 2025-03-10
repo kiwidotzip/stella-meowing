@@ -93,7 +93,7 @@ export const calcDistance = (p1, p2) => {
     var b = p2[1] - p1[1];
     var c = p2[2] - p1[2];
 
-    let dist = Math.sqrt(a * a + b * b + c * c);
+    let dist = a * a + b * b + c * c;
 
     if (dist < 0) {
         dist *= -1;

@@ -93,7 +93,7 @@ function addPoint(realpos, type) {
             let [x, y, z] = [recordingData.tnts[i][0], recordingData.tnts[i][1], recordingData.tnts[i][2]];
             let distance = calcDistance(pos, [x, y, z]);
 
-            if (distance < 5) return;
+            if (distance < 25) return;
         }
         recordingData.tnts.push([Math.round(pos[0]), Math.round(pos[1]), Math.round(pos[2])]);
     }
@@ -311,7 +311,7 @@ registerWhen(
                     let secretPos = getRealCoord(currRouteData[step].secret.location);
                     let distance = calcDistance(pos, secretPos);
 
-                    if (distance < 5) {
+                    if (distance < 25) {
                         step++;
                     }
                 }
@@ -435,7 +435,7 @@ register("step", () => {
 
     if (playerloc !== null) distance = calcDistance(loc, playerloc);
 
-    if (distance > 2 || playerloc === null) {
+    if (distance > 4 || playerloc === null) {
         playerloc = loc;
         addPoint(loc, "location");
     }
@@ -594,7 +594,7 @@ registerWhen(
 
                 //ChatLib.chat(distance);
 
-                if (distance < 5) {
+                if (distance < 25) {
                     step++;
                 }
             }
@@ -615,15 +615,15 @@ registerWhen(
                 let distance = calcDistance(posRound, secretPos);
                 //ChatLib.chat(distance)
 
-                if (distance > 5) {
-                    if (pdistance > 5) addPoint(playerPos, "secretItem");
+                if (distance > 25) {
+                    if (pdistance > 25) addPoint(playerPos, "secretItem");
                     else addPoint(posRound, "secretItem");
 
                     pushToRoute();
                     //ChatLib.chat("item added!")
                 }
             } else {
-                if (pdistance > 5) addPoint(playerPos, "secretItem");
+                if (pdistance > 25) addPoint(playerPos, "secretItem");
                 else addPoint(posRound, "secretItem");
 
                 pushToRoute();

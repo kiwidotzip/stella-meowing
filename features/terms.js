@@ -67,8 +67,8 @@ registerWhen(
 
                 let pdistance = calcDistance(playerPos, [x, y, z]);
 
-                if (pdistance < 50) {
-                    if (pdistance > 4) drawString(text, x + 0.5, y + 1.75, z + 0.5, 0xffffff, false, 2, true);
+                if (pdistance < 2500) {
+                    if (pdistance > 16) drawString(text, x + 0.5, y + 1.75, z + 0.5, 0xffffff, false, 2, true);
                     else drawString(text, x + 0.5, y + 1.75, z + 0.5, 0xffffff, false, 0.03, false);
 
                     if (settings().highlightTerms) {
