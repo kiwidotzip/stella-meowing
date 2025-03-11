@@ -143,5 +143,7 @@ And that should be it, you _should_ have properly manually installed the desired
 ---
 
 <h2 align="center">Credits</h2>
+
 - **[KiwiDotZip]** - Whatever u wanna say about urself
 - [Example](https://example.com) - example
+
