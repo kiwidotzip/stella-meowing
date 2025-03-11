@@ -44,7 +44,7 @@ const API_URL = "https://api.github.com/repos/Eclipse-5214/stella/releases";
 function checkUpdate() {
     request({
         url: API_URL,
-        headers: { "User-Agent": "MeowAddons" },
+        headers: { "User-Agent": "Stella" },
         json: true,
     })
         .then(function (response) {
