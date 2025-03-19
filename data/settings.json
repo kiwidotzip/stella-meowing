@@ -13,6 +13,14 @@
             {
                 "type": 2,
                 "name": "MyGithub"
+            },
+            {
+                "type": 2,
+                "name": "OpenSR"
+            },
+            {
+                "type": 2,
+                "name": "InstallsrSR"
             }
         ]
     },

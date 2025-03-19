@@ -55,7 +55,6 @@ const rGui = new PogObject("stella", {
     scale: 1,
 });
 
-lastRoomId = null;
 currRoomName = "Room Not Found";
 
 //shader loading
@@ -98,20 +97,7 @@ const renderRoomName = () => {
 
 //gets current room name
 register("step", () => {
-    if (settings().showRoomName) {
-        let roomId = getRoomData();
-
-        if (!roomId) {
-            currRoomName = "Room Not Found";
-            return;
-        }
-
-        if (lastRoomId !== roomId) {
-            lastRoomId = roomId;
-
-            currRoomName = getRoomData().name;
-        }
-    }
+    if (settings().showRoomName) currRoomName = getRoomData().name;
 }).setFps(20);
 
 //renders guis

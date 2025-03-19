@@ -28,7 +28,6 @@ register("tick", () => {
             `&b&l-----------------------------------------------------`;
 
         ChatLib.chat(message);
-
         firstInstall.firstInstall = true;
         firstInstall.save();
     }

@@ -1,4 +1,4 @@
-import { renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
+import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
 import { Render3D } from "../../tska/rendering/Render3D";
 import { registerWhen } from "../../BloomCore/utils/Utils";
 import Shader from "../../ShaderLib/index";
@@ -38,7 +38,6 @@ registerWhen(
         let [fr, fg, fb, fa] = [settings().blockFillColor[0], settings().blockFillColor[1], settings().blockFillColor[2], settings().blockFillColor[3]];
 
         let viewPos = { x: Player.getX(), y: Player.getY(), z: Player.getZ() };
-
         let meta = block?.getMetadata();
 
         if (settings().chromaHighlight) {
@@ -84,7 +83,6 @@ registerWhen(
             }
             if (fill) {
                 if (settings().chromaHighlight) chromaShader.uniform1f("alpha", fa / 255);
-
                 if (meta === 0) {
                     renderFilledBox(x + 0.5, y - 0.005, z + 0.5, 1.005, 1.005, 0.51, fr / 255, fg / 255, fb / 255, fa / 255, false);
                     renderFilledBox(x + 0.75, y + 0.505, z + 0.5, 1.005, 0.505, 0.5, fr / 255, fg / 255, fb / 255, fa / 255, false);

@@ -1,4 +1,4 @@
-import { renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
+import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
 import { registerWhen } from "../../BloomCore/utils/Utils";
 import { Render3D } from "../../tska/rendering/Render3D";
 import { calcDistance } from "../utils/utils";
