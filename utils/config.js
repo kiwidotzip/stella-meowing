@@ -56,10 +56,34 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         configName: "MyGithub",
         title: "Github",
         description: "The source code for all this :D",
-        tags: ["discord"],
+        tags: ["github"],
         onClick(setting) {
             ChatLib.command("ct copy https://github.com/Eclipse-5214/stella", true);
             ChatLib.chat("&6Copied Discord Link!");
+        },
+    })
+
+    .addButton({
+        category: "General",
+        subcategory: "",
+        configName: "OpenSR",
+        title: "Routes",
+        description: "Open Stella Routes config (if installed)",
+        //tags: ["discord"],
+        onClick(setting) {
+            ChatLib.command("stellaroutes", true);
+        },
+    })
+
+    .addButton({
+        category: "General",
+        subcategory: "",
+        configName: "InstallsrSR",
+        title: "Install Stella Routes",
+        description: "Installs the Stella Routes addon (if not installed)",
+        //tags: ["discord"],
+        onClick(setting) {
+            ChatLib.command("stellaroutes", true);
         },
     })
 
