@@ -83,7 +83,7 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         description: "Installs the Stella Routes addon (if not installed)",
         //tags: ["discord"],
         onClick(setting) {
-            ChatLib.command("stellaroutes", true);
+            ChatLib.command("ct import stellaRoutes", true);
         },
     })
 
