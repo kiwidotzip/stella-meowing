@@ -1,6 +1,7 @@
 import { renderBoxOutline, renderFilledBox } from "../utils/bloomRenderUtils";
 import { registerWhen } from "../../BloomCore/utils/Utils";
-import { drawString, calcDistance } from "../utils/utils";
+import { Render3D } from "../../tska/rendering/Render3D";
+import { calcDistance } from "../utils/utils";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import settings from "../utils/config";
 
@@ -13,7 +14,7 @@ import settings from "../utils/config";
 
     ------------------- To Do -------------------
 
-    - Make bloom's code work
+    - Done :D
 
     --------------------------------------------- */
 
@@ -47,29 +48,23 @@ registerWhen(
         Object.entries(terms).forEach(([phase, data]) => {
             data.forEach((term) => {
                 let [x, y, z, n, c, m7] = term;
-                let text = "";
+                let text = " ";
 
-                if ((settings().m7Roles && m7 !== "S") || (!settings().m7Roles && c !== "S")) {
-                    if (t !== n && t !== m7 && t !== 5) return;
-                }
-
-                if (!settings().hideNumber || !settings().showTermClass) text += "&l&8[ &f" + n.toString() + " &8]";
-
+                if (((settings().m7Roles && m7 !== "S") || (!settings().m7Roles && c !== "S")) && t !== n && t !== m7 && t !== 5) return;
+                if (!settings().hideNumber || !settings().showTermClass) text += "\n&l&8[ &f" + n.toString() + " &8]";
                 if (settings().showTermClass) {
                     if (!settings().m7Roles) text += "\n" + termLabels[c][0];
                     else text += "\n" + termLabels[m7][0];
                 }
-
                 if (settings().classColor) {
                     if (!settings().m7Roles) [r, g, b] = termLabels[c][1];
                     else [r, g, b] = termLabels[m7][1];
                 }
 
                 let pdistance = calcDistance(playerPos, [x, y, z]);
-
-                if (pdistance < 2500) {
-                    if (pdistance > 16) drawString(text, x + 0.5, y + 1.75, z + 0.5, 0xffffff, false, 2, true);
-                    else drawString(text, x + 0.5, y + 1.75, z + 0.5, 0xffffff, false, 0.03, false);
+                if (pdistance < 1600) {
+                    if (pdistance > 13) Render3D.renderString(text, x + 0.5, y + 1.95, z + 0.5, [0, 0, 0, 180], false, 2, true, true, true);
+                    else Render3D.renderString(text, x + 0.5, y + 1.95, z + 0.5, [0, 0, 0, 180], false, 0.03, false, true, true);
 
                     if (settings().highlightTerms) {
                         renderBoxOutline(x + 0.501, y - 0.001, z + 0.501, 1.002, 1.002, 1.002, r, g, b, 1, 1, false);

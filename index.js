@@ -3,8 +3,6 @@ import request from "../requestV2";
 import "./features/firstInstall";
 import "./features/blockOverlay";
 import "./features/terms";
-import "./features/secrets";
-import "./features/routes";
 import "./features/dungeon";
 
 /*  ------------------- Index -------------------
@@ -25,10 +23,14 @@ register("command", (...args) => {
     if (args[0] === "help") {
         ChatLib.chat("&8&m-------------------------------------------------");
         ChatLib.chat("&6/stella &7main command! Aliases: &6/sa /sta");
-        ChatLib.chat("&6/sa help &7Opens the Eclipse Addons help menu!");
+        ChatLib.chat("&6/sa help &7Opens the Stella help menu!");
+        ChatLib.chat("&6/sa update &7Checks for updates!");
+        ChatLib.chat("&6/stellaroutes &routes config! (if installed) Aliases: &6/sr /str");
         ChatLib.chat("&6/srdb &7 debug options for routes try &6/srdb help &7for more info!");
         ChatLib.chat("&6/route &7 route recording try &6/route help &7for more info!");
         ChatLib.chat("&8&m-------------------------------------------------");
+    } else if (args[0] === "update") {
+        checkUpdate();
     } else if (!args || !args.length || !args[0]) {
         return settings().getConfig().openGui();
     } else {
@@ -82,11 +84,3 @@ register("worldLoad", () => {
         });
     }
 });
-
-register("gameLoad", () => {
-    UpdateChecked = false;
-});
-
-register("command", () => {
-    checkUpdate();
-}).setName("stellaupdate");
