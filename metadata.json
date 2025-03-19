@@ -2,7 +2,7 @@
     "name": "stella",
     "creator": "NEXD_",
     "description": "A fun ct module with variouse skyblock features",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "entry": "index.js",
     "requires": ["Amaterasu", "BloomCore", "PogData", "ShaderLib", "roomsAPI", "requestV2", "tska"]
 }
