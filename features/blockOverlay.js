@@ -1,7 +1,7 @@
 import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
 import { Render3D } from "../../tska/rendering/Render3D";
 import { registerWhen } from "../../BloomCore/utils/Utils";
-import Shader from "../../ShaderLib/index";
+import Shader from "../../shaderlib/index";
 import settings from "../utils/config";
 
 const DrawBlockHighlightEvent = net.minecraftforge.client.event.DrawBlockHighlightEvent;

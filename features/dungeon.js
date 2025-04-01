@@ -2,7 +2,7 @@ import { registerWhen, highlightSlot, renderCenteredString } from "../../BloomCo
 import { getRoomData } from "../../roomsAPI/utils/utils";
 import settings, { roomName } from "../utils/config";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
-import Shader from "../../ShaderLib/index";
+import Shader from "../../shaderlib/index";
 import PogObject from "../../PogData";
 
 /*  --------------- secret routes ---------------
