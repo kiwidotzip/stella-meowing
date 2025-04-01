@@ -1,3 +1,7 @@
+>[!IMPORTANT]
+>Stella has officially been verified on CT!!!!
+>/ct import stella!!!!
+
 <p align="center">
   <img alt="logo" src="https://i.imgur.com/uaTiLVS.png" /
 </p>
@@ -38,7 +42,7 @@
 - Highlight Dugeon Trash
 - Cool Chroma
 
-<h2 align="center">Installation Steps (hopefully coming soon)</h2>
+<h2 align="center">Installation Steps</h2>
 
 ## **Automatic**
 1. Download Chattriggers.  
