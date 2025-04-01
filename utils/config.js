@@ -7,7 +7,7 @@ import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
 
     ------------------- To Do -------------------
 
-    - Make themeing work
+    - Make theming work
 
     --------------------------------------------- */
 
@@ -93,7 +93,7 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
     .addSwitch({
         category: "Dungeons",
         configName: "highlightTrash",
-        title: "Highligt Dugneon trash",
+        title: "Highlight Dungeon trash",
         description: "Highlights dungeon trash in your inventory",
         subcategory: "General",
     })
@@ -225,8 +225,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
     .addSwitch({
         category: "Dungeons",
         configName: "classColor",
-        title: "Highlight class Cclor",
-        description: "Highlihgts the terminals the color of the class",
+        title: "Highlight class Color",
+        description: "Highlights the terminals the color of the class",
         subcategory: "Terminals",
 
         shouldShow(data) {
