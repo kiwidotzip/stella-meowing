@@ -1,3 +1,5 @@
+import { fetch } from "../tska/polyfill/Fetch";
+import PogObject from "../PogData";
 import settings from "./utils/config";
 import request from "../requestV2";
 import "./features/firstInstall";
@@ -39,6 +41,10 @@ register("command", (...args) => {
 })
     .setName("stella")
     .setAliases("sa", "sta");
+
+const ud = new PogObject("stella", {
+    version: "0.0.0",
+});
 
 const LOCAL_VERSION = JSON.parse(FileLib.read("stella", "metadata.json")).version.replace(/^v/, "");
 const API_URL = "https://api.github.com/repos/Eclipse-5214/stella/releases";
@@ -90,8 +96,7 @@ function checkUpdate(silent = false) {
             if (compareVersions(LOCAL_VERSION, remoteVersion) > 0 && !silent) {
                 ChatLib.chat("&d[Stella] &bYou're running a development build that is newer than the latest release!");
             } else if (compareVersions(LOCAL_VERSION, remoteVersion) < 0 && !silent) {
-                ChatLib.chat(`&e[MeowAddons] &aUpdate available: &bv${remoteVersion}&a! Current: &ev${LOCAL_VERSION}`);
-                ChatLib.chat(`&d[Stella] &bUpdate available: &6v${remoteVersion}&b! Current: &6v${localVersion}`);
+                ChatLib.chat(`&d[Stella] &bUpdate available: &6v${remoteVersion}&b! Current: &6v${LOCAL_VERSION}`);
                 ChatLib.chat(new TextComponent(`&d[Stella] &bClick here to go to the Github release page!`).setClick("open_url", `https://github.com/Eclipse-5214/stella/releases/latest`)).setHoverValue(`&bOpens the release page - Github`);
                 ChatLib.chat(new TextComponent(`&d[Stella] &bHover over this message to view changelogs!`).setHoverValue(updateMessage));
             } else if (!silent) {
@@ -106,11 +111,11 @@ function checkUpdate(silent = false) {
 let updateChecked = false;
 register("worldLoad", () => {
     if (!updateChecked) {
-        if (pogData.version < LOCAL_VERSION) {
+        if (ud.version < LOCAL_VERSION) {
             checkUpdate(true);
             Client.scheduleTask(40, () => ChatLib.chat(updateMessage));
-            pogData.version = LOCAL_VERSION;
-            pogData.save();
+            ud.version = LOCAL_VERSION;
+            ud.save();
         }
         updateChecked = true;
         Client.scheduleTask(1000, () => {

@@ -97,6 +97,7 @@ const renderRoomName = () => {
 
 //gets current room name
 register("step", () => {
+    if (!Dungeon.inDungeon) return;
     if (settings().showRoomName) currRoomName = getRoomData().name;
 }).setFps(20);
 
