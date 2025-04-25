@@ -1,5 +1,5 @@
-import { registerWhen, highlightSlot, renderCenteredString } from "../../BloomCore/utils/Utils";
-import { getRoomData } from "../../roomsAPI/utils/utils";
+import { registerWhen, highlightSlot } from "../../BloomCore/utils/Utils";
+import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import settings from "../utils/config";
 import { hud } from "../utils/hud";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
@@ -59,10 +59,6 @@ let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));
 
 //functions
-const renderRoomNameEditGui = () => {
-    renderCenteredString("&6Scroll &rto change the scale", Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3, 1, false);
-};
-
 rHud.onDraw((x, y, str) => {
     Renderer.translate(x, y);
     Renderer.scale(rHud.getScale());
@@ -99,9 +95,12 @@ const renderRoomName = () => {
 };
 
 //gets current room name
+
 register("step", () => {
     if (!Dungeon.inDungeon) return;
-    if (settings().showRoomName) currRoomName = getRoomData().name;
+    DungeonScanner.scan();
+    currRoomName = DungeonScanner.getCurrentRoom().name;
+    //if (settings().showRoomName) currRoomName = getRoomData().name;
 }).setFps(20);
 
 //renders guis

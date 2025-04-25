@@ -1,6 +1,7 @@
 import { fetch } from "../tska/polyfill/Fetch";
 import { LocalStore } from "../tska/storage/LocalStore";
 import settings from "./utils/config";
+import { hud } from "./utils/hud";
 import "./utils/hud";
 import "./features/firstInstall";
 import "./features/blockOverlay";
@@ -27,12 +28,16 @@ register("command", (...args) => {
         ChatLib.chat("&6/stella &7main command! Aliases: &6/sa /sta");
         ChatLib.chat("&6/sa help &7Opens the Stella help menu!");
         ChatLib.chat("&6/sa update &7Checks for updates!");
+        ChatLib.chat("&6/sa hud &7Opens the HUD editor!");
         ChatLib.chat("&6/stellaroutes &routes config! (if installed) Aliases: &6/sr /str");
         ChatLib.chat("&6/srdb &7 debug options for routes try &6/srdb help &7for more info!");
         ChatLib.chat("&6/route &7 route recording try &6/route help &7for more info!");
         ChatLib.chat("&8&m-------------------------------------------------");
     } else if (args[0] === "update") {
         checkUpdate();
+        updateMessage = `&9&m${ChatLib.getChatBreak("-")}\n`;
+    } else if (args[0] === "hud") {
+        hud.open();
     } else if (!args || !args.length || !args[0]) {
         return settings().getConfig().openGui();
     } else {
@@ -95,7 +100,7 @@ function checkUpdate(silent = false) {
             const remoteVersion = latestRelease.tag_name.replace(/^v/, "");
             updateMessage = buildUpdateMessage(releases);
 
-            if (!silent) ChatLib.chat("&e[MeowAddons] &aChecking for updates...");
+            if (!silent) ChatLib.chat("&d[Stella] &bChecking for updates...");
 
             if (compareVersions(LOCAL_VERSION, remoteVersion) > 0 && !silent) {
                 ChatLib.chat("&d[Stella] &bYou're running a development build that is newer than the latest release!");
@@ -127,8 +132,3 @@ register("worldLoad", () => {
         });
     }
 });
-
-register("command", () => {
-    checkUpdate();
-    updateMessage = `&9&m${ChatLib.getChatBreak("-")}\n`;
-}).setName("saupdate");
