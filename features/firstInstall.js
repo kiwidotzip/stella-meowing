@@ -1,4 +1,4 @@
-import PogObject from "../../PogData";
+import { LocalStore } from "../../tska/storage/LocalStore";
 
 /*  ----------- First Install Message -----------
 
@@ -10,9 +10,13 @@ import PogObject from "../../PogData";
 
     --------------------------------------------- */
 
-const firstInstall = new PogObject("stella", {
-    firstInstall: false,
-});
+const firstInstall = new LocalStore(
+    "stella",
+    {
+        firstInstall: false,
+    },
+    "./data/stella.json"
+);
 
 register("tick", () => {
     if (!firstInstall.firstInstall) {
@@ -29,12 +33,10 @@ register("tick", () => {
 
         ChatLib.chat(message);
         firstInstall.firstInstall = true;
-        firstInstall.save();
     }
 });
 
 //debug command for testing
 register("command", () => {
     firstInstall.firstInstall = false;
-    firstInstall.save();
 }).setName("srdbfi");

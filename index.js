@@ -1,7 +1,7 @@
 import { fetch } from "../tska/polyfill/Fetch";
-import PogObject from "../PogData";
+import { LocalStore } from "../tska/storage/LocalStore";
 import settings from "./utils/config";
-import request from "../requestV2";
+import "./utils/hud";
 import "./features/firstInstall";
 import "./features/blockOverlay";
 import "./features/terms";
@@ -42,9 +42,13 @@ register("command", (...args) => {
     .setName("stella")
     .setAliases("sa", "sta");
 
-const ud = new PogObject("stella", {
-    version: "0.0.0",
-});
+const ud = new LocalStore(
+    "stella",
+    {
+        version: "0.0.0",
+    },
+    "./data/stella.json"
+);
 
 const LOCAL_VERSION = JSON.parse(FileLib.read("stella", "metadata.json")).version.replace(/^v/, "");
 const API_URL = "https://api.github.com/repos/Eclipse-5214/stella/releases";
@@ -115,7 +119,6 @@ register("worldLoad", () => {
             checkUpdate(true);
             Client.scheduleTask(40, () => ChatLib.chat(updateMessage));
             ud.version = LOCAL_VERSION;
-            ud.save();
         }
         updateChecked = true;
         Client.scheduleTask(1000, () => {

@@ -1,5 +1,6 @@
 import Settings from "../../Amaterasu/core/Settings";
 import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
+import { hud } from "../utils/hud";
 
 /*  ------------------- Config ------------------
 
@@ -141,7 +142,7 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         placeHolder: "Edit",
 
         onClick() {
-            roomName.open();
+            hud.open();
         },
 
         shouldShow(data) {

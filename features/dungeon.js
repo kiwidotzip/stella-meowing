@@ -1,9 +1,9 @@
 import { registerWhen, highlightSlot, renderCenteredString } from "../../BloomCore/utils/Utils";
 import { getRoomData } from "../../roomsAPI/utils/utils";
-import settings, { roomName } from "../utils/config";
+import settings from "../utils/config";
+import { hud } from "../utils/hud";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import Shader from "../../shaderlib/index";
-import PogObject from "../../PogData";
 
 /*  --------------- secret routes ---------------
 
@@ -49,13 +49,8 @@ let trashItems = [
 
 let shops = ["Booster Cookie", "Ophelia", "Trades"];
 
-const rGui = new PogObject("stella", {
-    X: Renderer.screen.getWidth() / 2,
-    Y: Renderer.screen.getHeight() / 2,
-    scale: 1,
-});
-
 currRoomName = "Room Not Found";
+const rHud = hud.createTextHud("roomHud", 120, 10, currRoomName);
 
 //shader loading
 const chromaShader = new Shader(FileLib.read("stella", "shaders/chroma/chromat.frag"), FileLib.read("stella", "shaders/chroma/chromat.vert"));
@@ -68,14 +63,22 @@ const renderRoomNameEditGui = () => {
     renderCenteredString("&6Scroll &rto change the scale", Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3, 1, false);
 };
 
+rHud.onDraw((x, y, str) => {
+    Renderer.translate(x, y);
+    Renderer.scale(rHud.getScale());
+    Renderer.drawStringWithShadow(str, 0, 0);
+    Renderer.finishDraw();
+});
+
 const renderRoomName = () => {
     let width = Renderer.getStringWidth(currRoomName);
     let height = 11;
     let c = settings().roomNameColor;
     let [r, g, b, a] = c;
-    Renderer.retainTransforms(true);
-    Renderer.translate(rGui.X, rGui.Y);
-    Renderer.scale(rGui.scale, rGui.scale);
+
+    Renderer.translate(rHud.getX(), rHud.getY());
+    Renderer.scale(rHud.getScale());
+
     if (a !== 0) Renderer.drawRect(Renderer.color(r, g, b, a), -1, -1, width + 2, height);
 
     if (settings().chromaRoomName) {
@@ -103,30 +106,8 @@ register("step", () => {
 
 //renders guis
 register("renderOverlay", () => {
-    if (roomName.isOpen()) {
-        renderRoomNameEditGui();
-        renderRoomName();
-    }
-
-    if (settings().showRoomName && Dungeon.inDungeon && !Dungeon.bossEntry) {
-        renderRoomName();
-    }
-});
-
-//update guis
-register("dragged", (dx, dy, x, y, btn) => {
-    if (roomName.isOpen()) {
-        rGui.X = x;
-        rGui.Y = y;
-        rGui.save();
-    }
-});
-
-register("scrolled", (mx, my, dir) => {
-    if (!roomName.isOpen()) return;
-    if (dir == 1) rGui.scale += 0.05;
-    else rGui.scale -= 0.05;
-    rGui.save();
+    if (hud.isOpen() || !settings().showRoomName || !Dungeon.inDungeon || Dungeon.bossEntry) return;
+    renderRoomName();
 });
 
 //highlihgt trash
