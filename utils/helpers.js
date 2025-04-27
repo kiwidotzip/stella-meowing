@@ -13,3 +13,5 @@ import settings from "./config";
     --------------------------------------------- */
 
 export const FeatManager = new FeatureManager(settings().getConfig());
+
+//events

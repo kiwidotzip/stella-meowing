@@ -18,7 +18,7 @@ const firstInstall = new LocalStore(
     "./data/stella.json"
 );
 
-register("tick", () => {
+register("step", () => {
     if (!firstInstall.firstInstall) {
         let message =
             `&b&l-----------------------------------------------------\n` +
@@ -34,7 +34,7 @@ register("tick", () => {
         ChatLib.chat(message);
         firstInstall.firstInstall = true;
     }
-});
+}).setFps(1);
 
 //debug command for testing
 register("command", () => {

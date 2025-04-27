@@ -129,7 +129,7 @@
             {
                 "type": 6,
                 "name": "overlayEnabled",
-                "value": false
+                "value": true
             },
             {
                 "type": 5,
@@ -189,16 +189,6 @@
             {
                 "type": 2,
                 "name": "apply"
-            },
-            {
-                "type": 5,
-                "name": "bgColor",
-                "value": [
-                    0,
-                    0,
-                    0,
-                    84
-                ]
             },
             {
                 "type": 1,

@@ -68,21 +68,3 @@ export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z =
     Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
     Renderer.finishDraw();
 };
-
-const checkingTriggers = []; // [[trigger, func]]
-/**
- * Registers and unregisters the trigger depending on the result of the checkFunc. Use with render triggers to reduce lag when they are not being used.
- * @param {() => void} trigger
- * @param {Function} checkFunc
- * @returns
- * also stolen from BloomCore
- */
-export const registerWhen = (trigger, checkFunc) => checkingTriggers.push([trigger.unregister(), checkFunc]);
-
-register("tick", () => {
-    for (let i = 0; i < checkingTriggers.length; i++) {
-        let [trigger, func] = checkingTriggers[i];
-        if (func()) trigger.register();
-        else trigger.unregister();
-    }
-});

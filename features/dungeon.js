@@ -5,6 +5,7 @@ import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import settings from "../utils/config";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import Shader from "../../shaderlib/index";
+import Location from "../../tska/skyblock/Location";
 
 /*  --------------- secret routes ---------------
 
@@ -17,7 +18,7 @@ import Shader from "../../shaderlib/index";
     --------------------------------------------- */
 
 //features
-const RoomName = FeatManager.createFeature("showRoomName");
+const RoomName = FeatManager.createFeature("showRoomName", "catacombs");
 const TrashHighlight = FeatManager.createFeature("highlightTrash");
 
 //variables
@@ -104,9 +105,13 @@ const renderRoomName = () => {
 RoomName.register(
     "stepFps",
     () => {
-        if (!Dungeon.inDungeon) return;
         DungeonScanner.scan();
-        currRoomName = DungeonScanner.getCurrentRoom().name;
+        let room = DungeonScanner.getCurrentRoom();
+        if (!room || !room.name) {
+            currRoomName = "Room Not Found";
+            return;
+        }
+        currRoomName = room.name;
     },
     20
 );

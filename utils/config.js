@@ -43,7 +43,7 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "",
         configName: "MyDiscord",
         title: "Discord Server",
-        description: "Join if you want to report a bug or want to make a suggestion", // The description for this [Button] to display in the [Theme]
+        description: "Join if you want to report a bug or want to make a suggestion",
         tags: ["discord"],
         onClick(setting) {
             ChatLib.command("ct copy coming soon", true);
@@ -398,21 +398,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         placeHolder: "Apply",
         onClick(config) {
             const currentScheme = schemes[config.settings.scheme];
-            const scheme = JSON.parse(FileLib.read("stella", currentScheme));
-            scheme.Amaterasu.background.color = config.settings.bgColor;
-
-            FileLib.write("stella", currentScheme, JSON.stringify(scheme, null, 4));
-
             config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
         },
-    })
-
-    .addColorPicker({
-        category: "Theme",
-        configName: "bgColor",
-        title: "Change Background Color",
-        description: "Changes the color and alpha of the background",
-        value: [0, 0, 0, 80],
     })
 
     .addSlider({
@@ -454,11 +441,6 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
 const config = new Settings("stella", defaultConf, "data/ColorScheme.json").addMarkdown("Changelog", CHANGELOG).addMarkdown("Credits", CREDITS);
 
 const currentScheme = schemes[config.settings.scheme];
-const scheme = JSON.parse(FileLib.read("stella", currentScheme));
-scheme.Amaterasu.background.color = config.settings.bgColor;
-
-FileLib.write("stella", currentScheme, JSON.stringify(scheme, null, 4));
-
 config.setPos(config.settings.x, config.settings.y).setSize(config.settings.width, config.settings.height).setScheme(currentScheme).apply();
 
 export default () => config.settings;

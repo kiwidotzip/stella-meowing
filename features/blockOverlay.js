@@ -1,8 +1,8 @@
 import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
 import { FeatManager } from "../utils/helpers";
 import { Render3D } from "../../tska/rendering/Render3D";
-import Shader from "../../shaderlib/index";
 import settings from "../utils/config";
+import Shader from "../../shaderlib/index";
 
 /*  --------------- Block Overlay ---------------
 
