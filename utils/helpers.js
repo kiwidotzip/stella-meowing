@@ -13,14 +13,3 @@ import settings from "./config";
     --------------------------------------------- */
 
 export const FeatManager = new FeatureManager(settings().getConfig());
-
-//events
-Event.createEvent("sa:blockHighlight", (cb) => {
-    register(net.minecraftforge.client.event.DrawBlockHighlightEvent, (e) => cb(e));
-});
-Event.createEvent("sa:guiRender", (cb) => {
-    register("guiRender", cb);
-});
-Event.createEvent("sa:renderWorld", (cb) => {
-    register("renderWorld", cb);
-});

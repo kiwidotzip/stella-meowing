@@ -22,12 +22,23 @@ const chromaShader = new Shader(FileLib.read("stella", "shaders/chroma/chroma3D.
 let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));
 
+//excluded blocks
+const excludedBlocks = new Set([
+    net.minecraft.init.Blocks.field_150350_a, // BlockAir
+    net.minecraft.init.Blocks.field_150356_k, // FlowLava
+    net.minecraft.init.Blocks.field_150353_l, // StillLava
+    net.minecraft.init.Blocks.field_150358_i, // FlowWater
+    net.minecraft.init.Blocks.field_150355_j, // StillWater
+]);
+
 //overlay
-BlockOverlay.register("sa:blockHighlight", (event) => {
+BlockOverlay.register("drawBlockHighlight", (pos, event) => {
     const partialTicks = event.partialTicks;
     const fill = settings().fillBlockOverlay;
     const lw = settings().overlayLineWidth;
-    const block = Player.lookingAt();
+    const block = World.getBlockAt(pos.x, pos.y, pos.z);
+    if ([...excludedBlocks].some((b) => b?.getRegistryName?.() === block.type.mcBlock?.getRegistryName?.())) return;
+    cancel(event);
 
     if (!block) return;
     if (!block?.type) return;
@@ -121,7 +132,4 @@ BlockOverlay.register("sa:blockHighlight", (event) => {
         }
     }
     if (settings().chromaHighlight) chromaShader.unbind();
-
-    //delete vanilla outline
-    //cancel(event);
 });

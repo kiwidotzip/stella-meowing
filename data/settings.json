@@ -129,7 +129,7 @@
             {
                 "type": 6,
                 "name": "overlayEnabled",
-                "value": true
+                "value": false
             },
             {
                 "type": 5,

@@ -118,7 +118,7 @@ register("renderOverlay", () => {
 });
 
 //highlihgt trash
-TrashHighlight.register("stella:guiRender", (mx, mt, gui) => {
+TrashHighlight.register("guiRender", (mx, mt, gui) => {
     let inv = Player.getContainer();
     let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
     if (!shops.some((k) => inv?.getName()?.includes(k))) return;
