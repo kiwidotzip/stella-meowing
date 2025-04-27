@@ -1,7 +1,8 @@
-import { registerWhen, highlightSlot } from "../../BloomCore/utils/Utils";
+import { highlightSlot } from "../utils/utils";
+import { FeatManager } from "../utils/helpers";
+import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import settings from "../utils/config";
-import { hud } from "../utils/hud";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import Shader from "../../shaderlib/index";
 
@@ -14,6 +15,10 @@ import Shader from "../../shaderlib/index";
     - Doccument how gui works
 
     --------------------------------------------- */
+
+//features
+const RoomName = FeatManager.createFeature("showRoomName");
+const TrashHighlight = FeatManager.createFeature("highlightTrash");
 
 //variables
 let trashItems = [
@@ -96,12 +101,15 @@ const renderRoomName = () => {
 
 //gets current room name
 
-register("step", () => {
-    if (!Dungeon.inDungeon) return;
-    DungeonScanner.scan();
-    currRoomName = DungeonScanner.getCurrentRoom().name;
-    //if (settings().showRoomName) currRoomName = getRoomData().name;
-}).setFps(20);
+RoomName.register(
+    "stepFps",
+    () => {
+        if (!Dungeon.inDungeon) return;
+        DungeonScanner.scan();
+        currRoomName = DungeonScanner.getCurrentRoom().name;
+    },
+    20
+);
 
 //renders guis
 register("renderOverlay", () => {
@@ -110,16 +118,13 @@ register("renderOverlay", () => {
 });
 
 //highlihgt trash
-registerWhen(
-    register("guiRender", (mx, mt, gui) => {
-        let inv = Player.getContainer();
-        let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
-        if (!shops.some((k) => inv?.getName()?.includes(k))) return;
-        for (let i = 0; i < inv.getSize(); i++) {
-            if (!inv?.getStackInSlot(i)?.getName()) continue;
-            if (!trashItems.some((j) => inv?.getStackInSlot(i)?.getName().includes(j))) continue;
-            highlightSlot(gui, i, r, g, b, a, false);
-        }
-    }),
-    () => settings().highlightTrash
-);
+TrashHighlight.register("stella:guiRender", (mx, mt, gui) => {
+    let inv = Player.getContainer();
+    let [r, g, b, a] = [settings().trashColor[0] / 255, settings().trashColor[1] / 255, settings().trashColor[2] / 255, settings().trashColor[3] / 255];
+    if (!shops.some((k) => inv?.getName()?.includes(k))) return;
+    for (let i = 0; i < inv.getSize(); i++) {
+        if (!inv?.getStackInSlot(i)?.getName()) continue;
+        if (!trashItems.some((j) => inv?.getStackInSlot(i)?.getName().includes(j))) continue;
+        highlightSlot(gui, i, r, g, b, a, false);
+    }
+});

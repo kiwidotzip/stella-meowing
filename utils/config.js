@@ -1,6 +1,6 @@
 import Settings from "../../Amaterasu/core/Settings";
 import DefaultConfig from "../../Amaterasu/core/DefaultConfig";
-import { hud } from "../utils/hud";
+import { hud } from "./hud";
 
 /*  ------------------- Config ------------------
 

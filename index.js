@@ -1,8 +1,9 @@
 import { fetch } from "../tska/polyfill/Fetch";
 import { LocalStore } from "../tska/storage/LocalStore";
-import settings from "./utils/config";
 import { hud } from "./utils/hud";
-import "./utils/hud";
+import settings from "./utils/config";
+
+import "./utils/helpers";
 import "./features/firstInstall";
 import "./features/blockOverlay";
 import "./features/terms";

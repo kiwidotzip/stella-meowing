@@ -1,5 +1,5 @@
 import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
-import { registerWhen } from "../../BloomCore/utils/Utils";
+import { registerWhen } from "../utils/utils";
 import { Render3D } from "../../tska/rendering/Render3D";
 import { calcDistance } from "../utils/utils";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
