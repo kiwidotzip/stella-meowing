@@ -15,12 +15,12 @@ import settings from "./config";
 export const FeatManager = new FeatureManager(settings().getConfig());
 
 //events
-Event.createEvent("stella:blockOverlay", (cb) => {
-    register(net.minecraftforge.client.event.DrawBlockHighlightEvent, cb);
+Event.createEvent("sa:blockHighlight", (cb) => {
+    register(net.minecraftforge.client.event.DrawBlockHighlightEvent, (e) => cb(e));
 });
-Event.createEvent("stella:guiRender", (cb) => {
+Event.createEvent("sa:guiRender", (cb) => {
     register("guiRender", cb);
 });
-Event.createEvent("stella:renderWorld", (cb) => {
+Event.createEvent("sa:renderWorld", (cb) => {
     register("renderWorld", cb);
 });

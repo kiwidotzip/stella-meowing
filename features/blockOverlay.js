@@ -23,7 +23,7 @@ let totalTicks = 0;
 register("tick", (t) => (totalTicks = t));
 
 //overlay
-BlockOverlay.register("stella:blockOverlay", (event) => {
+BlockOverlay.register("sa:blockHighlight", (event) => {
     const partialTicks = event.partialTicks;
     const fill = settings().fillBlockOverlay;
     const lw = settings().overlayLineWidth;
