@@ -1,10 +1,13 @@
+import { Promise } from "../../tska/polyfill/Promise";
 import { FeatManager } from "../utils/helpers";
 import { hud } from "../utils/hud";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
-import { getCheckmarks, WhiteMarker, GreenMarker } from "../utils/mapUtils";
-import { mapRGBs, defaultMapImage } from "../utils/mapUtils";
+import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage } from "../utils/mapUtils";
+import { getHead } from "../utils/api";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 
+const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
+const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats");
 const BufferedImage = Java.type("java.awt.image.BufferedImage");
 const Color = Java.type("java.awt.Color");
 
@@ -55,6 +58,14 @@ const clearMap = () => {
     setPixels(0, 0, 23, 23, new Color(0, 0, 0, 0));
 };
 
+const getPlayerHead = (player, blackBorder) => {
+    if (!cachedPlayerHeads.has(player)) return getHead(player, blackBorder);
+
+    return new Promise((resolve) => {
+        resolve(cachedPlayerHeads.get(player));
+    });
+};
+
 //feature
 const StellaNav = FeatManager.createFeature("mapEnabled", "catacombs");
 
@@ -103,7 +114,10 @@ StellaNav.register(
         if (!tempPlayers) return;
 
         tempPlayers.forEach((p) => {
-            players[p?.name] = {
+            player = p?.name;
+            if (!player) return;
+
+            players[player] = {
                 head: null,
                 uuid: null,
                 hasSpirit: false,
@@ -114,7 +128,13 @@ StellaNav.register(
                 yaw: p?.rotation,
                 visited: p?.visitedRooms,
                 deaths: p?.deaths,
+                inRender: false,
             };
+
+            getPlayerHead(p, true).then((head) => {
+                players[player].head = head;
+                cachedPlayerHeads.set(player, head);
+            });
         });
     },
     60
@@ -231,23 +251,23 @@ const renderPlayers = () => {
         let size = [7, 10];
         let head = p == Player.getName() ? GreenMarker : WhiteMarker;
         let headScale = 1;
-        /*
-        if (Config.playerHeads && players[p].head) {
-            size = [10, 10];
-            head = players[p].head;
-        }
-        */
+
+        size = [10, 10];
+        //head = players[p].head;
+
         let x = players[p].iconX || 0;
         let y = players[p].iconY || 0;
         if (!x && !y) continue;
 
         let yaw = players[p].yaw || 0;
+        let [w, h] = size;
+
+        Tessellator.pushMatrix();
 
         Renderer.retainTransforms(true);
         Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
         Renderer.scale(MapGui.getScale());
         Renderer.translate(x + 5, y + 5);
-        //Renderer.drawRect(Renderer.RED, 0, 0, 1, 1);
         //let dontRenderOwn = !Config.showOwnName && p == Player.getName();
         // Render the player name
         /*
@@ -267,9 +287,67 @@ const renderPlayers = () => {
         Renderer.scale(headScale);
         Renderer.rotate(yaw);
         Renderer.translate(-size[0] / 2, -size[1] / 2);
-        Renderer.drawImage(head, 0, 0, size[0], size[1]);
+        //Renderer.drawImage(head, 0, 0, size[0], size[1]);
+
+        // Render the player head
+        Tessellator.enableBlend();
+        //                   .getTextureManager().bindTexture                     .getLocationSkin
+        Client.getMinecraft().func_110434_K().func_110577_a(this.networkPlayerInfo.func_178837_g());
+        Tessellator.enableTexture2D();
+
+        //                             .getInstance()
+        let tessellator = MCTessellator.func_178181_a();
+        //                             .getWorldRenderer()
+        let worldRenderer = tessellator.func_178180_c();
+        //           .begin                                .POSITION_TEX
+        worldRenderer.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+
+        //           .pos                              .tex                           .endVertex
+        worldRenderer
+            .func_181662_b(-w / 2, -h / 2, 0.0)
+            .func_181673_a(8 / 64, 16 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(w / 2, h / 2, 0.0)
+            .func_181673_a(16 / 64, 16 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(w / 2, -h / 2, 0.0)
+            .func_181673_a(16 / 64, 8 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(-w / 2, -h / 2, 0.0)
+            .func_181673_a(8 / 64, 8 / 64)
+            .func_181675_d();
+        //         .draw
+        tessellator.func_78381_a();
+
+        //           .begin                                .POSITION_TEX
+        worldRenderer.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+
+        worldRenderer
+            .func_181662_b(-w / 2, h / 2, 0.0)
+            .func_181673_a(40 / 64, 16 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(w / 2, h / 2, 0.0)
+            .func_181673_a(48 / 64, 16 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(w / 2, -h / 2, 0.0)
+            .func_181673_a(48 / 64, 8 / 64)
+            .func_181675_d();
+        worldRenderer
+            .func_181662_b(-w / 2, -h / 2, 0.0)
+            .func_181673_a(40 / 64, 8 / 64)
+            .func_181675_d();
+        //         .draw
+        tessellator.func_78381_a();
+
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
+
+        Tessellator.popMatrix;
     }
 };
 
