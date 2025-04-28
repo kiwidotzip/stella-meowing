@@ -55,7 +55,7 @@ let trashItems = [
 
 let shops = ["Booster Cookie", "Ophelia", "Trades"];
 
-currRoomName = "Room Not Found";
+let currRoomName = "Room Not Found";
 const rHud = hud.createTextHud("roomHud", 120, 10, currRoomName);
 
 //shader loading
@@ -105,7 +105,6 @@ const renderRoomName = () => {
 RoomName.register(
     "stepFps",
     () => {
-        DungeonScanner.scan();
         let room = DungeonScanner.getCurrentRoom();
         if (!room || !room.name) {
             currRoomName = "Room Not Found";

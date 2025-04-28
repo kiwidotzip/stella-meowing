@@ -1,5 +1,4 @@
 import { fetch } from "../tska/polyfill/Fetch";
-import Location from "../tska/skyblock/Location";
 import { LocalStore } from "../tska/storage/LocalStore";
 import { hud } from "./utils/hud";
 import settings from "./utils/config";
@@ -134,12 +133,4 @@ register("worldLoad", () => {
             updateMessage = `&9&m${ChatLib.getChatBreak("-")}\n`;
         });
     }
-});
-
-Location.onWorldChange((world) => {
-    ChatLib.chat(`&d[Stella] &bWorld changed to: &6${world}`);
-});
-
-Location.onAreaChange((area) => {
-    ChatLib.chat(`&d[Stella] &bArea changed to: &6${area}`);
 });
