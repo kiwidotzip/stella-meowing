@@ -381,6 +381,15 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         },
     })
 
+    //map
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapEnabled",
+        title: "Dungeon Map",
+        description: "Renders stella's dungeon map",
+        subcategory: "Main",
+    })
+
     //themeing
     .addSelection({
         category: "Theme",

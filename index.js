@@ -9,6 +9,7 @@ import "./features/firstInstall";
 import "./features/blockOverlay";
 import "./features/terms";
 import "./features/dungeon";
+import "./features/map";
 
 /*  ------------------- Index -------------------
 
