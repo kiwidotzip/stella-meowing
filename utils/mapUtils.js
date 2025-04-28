@@ -1,12 +1,16 @@
 const Color = Java.type("java.awt.Color");
 
-export const greenCheck = new Image("NEUMapGreenCheck.png", "./stellanav/clear/NEUMapGreenCheck.png");
-export const whiteCheck = new Image("NEUMapWhiteCheck.png", "./stellanav/clear/NEUMapWhiteCheck.png");
-export const failedRoom = new Image("NEUMapFailedRoom.png", "./stellanav/clear/NEUMapFailedRoom.png");
-export const questionMark = new Image("NEUMapQuestionMark.png", "./stellanav/clear/NEUMapQuestionMark.png");
+const assets = "config/ChatTriggers/modules/stella/stellanav";
 
-export const GreenMarker = new Image("markerSelf.png", "./stellanav/markerSelf.png");
-export const WhiteMarker = new Image("markerOther.png", "./stellanav/markerOther.png");
+export const defaultMapImage = Image.fromFile(assets + "/DefaultMap.png");
+
+export const greenCheck = Image.fromFile(assets + "/clear/BloomMapGreenCheck.png");
+export const whiteCheck = Image.fromFile(assets + "/clear/BloomMapWhiteCheck.png");
+export const failedRoom = Image.fromFile(assets + "/clear/BloomMapFailedRoom.png");
+export const questionMark = Image.fromFile(assets + "/clear/BloomMapQuestionMark.png");
+
+export const GreenMarker = Image.fromFile(assets + "/markerSelf.png");
+export const WhiteMarker = Image.fromFile(assets + "/markerOther.png");
 
 export const getCheckmarks = () => {
     return {
@@ -28,11 +32,6 @@ export const mapRGBs = {
     66: new Color(117 / 255, 0 / 255, 133 / 255, 1), // Puzzle
     119: new Color(0, 0, 0, 1), // Wither door
 };
-
-/*export const renderMap = (mapData) => {
-    Client.getMinecraft().field_71460_t.func_147701_i().func_148250_a(mapData, true);
-};
-*/
 
 export const roomTypes = {
     63: "Normal",

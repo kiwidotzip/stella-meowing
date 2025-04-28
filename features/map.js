@@ -1,9 +1,9 @@
 import { FeatManager } from "../utils/helpers";
 import { hud } from "../utils/hud";
-import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
-import { getCheckmarks } from "../utils/mapUtils";
-import { mapRGBs } from "../utils/mapUtils";
+import { getCheckmarks, WhiteMarker, GreenMarker } from "../utils/mapUtils";
+import { mapRGBs, defaultMapImage } from "../utils/mapUtils";
+import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage");
 const Color = Java.type("java.awt.Color");
@@ -21,9 +21,29 @@ const Color = Java.type("java.awt.Color");
 //variables
 const cachedPlayerHeads = new Map(); // ["UnclaimedBloom6": HEAD_IMAGE]
 
+const checkmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
+const editCheckmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
+let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
+let puzzles = {}; // {"Water Board":{"pos": [2, 4], "checkmark": 1}, ...} checkmark: 0=failed, 1=incomplete, 2=white check, 3=green check
+let unassignedPuzzles = []; // [[0, 5], [2,4], ...] Coordinates of puzzles on map (0-5)
+let trapPos = null; // null or [0-128, 0-128]
+
 let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
 let mapImage = new Image(mapBuffered);
 let mapIsEmpty = true;
+
+let watcherDone = false;
+
+let ll = 128 / 23;
+const getRoomPosition = (x, y) => [ll * 1.5 + ll * 4 * x, ll * 1.5 + ll * 4 * y];
+
+// Checkmark status of the puzzle
+const puzzleTextColors = {
+    0: new Color(161 / 255, 0, 0, 1),
+    1: Color.WHITE,
+    2: Color.YELLOW,
+    3: Color.GREEN,
+};
 
 //functions
 const setPixels = (x1, y1, width, height, color) => {
@@ -46,32 +66,79 @@ MapGui.onDraw((x, y) => {
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, 150, 150);
     Renderer.finishDraw();
+
+    Renderer.drawImage(defaultMapImage, 11 + x, 11 + y, 128 * MapGui.getScale(), 128 * MapGui.getScale());
+
+    let checks = getCheckmarks();
+    // Add fake checkmarks
+    editCheckmarkMap.set(0, checks[34]);
+    editCheckmarkMap.set(12, checks[30]);
+    editCheckmarkMap.set(13, checks[18]);
+    editCheckmarkMap.set(16, checks[18]);
+
+    renderCheckmarks(editCheckmarkMap);
 });
 
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
+    let [x, y] = [MapGui.getX(), MapGui.getY()];
 
-    Renderer.translate(MapGui.getX(), MapGui.getY());
+    Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, 150, 150);
-    Renderer.drawImage(mapImage, 0, 0, 128, 128);
+    Renderer.drawImage(mapImage, 11 + x, 11 + y, 128 * MapGui.getScale(), 128 * MapGui.getScale());
     //Renderer.drawRect(Renderer.color(0, 0, 0), x3, y3, x4, y4);
     Renderer.finishDraw();
+
+    renderCheckmarks(checkmarkMap);
+    renderPlayers();
 });
 
-//get dungeon stuff
+//get players
+StellaNav.register(
+    // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
+    "stepFps",
+    () => {
+        let tempPlayers = DungeonScanner.players;
+        if (!tempPlayers) return;
+
+        tempPlayers.forEach((p) => {
+            players[p?.name] = {
+                head: null,
+                uuid: null,
+                hasSpirit: false,
+                rank: null,
+                visited: [],
+                iconX: (p?.iconX / 125) * 128,
+                iconY: (p?.iconZ / 125) * 128,
+                yaw: p?.rotation,
+                visited: p?.visitedRooms,
+                deaths: p?.deaths,
+            };
+        });
+    },
+    60
+);
+
+//update from map
 StellaNav.register(
     "stepFps",
     () => {
         //if (!Dungeon.inDungeon || !Config.enabled) return;
+        let roomData = DungeonScanner.getCurrentRoom();
+
+        if (!roomData || !roomData.name) return;
+
         if (!Dungeon.mapData) return;
 
         const colors = Dungeon.mapData./* colors */ field_76198_e;
         if (!colors) return;
 
         clearMap();
+
         const checkmarkImages = getCheckmarks();
         const tempCheckmarkMap = new Map();
+
         // Find important points on the map and build a new one
         let xx = -1;
         for (let x = Dungeon.mapCorner[0] + Dungeon.mapRoomSize / 2; x < 118; x += Dungeon.mapGapSize / 2) {
@@ -90,11 +157,11 @@ StellaNav.register(
                     let roomIndex = rmx * 6 + rmy;
                     setPixels(xx * 2, yy * 2, 3, 3, mapRGBs[roomColor]);
                     // Checkmarks and stuff
-                    if (roomColor == 18 && Dungeon.watcherCleared && Config.whiteCheckBlood) {
-                        tempCheckmarkMap.set(roomIndex, checkmarkImages[34]); // White checkmark
+                    if (roomColor == 18 && watcherDone && center != 30) {
+                        tempCheckmarkMap.set(roomIndex, checkmarkImages[34], roomData.name); // White checkmark for blood room
                     }
                     if (center in checkmarkImages && roomColor !== center) {
-                        tempCheckmarkMap.set(roomIndex, checkmarkImages[center]);
+                        tempCheckmarkMap.set(roomIndex, checkmarkImages[center], roomData.name);
                         if (roomColor == 66) {
                             let p = Object.keys(puzzles).find((key) => puzzles[key].pos[0] == rmx && puzzles[key].pos[1] == rmy);
                             if (p) puzzles[p].check = puzzleStatusColors[center];
@@ -147,13 +214,99 @@ StellaNav.register(
     5
 );
 
-register("command", (...args) => {
-    if (args[0] === "next");
-    else if (args[0] === "debug") {
-        roomMap.forEach((room) => {
-            ChatLib.chat(`&7Room: &b${room.name}`);
-        });
-    } else {
-        ChatLib.chat("&cUnknown command. &7Try &6/stellanav help &7for a list of commands");
+//player heads
+const renderPlayers = () => {
+    if (!players) return;
+
+    let keys = Object.keys(players);
+    // Move the player to the end of the array so they get rendered above everyone else
+    /*
+    if (keys.includes(Player.getName())) {
+        const ind = keys.indexOf(Player.getName());
+        keys = keys.concat(keys.splice(ind, 1));
     }
-}).setName("stellanav");
+    */
+    for (let p of keys) {
+        //if (Dungeon.deadPlayers.has(p) && p !== Player.getName()) continue;
+        let size = [7, 10];
+        let head = p == Player.getName() ? GreenMarker : WhiteMarker;
+        let headScale = 1;
+        /*
+        if (Config.playerHeads && players[p].head) {
+            size = [10, 10];
+            head = players[p].head;
+        }
+        */
+        let x = players[p].iconX || 0;
+        let y = players[p].iconY || 0;
+        if (!x && !y) continue;
+
+        let yaw = players[p].yaw || 0;
+
+        Renderer.retainTransforms(true);
+        Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
+        Renderer.scale(MapGui.getScale());
+        Renderer.translate(x + 5, y + 5);
+        //Renderer.drawRect(Renderer.RED, 0, 0, 1, 1);
+        //let dontRenderOwn = !Config.showOwnName && p == Player.getName();
+        // Render the player name
+        /*
+        if (Config.spiritLeapNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
+            let name = players[p].formatted && Config.showPlayerRanks ? players[p].formatted : p;
+            let width = Renderer.getStringWidth(name);
+            let scale = lmData.map.headScale / 1.75;
+            Renderer.translate(0, 7);
+            Renderer.scale(scale, scale);
+            Renderer.drawRect(Renderer.color(0, 0, 0, 150), -width / 2 - 2, -2, width + 4, 11);
+            Renderer.drawStringWithShadow(name, -width / 2, 0);
+            Renderer.scale(1.75 / lmData.map.headScale, 1.75 / lmData.map.headScale);
+
+            Renderer.translate(0, -7);
+        }
+        */
+        Renderer.scale(headScale);
+        Renderer.rotate(yaw);
+        Renderer.translate(-size[0] / 2, -size[1] / 2);
+        Renderer.drawImage(head, 0, 0, size[0], size[1]);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+    }
+};
+
+//checkmarks
+const renderCheckmarks = (map) => {
+    // Render the checkmarks
+    for (let entry of map.entries()) {
+        let [roomIndex, checkmarkImage] = entry;
+        let rx = Math.floor(roomIndex / 6);
+        let ry = roomIndex % 6;
+        let scale = 0.9;
+        let [x, y] = getRoomPosition(rx, ry);
+        if (Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rx && puzzles[a].pos[1] == ry)) continue;
+        let [w, h] = [12 * scale, 12 * scale];
+        Renderer.retainTransforms(true);
+        Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
+        Renderer.scale(MapGui.getScale());
+        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
+        Renderer.drawImage(checkmarkImage, -w / 2, -h / 2, w, h);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+    }
+};
+
+register("chat", () => {
+    watcherDone = true;
+}).setCriteria(/\[BOSS\] The Watcher: That will be enough for now\./);
+
+//Reset on world unload
+register("worldUnload", () => {
+    clearMap();
+    playerHeads = {};
+    checkmarkMap.clear();
+    puzzles = {};
+    players = {};
+    mapIsEmpty = true;
+    trapPos = null;
+    rooms = [];
+    watcherDone = false;
+});
