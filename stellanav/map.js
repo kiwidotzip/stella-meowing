@@ -1,7 +1,7 @@
 import { FeatManager } from "../utils/helpers";
 import { hud } from "../utils/hud";
-import Dungeon from "../../BloomCore/dungeons/Dungeon";
-import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads } from "../utils/mapUtils";
+import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
+import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads } from "./utils/mapUtils";
 import { isBetween } from "../utils/utils";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import settings from "../utils/config";
@@ -253,7 +253,7 @@ StellaNav.register(
                 let vert = [colors[i - 128 * 5], colors[i + 128 * 3]];
                 // Door
                 if (horiz.every((a) => !a) || vert.every((a) => !a)) {
-                    if (center == 119) setPixels(xx * 2 + 1, yy * 2 + 1, 1, 1, Config.witherDoorColor);
+                    if (center == 119) setPixels(xx * 2 + 1, yy * 2 + 1, 1, 1, new Color(settings().mapWitherDoorColor[0] / 255, settings().mapWitherDoorColor[1] / 255, settings().mapWitherDoorColor[2] / 255), 1);
                     else if (center == 63) setPixels(xx * 2 + 1, yy * 2 + 1, 1, 1, new Color(92 / 255, 52 / 255, 14 / 255, 1));
                     else setPixels(xx * 2 + 1, yy * 2 + 1, 1, 1, mapRGBs[center]);
                     continue;
@@ -334,7 +334,6 @@ const renderPlayers = () => {
 
 //checkmarks
 const renderCheckmarks = (map) => {
-    // Render the checkmarks
     for (let entry of map.entries()) {
         let [roomIndex, checkmarkImage] = entry;
         let rx = Math.floor(roomIndex / 6);
@@ -344,7 +343,7 @@ const renderCheckmarks = (map) => {
         if (Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rx && puzzles[a].pos[1] == ry)) continue;
         let [w, h] = [12 * scale, 12 * scale];
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
+        Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
         Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
         Renderer.drawImage(checkmarkImage, -w / 2, -h / 2, w, h);

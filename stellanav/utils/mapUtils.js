@@ -1,10 +1,8 @@
-import settings from "./config";
-
-const Color = Java.type("java.awt.Color");
-const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats");
+const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
+const Color = Java.type("java.awt.Color");
 
-const assets = "config/ChatTriggers/modules/stella/stellanav";
+const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
 
 export const defaultMapImage = Image.fromFile(assets + "/DefaultMap.png");
 

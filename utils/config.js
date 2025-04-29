@@ -447,6 +447,15 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "Markers",
     })
 
+    .addColorPicker({
+        configName: "mapWitherDoorColor",
+        title: "Wither Door Color",
+        description: "The color to make wither doors on the map",
+        category: "StellaNav",
+        subcategory: "Map",
+        value: [0, 0, 0, 255],
+    })
+
     //themeing
     .addSelection({
         category: "Theme",

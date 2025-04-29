@@ -214,6 +214,16 @@
                 "type": 6,
                 "name": "mapShowOwn",
                 "value": true
+            },
+            {
+                "type": 5,
+                "name": "mapWitherDoorColor",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    255
+                ]
             }
         ]
     },
