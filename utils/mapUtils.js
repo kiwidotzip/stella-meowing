@@ -86,8 +86,7 @@ export function renderPlayerHeads(netInfo, x, y, yaw, headScale, borderWidth, dC
     Renderer.rotate(yaw);
 
     if (borderWidth) {
-        let playerColor = [0, 0, 0, 255];
-        if (settings().mapClassColors) playerColor = getClassColor(dClass);
+        let playerColor = getClassColor(dClass);
 
         Renderer.drawRect(
             Renderer.color(playerColor[0] ?? 0, playerColor[1] ?? 0, playerColor[2] ?? 0, playerColor[3] ?? 255),

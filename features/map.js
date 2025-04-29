@@ -307,20 +307,18 @@ const renderPlayers = () => {
         Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
         Renderer.scale(MapGui.getScale());
         Renderer.translate(x + 5, y + 5);
-        let dontRenderOwn = !settings().ShowOwn && p == Player.getName();
+        let dontRenderOwn = !settings().mapShowOwn && p == Player.getName();
 
         // Render the player name
         if (settings().mapShowPlayerNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
             let name = p;
             let width = Renderer.getStringWidth(name);
             let scale = headScale / 1.75;
-            Renderer.translate(0, 7);
-            Renderer.scale(scale, scale);
-            Renderer.drawRect(Renderer.color(0, 0, 0, 150), -width / 2 - 2, -2, width + 4, 11);
+            Renderer.translate(0, 8);
+            Renderer.scale(scale);
             Renderer.drawStringWithShadow(name, -width / 2, 0);
             Renderer.scale(1.75 / headScale, 1.75 / headScale);
-
-            Renderer.translate(0, -7);
+            Renderer.translate(0, -8);
         }
 
         Renderer.rotate(yaw);

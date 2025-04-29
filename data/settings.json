@@ -187,6 +187,10 @@
                 "value": true
             },
             {
+                "type": 2,
+                "name": "editMap"
+            },
+            {
                 "type": 6,
                 "name": "mapPlayerHeads",
                 "value": true
@@ -208,7 +212,7 @@
             },
             {
                 "type": 6,
-                "name": "mapDontShowOwn",
+                "name": "mapShowOwn",
                 "value": true
             }
         ]
