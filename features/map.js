@@ -1,10 +1,10 @@
-import { Promise } from "../../tska/polyfill/Promise";
 import { FeatManager } from "../utils/helpers";
 import { hud } from "../utils/hud";
 import Dungeon from "../../BloomCore/dungeons/Dungeon";
 import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads } from "../utils/mapUtils";
-import { getHead } from "../utils/api";
+import { isBetween } from "../utils/utils";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
+import settings from "../utils/config";
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage");
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator;
@@ -25,8 +25,6 @@ const Color = Java.type("java.awt.Color");
     --------------------------------------------- */
 
 //variables
-const cachedPlayerHeads = new Map(); // ["UnclaimedBloom6": HEAD_IMAGE]
-
 const checkmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
 const editCheckmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
 let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
@@ -61,7 +59,7 @@ const clearMap = () => {
     setPixels(0, 0, 23, 23, new Color(0, 0, 0, 0));
 };
 
-conist = updatePlayer = (player) => {
+const updatePlayer = (player) => {
     if (!Player.getPlayer()) return; //How tf is this null sometimes wtf
     let pl = Player.getPlayer()
         .field_71174_a.func_175106_d()
@@ -112,7 +110,6 @@ StellaNav.register("renderOverlay", () => {
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, 150, 150);
     Renderer.drawImage(mapImage, 11 + x, 11 + y, 128 * MapGui.getScale(), 128 * MapGui.getScale());
-    //Renderer.drawRect(Renderer.color(0, 0, 0), x3, y3, x4, y4);
     Renderer.finishDraw();
 
     renderCheckmarks(checkmarkMap);
@@ -122,7 +119,7 @@ StellaNav.register("renderOverlay", () => {
 //get players
 StellaNav.register(
     // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
-    "stepFps",
+    "tick",
     () => {
         let tempPlayers = DungeonScanner.players;
         if (!tempPlayers) return;
@@ -131,20 +128,62 @@ StellaNav.register(
             let player = p?.name;
             if (!player) return;
 
-            players[player] = {
-                info: updatePlayer(player),
-                uuid: null,
-                hasSpirit: false,
-                rank: null,
-                visited: [],
-                iconX: (p?.iconX / 125) * 128,
-                iconY: (p?.iconZ / 125) * 128,
-                yaw: p?.rotation,
-                visited: p?.visitedRooms,
-                deaths: p?.deaths,
-                inRender: false,
-            };
+            //create a player object
+            if (!Object.keys(players).includes(player)) {
+                players[player] = {
+                    info: updatePlayer(player),
+                    uuid: null,
+                    hasSpirit: false,
+                    rank: null,
+                    visited: [],
+                    iconX: null,
+                    iconY: null,
+                    yaw: null,
+                    visited: p?.visitedRooms,
+                    deaths: p?.deaths,
+                    inRender: false,
+                };
+            }
+
+            //update player position from map
+            if (!players[player].inRender) {
+                if (Dungeon.mapData && Dungeon.mapCorner) {
+                    for (let p of Object.keys(players)) {
+                        let player = players[p];
+                        if (!players[p].inRender) {
+                            let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
+                            if (!icon) continue;
+                            icon = Dungeon.icons[icon];
+                            player.iconX = MathLib.map(icon.x - Dungeon.mapCorner[0] * 2, 0, 256, 0, 138);
+                            player.iconY = MathLib.map(icon.y - Dungeon.mapCorner[1] * 2, 0, 256, 0, 138);
+                            player.yaw = icon.rotation;
+                        }
+                    }
+                }
+            }
         });
+    }
+);
+
+StellaNav.register(
+    "stepFps",
+    () => {
+        for (let p of Object.keys(players)) {
+            let player = World.getPlayerByName(p);
+            if (!player) {
+                players[p].inRender = false;
+                continue;
+            }
+            if (player.getPing() == -1) {
+                delete players[p];
+                continue;
+            }
+            if (!isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) continue;
+            players[p].inRender = true;
+            players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
+            players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
+            players[p].yaw = player.getYaw() + 180;
+        }
     },
     60
 );
@@ -154,9 +193,6 @@ StellaNav.register(
     "stepFps",
     () => {
         //if (!Dungeon.inDungeon || !Config.enabled) return;
-        let roomData = DungeonScanner.getCurrentRoom();
-
-        if (!roomData || !roomData.name) return;
 
         if (!Dungeon.mapData) return;
 
@@ -187,10 +223,10 @@ StellaNav.register(
                     setPixels(xx * 2, yy * 2, 3, 3, mapRGBs[roomColor]);
                     // Checkmarks and stuff
                     if (roomColor == 18 && watcherDone && center != 30) {
-                        tempCheckmarkMap.set(roomIndex, checkmarkImages[34], roomData.name); // White checkmark for blood room
+                        tempCheckmarkMap.set(roomIndex, checkmarkImages[34]); // White checkmark for blood room
                     }
                     if (center in checkmarkImages && roomColor !== center) {
-                        tempCheckmarkMap.set(roomIndex, checkmarkImages[center], roomData.name);
+                        tempCheckmarkMap.set(roomIndex, checkmarkImages[center]);
                         if (roomColor == 66) {
                             let p = Object.keys(puzzles).find((key) => puzzles[key].pos[0] == rmx && puzzles[key].pos[1] == rmy);
                             if (p) puzzles[p].check = puzzleStatusColors[center];
@@ -258,45 +294,43 @@ const renderPlayers = () => {
         let size = [7, 10];
         let head = p == Player.getName() ? GreenMarker : WhiteMarker;
         let headScale = 1;
+        let borderWidth = 0;
 
-        size = [10, 10];
-        //head = players[p].head;
+        if (settings().mapHeadOutline) borderWidth = 3;
 
         let x = players[p].iconX || 0;
         let y = players[p].iconY || 0;
         if (!x && !y) continue;
 
         let yaw = players[p].yaw || 0;
-        /*
         Renderer.retainTransforms(true);
         Renderer.translate(MapGui.getX() + 5.5, MapGui.getY() + 5.5);
         Renderer.scale(MapGui.getScale());
         Renderer.translate(x + 5, y + 5);
-        */
-        //let dontRenderOwn = !Config.showOwnName && p == Player.getName();
+        let dontRenderOwn = !settings().ShowOwn && p == Player.getName();
+
         // Render the player name
-        /*
-        if (Config.spiritLeapNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
-            let name = players[p].formatted && Config.showPlayerRanks ? players[p].formatted : p;
+        if (settings().mapShowPlayerNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
+            let name = p;
             let width = Renderer.getStringWidth(name);
-            let scale = lmData.map.headScale / 1.75;
+            let scale = headScale / 1.75;
             Renderer.translate(0, 7);
             Renderer.scale(scale, scale);
             Renderer.drawRect(Renderer.color(0, 0, 0, 150), -width / 2 - 2, -2, width + 4, 11);
             Renderer.drawStringWithShadow(name, -width / 2, 0);
-            Renderer.scale(1.75 / lmData.map.headScale, 1.75 / lmData.map.headScale);
+            Renderer.scale(1.75 / headScale, 1.75 / headScale);
 
             Renderer.translate(0, -7);
         }
-        */
 
-        //Renderer.rotate(yaw);
-        //Renderer.translate(-size[0] / 2, -size[1] / 2);
-        //Renderer.drawImage(head, 0, 0, size[0], size[1]);
+        Renderer.rotate(yaw);
+        Renderer.translate(-size[0] / 2, -size[1] / 2);
+        if (!settings().mapPlayerHeads) Renderer.drawImage(head, 0, 0, size[0], size[1]);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
 
         // Render the player head
-        Renderer.finishDraw();
-        renderPlayerHeads(players[p].info[0], x + MapGui.getX(), y + MapGui.getY(), yaw, headScale, 3, players[p].info[1]);
+        if (settings().mapPlayerHeads) renderPlayerHeads(players[p].info[0], x + MapGui.getX(), y + MapGui.getY(), yaw, headScale, borderWidth, players[p].info[1]);
     }
 };
 

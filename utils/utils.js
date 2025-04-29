@@ -8,6 +8,9 @@
 
     --------------------------------------------- */
 
+//check if something is between two numbers
+export const isBetween = (number, min, max) => (number - min) * (number - max) <= 0;
+
 //calculates the distance between 2 points using the 3d distance formula
 export const calcDistance = (p1, p2) => {
     var a = p2[0] - p1[0];

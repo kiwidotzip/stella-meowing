@@ -390,6 +390,63 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "Main",
     })
 
+    .addButton({
+        category: "StellaNav",
+        configName: "editMap",
+        title: "Map Location",
+        description: "Move StellaNav, change the scale, etc.",
+        subcategory: "Main",
+        placeHolder: "Edit",
+
+        onClick() {
+            hud.open();
+        },
+
+        shouldShow(data) {
+            return data.showRoomName;
+        },
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapPlayerHeads",
+        title: "Show Player Heads",
+        description: "Shows player heads on the map",
+        subcategory: "Markers",
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapHeadOutline",
+        title: "Outline player heads",
+        description: "Outlines the head",
+        subcategory: "Markers",
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapClassColors",
+        title: "Class Colors",
+        description: "Makes the outline the color of the class",
+        subcategory: "Markers",
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapShowPlayerNames",
+        title: "Show Names",
+        description: "Shows the player names on the map when holding leaps",
+        subcategory: "Markers",
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapShowOwn",
+        title: "Show Own Name",
+        description: "Showes your own name",
+        subcategory: "Markers",
+    })
+
     //themeing
     .addSelection({
         category: "Theme",

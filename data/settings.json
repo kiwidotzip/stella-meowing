@@ -185,6 +185,31 @@
                 "type": 6,
                 "name": "mapEnabled",
                 "value": true
+            },
+            {
+                "type": 6,
+                "name": "mapPlayerHeads",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "mapHeadOutline",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "mapClassColors",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "mapShowPlayerNames",
+                "value": true
+            },
+            {
+                "type": 6,
+                "name": "mapDontShowOwn",
+                "value": true
             }
         ]
     },
