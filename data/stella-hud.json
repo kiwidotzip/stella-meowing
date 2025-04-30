@@ -7,10 +7,10 @@
         "height": 9
     },
     "StellaNav": {
-        "x": 154.5,
-        "y": 5.5,
+        "x": 174,
+        "y": 35,
         "scale": 0.94,
-        "width": 150,
-        "height": 150
+        "width": 138,
+        "height": 138
     }
 }

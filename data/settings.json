@@ -216,6 +216,11 @@
                 "value": true
             },
             {
+                "type": 6,
+                "name": "mapInfoUnder",
+                "value": true
+            },
+            {
                 "type": 5,
                 "name": "mapWitherDoorColor",
                 "value": [

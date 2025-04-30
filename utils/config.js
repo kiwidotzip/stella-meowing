@@ -447,6 +447,14 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "Markers",
     })
 
+    .addSwitch({
+        configName: "mapInfoUnder",
+        title: "Dungeon Info",
+        description: "Info under the map",
+        category: "StellaNav",
+        subcategory: "Map",
+    })
+
     .addColorPicker({
         configName: "mapWitherDoorColor",
         title: "Wither Door Color",
