@@ -446,21 +446,20 @@ const renderCheckmarks = (map) => {
 const renderRoomNames = () => {
     for (let room of rooms) {
         if (!room) continue;
-        //if (!room.explored) continue;
+        if (!room.explored) continue;
         if (!room.comps) continue;
         if (!room.name) continue;
 
         let textColor = null;
         let secrets = 0;
-
         textColor = getTextColor(room.checkmark);
 
         let text = room.name?.split(" ") || ["???"];
         let sectext = secrets + " / " + room?.secrets || "?";
-        text.push(sectext);
+        if (room?.secrets && room?.secrets !== 0) text.push(sectext);
 
         //let text = room.name;
-        let scale = 1;
+        let scale = 0.5;
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -478,12 +477,12 @@ const renderRoomNames = () => {
         Renderer.retainTransforms(true);
         Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.scale(scale);
         Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.scale(scale);
 
         let i = 0;
         for (let line of text) {
-            let ly = y + 9 * scale * i;
+            let ly = 9 * i - (text.length * 9) / 2;
             let w = Renderer.getStringWidth(line);
 
             Renderer.drawStringWithShadow(textColor + line, -w / 2, ly);
