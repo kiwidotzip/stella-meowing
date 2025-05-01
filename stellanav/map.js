@@ -1,7 +1,7 @@
-import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads } from "./utils/mapUtils";
+import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
+import { isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
-
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import InternalEvents from "../../tska/event/InternalEvents";
 import settings from "../utils/config";
@@ -36,10 +36,14 @@ let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit":
 let puzzles = {}; // {"Water Board":{"pos": [2, 4], "checkmark": 1}, ...} checkmark: 0=failed, 1=incomplete, 2=white check, 3=green check
 let unassignedPuzzles = []; // [[0, 5], [2,4], ...] Coordinates of puzzles on map (0-5)
 let trapPos = null; // null or [0-128, 0-128]
+let rooms = [];
 
 let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
 let mapImage = new Image(mapBuffered);
 let mapIsEmpty = true;
+
+let mapScale = 1;
+let mapOffset = 0;
 
 let watcherDone = false;
 
@@ -47,12 +51,6 @@ let ll = 128 / 23;
 const getRoomPosition = (x, y) => [ll * 1.5 + ll * 4 * x, ll * 1.5 + ll * 4 * y];
 
 // Checkmark status of the puzzle
-const puzzleTextColors = {
-    0: new Color(161 / 255, 0, 0, 1),
-    1: Color.WHITE,
-    2: Color.YELLOW,
-    3: Color.GREEN,
-};
 
 //functions
 const setPixels = (x1, y1, width, height, color) => {
@@ -114,7 +112,7 @@ MapGui.onDraw((x, y) => {
     let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b"); // getPlayerInfo
     fun.setAccessible(true);
     let info = fun.invoke(Player.getPlayer());
-    if (info) renderPlayerHeads(info, 65 + x, 35 + y, 320, headScale, 3, "Mage");
+    if (info) renderPlayerHeads(info, 65 + x, 35 + y, 320, headScale, 3, "Mage", MapGui.scale());
 
     if (settings().mapInfoUnder) renderUnderMapInfo();
 });
@@ -122,13 +120,17 @@ MapGui.onDraw((x, y) => {
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
     renderMap();
-    renderCheckmarks(checkmarkMap);
+    //renderCheckmarks(checkmarkMap);
+    renderRoomNames();
     renderPlayers();
     if (settings().mapInfoUnder) renderUnderMapInfo();
 });
 
-//get players
+//get players and map offset / scale
 StellaNav.register("tick", () => {
+    mapScale = oscale(Dungeon.floorNumber);
+    mapOffset = Dungeon.floorNumber == 1 ? 10.6 : 0;
+
     let tempPlayers = DungeonScanner.players;
     if (!tempPlayers) return;
 
@@ -175,31 +177,28 @@ StellaNav.register("tick", () => {
                 }
             }
         }
+        rooms = DungeonScanner?.rooms;
     });
 });
 
-StellaNav.register(
-    "stepFps",
-    () => {
-        for (let p of Object.keys(players)) {
-            let player = World.getPlayerByName(p);
-            if (!player) {
-                players[p].inRender = false;
-                continue;
-            }
-            if (player.getPing() == -1) {
-                delete players[p];
-                continue;
-            }
-            if (!isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) continue;
-            players[p].inRender = true;
-            players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
-            players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
-            players[p].yaw = player.getYaw() + 180;
+StellaNav.register("tick", () => {
+    for (let p of Object.keys(players)) {
+        let player = World.getPlayerByName(p);
+        if (!player) {
+            players[p].inRender = false;
+            continue;
         }
-    },
-    60
-);
+        if (player.getPing() == -1) {
+            delete players[p];
+            continue;
+        }
+        if (!isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) continue;
+        players[p].inRender = true;
+        players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
+        players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
+        players[p].yaw = player.getYaw() + 180;
+    }
+});
 
 let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘";
 let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0";
@@ -238,11 +237,12 @@ InternalEvents.on("mapdata", (mapData) => {
                     tempCheckmarkMap.set(roomIndex, checkmarkImages[34]); // White checkmark for blood room
                 }
                 if (center in checkmarkImages && roomColor !== center) {
+                    if (center != 119) continue;
                     tempCheckmarkMap.set(roomIndex, checkmarkImages[center]);
-                    if (roomColor == 66) {
+                    /*if (roomColor == 66) {
                         let p = Object.keys(puzzles).find((key) => puzzles[key].pos[0] == rmx && puzzles[key].pos[1] == rmy);
                         if (p) puzzles[p].check = puzzleStatusColors[center];
-                    }
+                    }*/
                 }
                 // Puzzles
                 if (roomColor == 66 && !Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rmx && puzzles[a].pos[1] == rmy) && !unassignedPuzzles.some((a) => a[0] == rmx && a[1] == rmy)) {
@@ -313,7 +313,9 @@ const renderMap = () => {
     Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, w, h);
+    Renderer.translate(mapOffset, 0);
     Renderer.translate(5, 5);
+    Renderer.scale(mapScale);
     Renderer.drawImage(map, 0, 0, 128, 128);
     Renderer.retainTransforms(false);
     Renderer.finishDraw();
@@ -346,7 +348,8 @@ const renderPlayers = () => {
         Renderer.retainTransforms(true);
         Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate(x + 5, y + 5);
+        Renderer.translate((x + 5 + mapOffset) * mapScale, (y + 5) * mapScale);
+        Renderer.scale(mapScale);
 
         let dontRenderOwn = !settings().mapShowOwn && p == Player.getName();
 
@@ -354,12 +357,12 @@ const renderPlayers = () => {
         if (settings().mapShowPlayerNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
             let name = p;
             let width = Renderer.getStringWidth(name);
-            let scale = headScale / 1.75;
-            Renderer.translate(0, 8);
+            let scale = headScale / 1.3;
+            Renderer.translate(0, 8.5);
             Renderer.scale(scale);
             Renderer.drawStringWithShadow(name, -width / 2, 0);
-            Renderer.scale(1.75 / headScale, 1.75 / headScale);
-            Renderer.translate(0, -8);
+            Renderer.scale(1.3 / headScale, 1.3 / headScale);
+            Renderer.translate(0, -8.5);
         }
 
         Renderer.rotate(yaw);
@@ -368,13 +371,16 @@ const renderPlayers = () => {
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
 
+        let hscale = MapGui.getScale() * mapScale;
+
         // Render the player head
-        if (settings().mapPlayerHeads) renderPlayerHeads(players[p].info[0], x + MapGui.getX(), y + MapGui.getY(), yaw, headScale, borderWidth, players[p].info[1]);
+        if (settings().mapPlayerHeads) renderPlayerHeads(players[p].info[0], (x + mapOffset) * hscale + MapGui.getX(), y * hscale + MapGui.getY(), yaw, headScale, borderWidth, players[p].info[1], hscale);
     }
 };
 
 //checkmarks
 const renderCheckmarks = (map) => {
+    //render question marks and blood room checkmarks
     for (let entry of map.entries()) {
         let [roomIndex, checkmarkImage] = entry;
         let rx = Math.floor(roomIndex / 6);
@@ -382,12 +388,107 @@ const renderCheckmarks = (map) => {
         let scale = 0.9;
         let [x, y] = getRoomPosition(rx, ry);
         if (Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rx && puzzles[a].pos[1] == ry)) continue;
-        let [w, h] = [12 * scale, 12 * scale];
+        let [w, h] = [10 * scale * mapScale, 12 * scale * mapScale];
+
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX(), MapGui.getY());
+        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
+        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
         Renderer.drawImage(checkmarkImage, -w / 2, -h / 2, w, h);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+    }
+    //render all other checkmarks
+    for (let room of rooms) {
+        if (!room) continue;
+        if (!room.explored) continue;
+
+        let check = getCheckmarks();
+        let checkImg = null;
+
+        if (!room.checkmark) continue;
+        if (!room.comps) continue;
+
+        if (room.checkmark == 0) continue;
+        if (room.checkmark == 1) checkImg = check[34];
+        if (room.checkmark == 2) checkImg = check[30];
+        if (room.checkmark == 3) checkImg = check[18];
+        if (room.checkmark == 4) checkImg = check[119];
+
+        let scale = 0.9;
+        let location = room.comps[0];
+
+        let minX = Math.min(...room.comps.map((a) => a[0]));
+        let minZ = Math.min(...room.comps.map((a) => a[1]));
+        let roomWidth = Math.max(...room.comps.map((a) => a[0])) - minX;
+        let roomHeight = Math.max(...room.comps.map((a) => a[1])) - minZ;
+        location = [minX + roomWidth / 2, minZ + roomHeight / 2];
+        if (room.shape == "L") {
+            if (room.comps.filter((a) => a[1] == minZ).length == 2) location[1] -= roomHeight / 2;
+            else location[1] += roomHeight / 2;
+        }
+
+        let [x, y] = getRoomPosition(location[0], location[1]);
+
+        let [w, h] = [12 * scale * mapScale, 12 * scale * mapScale];
+
+        Renderer.retainTransforms(true);
+        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.scale(MapGui.getScale());
+        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.drawImage(checkImg, -w / 2, -h / 2, w, h);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+    }
+};
+
+//room names
+const renderRoomNames = () => {
+    for (let room of rooms) {
+        if (!room) continue;
+        //if (!room.explored) continue;
+        if (!room.comps) continue;
+        if (!room.name) continue;
+
+        let textColor = null;
+        let secrets = 0;
+
+        textColor = getTextColor(room.checkmark);
+
+        let text = room.name?.split(" ") || ["???"];
+        let sectext = secrets + " / " + room?.secrets || "?";
+        text.push(sectext);
+
+        //let text = room.name;
+        let scale = 1;
+        let location = room.comps[0];
+
+        let minX = Math.min(...room.comps.map((a) => a[0]));
+        let minZ = Math.min(...room.comps.map((a) => a[1]));
+        let roomWidth = Math.max(...room.comps.map((a) => a[0])) - minX;
+        let roomHeight = Math.max(...room.comps.map((a) => a[1])) - minZ;
+        location = [minX + roomWidth / 2, minZ + roomHeight / 2];
+        if (room.shape == "L") {
+            if (room.comps.filter((a) => a[1] == minZ).length == 2) location[1] -= roomHeight / 2;
+            else location[1] += roomHeight / 2;
+        }
+
+        let [x, y] = getRoomPosition(location[0], location[1]);
+
+        Renderer.retainTransforms(true);
+        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.scale(MapGui.getScale());
+        Renderer.scale(scale);
+        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+
+        let i = 0;
+        for (let line of text) {
+            let ly = y + 9 * scale * i;
+            let w = Renderer.getStringWidth(line);
+
+            Renderer.drawStringWithShadow(textColor + line, -w / 2, ly);
+            i++;
+        }
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
     }
@@ -423,3 +524,12 @@ register("worldUnload", () => {
     rooms = [];
     watcherDone = false;
 });
+
+register("command", () => {
+    ChatLib.chat(Dungeon.floorNumber);
+    ChatLib.chat(mapOffset);
+    for (let room of rooms) {
+        let text = room.name?.split(" ") || ["???"];
+        ChatLib.chat(JSON.stringify(text));
+    }
+}).setName("stellaNav");

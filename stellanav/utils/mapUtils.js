@@ -4,6 +4,23 @@ const Color = Java.type("java.awt.Color");
 
 const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
 
+export const oscale = (floor) => {
+    if (!floor) return 1;
+
+    // The max dungeon size is 6x6
+    // Lower floors contain smaller dungeons
+    // Entrance is only a 4x4 dungeon, so we need to scale the rooms by the inverse of 4/6
+    // To make them fill the entire map area, which is 6/4.
+    // The same goes for the other non 6x6 dungeons
+    if (floor == 0) return 6 / 4;
+    if (floor == 1) return 6 / 5;
+    if (floor == 2) return 6 / 5;
+    if (floor == 3) return 6 / 5;
+
+    return 1;
+};
+
+//images
 export const defaultMapImage = Image.fromFile(assets + "/DefaultMap.png");
 
 export const greenCheck = Image.fromFile(assets + "/clear/BloomMapGreenCheck.png");
@@ -23,6 +40,15 @@ export const getCheckmarks = () => {
     };
 };
 
+export const getTextColor = (check) => {
+    if (!check) return "&7";
+    if (check == 1) return "&f";
+    else if (check == 2) return "&a";
+    else if (check == 3) return "&c";
+    else return "&7";
+};
+
+//map colors
 export const mapRGBs = {
     18: new Color(1, 0, 0, 1), // Blood
     85: new Color(65 / 255, 65 / 255, 65 / 255, 1), // Unexplored
@@ -44,6 +70,7 @@ export const roomTypes = {
     62: "Trap",
 };
 
+//functions
 export function getPlayerName(player) {
     if (!player) return "???";
     return ChatLib.removeFormatting(player.name ?? "???")
@@ -74,12 +101,13 @@ getClassColor = (dClass) => {
     return color;
 };
 
-export function renderPlayerHeads(netInfo, x, y, yaw, headScale, borderWidth, dClass) {
+export function renderPlayerHeads(netInfo, x, y, yaw, headScale, borderWidth, dClass, scale = 1) {
     Tessellator.pushMatrix();
     Renderer.retainTransforms(true);
-    let [w, h] = [headScale * 10, headScale * 10];
+    let [w, h] = [headScale * 10 * scale, headScale * 10 * scale];
 
-    Renderer.translate(x + w / 2, y + h / 2, 50);
+    Renderer.translate(-w / 2, -h / 2);
+    Renderer.translate(x + w, y + h, 50);
 
     Renderer.rotate(yaw);
 
