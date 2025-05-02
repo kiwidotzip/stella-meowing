@@ -4,6 +4,16 @@ const Color = Java.type("java.awt.Color");
 
 const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
 
+/*  -------------- StellaNav Utils --------------
+
+    Utilities for StellaNav
+
+    ------------------- To Do -------------------
+
+    - Make the  map
+
+    --------------------------------------------- */
+
 export const oscale = (floor) => {
     if (!floor) return 1;
 
@@ -102,6 +112,7 @@ getClassColor = (dClass) => {
 };
 
 export function renderPlayerHeads(netInfo, x, y, yaw, headScale, borderWidth, dClass, scale = 1) {
+    if (!netInfo) return;
     Tessellator.pushMatrix();
     Renderer.retainTransforms(true);
     let [w, h] = [headScale * 10 * scale, headScale * 10 * scale];

@@ -6,6 +6,8 @@ import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import InternalEvents from "../../tska/event/InternalEvents";
 import settings from "../utils/config";
 import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
+import EventListener from "../../tska/event/EventListener";
+require("./utils/events.js");
 
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer");
 const BufferedImage = Java.type("java.awt.image.BufferedImage");
@@ -36,6 +38,7 @@ let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit":
 let puzzles = {}; // {"Water Board":{"pos": [2, 4], "checkmark": 1}, ...} checkmark: 0=failed, 1=incomplete, 2=white check, 3=green check
 let unassignedPuzzles = []; // [[0, 5], [2,4], ...] Coordinates of puzzles on map (0-5)
 let trapPos = null; // null or [0-128, 0-128]
+let collectedSecrets = {};
 let rooms = [];
 
 let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
@@ -202,6 +205,31 @@ StellaNav.register("tick", () => {
 
 let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘";
 let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0";
+
+//secret logging
+EventListener.on("stella:secretCollect", (secret) => {
+    let collected = false;
+    if (collectedSecrets[secret.room]) {
+        let i = 0;
+        for (let srts of collectedSecrets[secret.room]) {
+            //ChatLib.chat("&d[Stella] &5[Secret Index]");
+            //ChatLib.chat("&d| &bIndex: &r" + i);
+            //ChatLib.chat("&d| &bType: &r" + srts.type);
+            //ChatLib.chat("&d| &bPosition: &r" + srts.pos[0] + " " + srts.pos[1] + " " + srts.pos[2]);
+            if (srts.type != secret.type) continue;
+            if (srts.pos[0] !== secret.pos[0] && srts.pos[1] !== secret.pos[1] && srts.pos[2] !== secret.pos[2]) continue;
+            collected = true;
+            i++;
+        }
+    } else collectedSecrets[secret.room] = [];
+    if (!collected) collectedSecrets[secret.room].push(secret);
+
+    if (settings().devMode) {
+        ChatLib.chat("&d[Stella] &bSecret collected!");
+        ChatLib.chat("&d| &bType: &r" + secret.type + " &bRoom: &r" + secret.room);
+        ChatLib.chat("&d| &bPosition: &r" + secret.pos[0] + " " + secret.pos[1] + " " + secret.pos[2] + " &bCollected: &r" + collected.toString());
+    }
+});
 
 //update from map
 InternalEvents.on("mapdata", (mapData) => {
@@ -374,7 +402,7 @@ const renderPlayers = () => {
         let hscale = MapGui.getScale() * mapScale;
 
         // Render the player head
-        if (settings().mapPlayerHeads) renderPlayerHeads(players[p].info[0], (x + mapOffset) * hscale + MapGui.getX(), y * hscale + MapGui.getY(), yaw, headScale, borderWidth, players[p].info[1], hscale);
+        if (settings().mapPlayerHeads) renderPlayerHeads(players[p]?.info[0], (x + mapOffset) * hscale + MapGui.getX(), y * hscale + MapGui.getY(), yaw, headScale, borderWidth, players[p]?.info[1], hscale);
     }
 };
 
@@ -461,7 +489,7 @@ const renderRoomNames = () => {
 
         let textColor = null;
 
-        let secrets = 0;
+        let secrets = collectedSecrets[room.name] ? collectedSecrets[room.name].length : 0;
         if (room.checkmark == 2) secrets = room.secrets;
 
         textColor = getTextColor(room.checkmark);
@@ -601,8 +629,8 @@ register("chat", () => {
 //Reset on world unload
 register("worldUnload", () => {
     clearMap();
-    playerHeads = {};
     checkmarkMap.clear();
+    collectedSecrets = {};
     puzzles = {};
     players = {};
     mapIsEmpty = true;

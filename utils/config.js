@@ -341,18 +341,6 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         },
     })
 
-    .addSwitch({
-        configName: "oldChroma",
-        title: "Old chroma overlay",
-        description: "Makes the outline chroma but worse",
-        category: "Msc.",
-        subcatagory: "Block Overlay",
-
-        shouldShow(data) {
-            return data.overlayEnabled && data.chromaHighlight;
-        },
-    })
-
     .addSlider({
         configName: "chromaOverlaySpeed",
         title: "Chroma Speed",
@@ -379,6 +367,14 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         shouldShow(data) {
             return data.overlayEnabled;
         },
+    })
+
+    .addSwitch({
+        configName: "devMode",
+        title: "Debug Info",
+        description: "Debug info for developers",
+        category: "Msc.",
+        subcatagory: "Dev",
     })
 
     //map
@@ -459,8 +455,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
 
     .addDropDown({
         configName: "mapPuzzleType",
-        title: "Room Check Type",
-        description: "What type of room checkmark you want",
+        title: "Puzzle Check Type",
+        description: "What type of puzzle checkmark you want",
         category: "StellaNav",
         subcategory: "Map",
         options: ["Checkmark", "Name", "Secrets", "Both"],

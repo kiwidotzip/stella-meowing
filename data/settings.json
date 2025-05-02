@@ -162,11 +162,6 @@
                 "value": true
             },
             {
-                "type": 6,
-                "name": "oldChroma",
-                "value": false
-            },
-            {
                 "type": 1,
                 "name": "chromaOverlaySpeed",
                 "value": 1
@@ -175,6 +170,11 @@
                 "type": 1,
                 "name": "overlayLineWidth",
                 "value": 2
+            },
+            {
+                "type": 6,
+                "name": "devMode",
+                "value": false
             }
         ]
     },
