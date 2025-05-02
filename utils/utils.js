@@ -31,6 +31,7 @@ const guiContainerTopField = GuiContainer.class.getDeclaredField("field_147009_r
 guiContainerLeftField.setAccessible(true);
 guiContainerTopField.setAccessible(true);
 
+//most of this stuff is stolen from bloomcore
 /**
  *
  * @param {Number} slotNumber
@@ -70,4 +71,10 @@ export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z =
     Renderer.translate(x, y, zPosition);
     Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
     Renderer.finishDraw();
+};
+
+// Get the tab list
+export const getTabList = (formatted = false) => {
+    if (formatted) return TabList.getNames();
+    return TabList.getNames().map((a) => a.removeFormatting());
 };

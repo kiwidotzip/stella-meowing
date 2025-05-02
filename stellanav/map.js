@@ -1,6 +1,6 @@
 import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
-import { isBetween } from "../utils/utils";
+import { getTabList, isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import InternalEvents from "../../tska/event/InternalEvents";
@@ -35,9 +35,9 @@ const defaultMapSize = [138, 138];
 let headScale = 1;
 
 let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
+let deadPlayers = new Set();
 let puzzles = {}; // {"Water Board":{"pos": [2, 4], "checkmark": 1}, ...} checkmark: 0=failed, 1=incomplete, 2=white check, 3=green check
 let unassignedPuzzles = []; // [[0, 5], [2,4], ...] Coordinates of puzzles on map (0-5)
-let trapPos = null; // null or [0-128, 0-128]
 let collectedSecrets = {};
 let rooms = [];
 
@@ -201,6 +201,28 @@ StellaNav.register("tick", () => {
         players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
         players[p].yaw = player.getYaw() + 180;
     }
+
+    let tabList = getTabList(false);
+    if (!tabList || tabList.length < 60) return;
+    // Party and Classes
+    const lines = Array(5)
+        .fill()
+        .map((_, i) => tabList[i * 4 + 1]);
+    // Matches the name and class of every player in the party
+    // [74] UnclaimedBloom6 (Mage XXXIX)
+    const matches = lines.reduce((a, b) => {
+        // https://regex101.com/r/cUzJoK/7
+        const match = b.match(/^.?\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
+        if (!match) return a;
+        let [_, sbLevel, player, dungeonClass, classLevel] = match;
+        return a.concat([[player, dungeonClass, classLevel]]);
+    }, []);
+
+    deadPlayers = matches.reduce((a, b) => {
+        let [player, dungeonClass] = b;
+        if (dungeonClass == "DEAD") a.add(player);
+        return a;
+    }, new Set());
 });
 
 let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘";
@@ -360,7 +382,7 @@ const renderPlayers = () => {
         keys = keys.concat(keys.splice(ind, 1));
     }
     for (let p of keys) {
-        //if (players[p].class == "DEAD" && p !== Player.getName()) continue;
+        if (deadPlayers.has(p) && p !== Player.getName()) continue;
         let size = [7, 10];
         let head = p == Player.getName() ? GreenMarker : WhiteMarker;
         let borderWidth = 0;
