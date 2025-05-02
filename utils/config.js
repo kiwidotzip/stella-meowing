@@ -447,6 +447,26 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "Markers",
     })
 
+    .addDropDown({
+        configName: "mapRoomType",
+        title: "Room Check Type",
+        description: "What type of room checkmark you want",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: ["Checkmark", "Name", "Secrets", "Both"],
+        value: 0,
+    })
+
+    .addDropDown({
+        configName: "mapPuzzleType",
+        title: "Room Check Type",
+        description: "What type of room checkmark you want",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: ["Checkmark", "Name", "Secrets", "Both"],
+        value: 1,
+    })
+
     .addSwitch({
         configName: "mapInfoUnder",
         title: "Dungeon Info",

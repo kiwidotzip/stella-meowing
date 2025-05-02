@@ -99,12 +99,11 @@ MapGui.onDraw((x, y) => {
 
     Renderer.drawImage(defaultMapImage, 5 + x, 5 + y, 128 * MapGui.getScale(), 128 * MapGui.getScale());
 
-    let checks = getCheckmarks();
     // Add fake checkmarks
-    editCheckmarkMap.set(0, checks[34]);
-    editCheckmarkMap.set(12, checks[30]);
-    editCheckmarkMap.set(13, checks[18]);
-    editCheckmarkMap.set(16, checks[18]);
+    editCheckmarkMap.set(0, 34);
+    editCheckmarkMap.set(12, 30);
+    editCheckmarkMap.set(13, 18);
+    editCheckmarkMap.set(16, 18);
 
     renderCheckmarks(editCheckmarkMap);
 
@@ -112,7 +111,7 @@ MapGui.onDraw((x, y) => {
     let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b"); // getPlayerInfo
     fun.setAccessible(true);
     let info = fun.invoke(Player.getPlayer());
-    if (info) renderPlayerHeads(info, 65 + x, 35 + y, 320, headScale, 3, "Mage", MapGui.scale());
+    if (info) renderPlayerHeads(info, 65 + x, 35 + y, 320, headScale, 3, "Mage", MapGui.getScale());
 
     if (settings().mapInfoUnder) renderUnderMapInfo();
 });
@@ -120,8 +119,9 @@ MapGui.onDraw((x, y) => {
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
     renderMap();
-    //renderCheckmarks(checkmarkMap);
+    renderCheckmarks(checkmarkMap);
     renderRoomNames();
+    renderPuzzleNames();
     renderPlayers();
     if (settings().mapInfoUnder) renderUnderMapInfo();
 });
@@ -234,11 +234,11 @@ InternalEvents.on("mapdata", (mapData) => {
                 setPixels(xx * 2, yy * 2, 3, 3, mapRGBs[roomColor]);
                 // Checkmarks and stuff
                 if (roomColor == 18 && watcherDone && center != 30) {
-                    tempCheckmarkMap.set(roomIndex, checkmarkImages[34]); // White checkmark for blood room
+                    tempCheckmarkMap.set(roomIndex, 34); // White checkmark for blood room
                 }
                 if (center in checkmarkImages && roomColor !== center) {
                     if (center != 119) continue;
-                    tempCheckmarkMap.set(roomIndex, checkmarkImages[center]);
+                    tempCheckmarkMap.set(roomIndex, center);
                     /*if (roomColor == 66) {
                         let p = Object.keys(puzzles).find((key) => puzzles[key].pos[0] == rmx && puzzles[key].pos[1] == rmy);
                         if (p) puzzles[p].check = puzzleStatusColors[center];
@@ -381,6 +381,8 @@ const renderPlayers = () => {
 //checkmarks
 const renderCheckmarks = (map) => {
     //render question marks and blood room checkmarks
+    const checkmarkImages = getCheckmarks();
+
     for (let entry of map.entries()) {
         let [roomIndex, checkmarkImage] = entry;
         let rx = Math.floor(roomIndex / 6);
@@ -388,13 +390,14 @@ const renderCheckmarks = (map) => {
         let scale = 0.9;
         let [x, y] = getRoomPosition(rx, ry);
         if (Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rx && puzzles[a].pos[1] == ry)) continue;
-        let [w, h] = [10 * scale * mapScale, 12 * scale * mapScale];
+        let [w, h] = [12 * scale * mapScale, 12 * scale * mapScale];
+        if (checkmarkImage == 119) [w, h] = [10 * scale * mapScale, 12 * scale * mapScale];
 
         Renderer.retainTransforms(true);
         Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
         Renderer.scale(MapGui.getScale());
         Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
-        Renderer.drawImage(checkmarkImage, -w / 2, -h / 2, w, h);
+        Renderer.drawImage(checkmarkImages[checkmarkImage], -w / 2, -h / 2, w, h);
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
     }
@@ -408,6 +411,8 @@ const renderCheckmarks = (map) => {
 
         if (!room.checkmark) continue;
         if (!room.comps) continue;
+
+        if (((settings().mapRoomType > 0 && room.type != 1) || (settings().mapPuzzleType != 2 && room.type == 1)) && (room.type != 3 || room.type != 5)) continue;
 
         if (room.checkmark == 0) continue;
         if (room.checkmark == 1) checkImg = check[34];
@@ -445,21 +450,30 @@ const renderCheckmarks = (map) => {
 //room names
 const renderRoomNames = () => {
     for (let room of rooms) {
+        let type = settings().mapRoomType;
+        if (type < 1) continue;
         if (!room) continue;
         if (!room.explored) continue;
         if (!room.comps) continue;
         if (!room.name) continue;
+        if (room.type == 1 || room.type == 3) continue;
+        if (room.name == "Entrance") continue;
 
         let textColor = null;
+
         let secrets = 0;
+        if (room.checkmark == 2) secrets = room.secrets;
+
         textColor = getTextColor(room.checkmark);
 
-        let text = room.name?.split(" ") || ["???"];
-        let sectext = secrets + " / " + room?.secrets || "?";
-        if (room?.secrets && room?.secrets !== 0) text.push(sectext);
+        let text = [];
+        if (type == 1 || type == 3) text = room.name?.split(" ") || ["???"];
+
+        let sectext = secrets + "/" + room?.secrets || "?";
+        if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.5;
+        let scale = 0.75;
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -485,6 +499,79 @@ const renderRoomNames = () => {
             let ly = 9 * i - (text.length * 9) / 2;
             let w = Renderer.getStringWidth(line);
 
+            //shadow
+            Renderer.drawStringWithShadow("&0" + line, -w / 2 + scale, ly);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2 - scale, ly);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2, ly + scale);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2, ly - scale);
+
+            //normal
+            Renderer.drawStringWithShadow(textColor + line, -w / 2, ly);
+            i++;
+        }
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+    }
+};
+
+//puzzle names
+const renderPuzzleNames = () => {
+    for (let room of rooms) {
+        let type = settings().mapPuzzleType;
+        if (type < 1) continue;
+        if (!room) continue;
+        if (!room.explored) continue;
+        if (!room.comps) continue;
+        if (!room.name) continue;
+        if (room.type != 1) continue;
+
+        let textColor = null;
+
+        let secrets = 0;
+        if (room.checkmark == 2) secrets = room?.secrets;
+
+        textColor = getTextColor(room.checkmark);
+
+        let text = [];
+        if (type == 1 || type == 3) text = room.name?.split(" ") || ["???"];
+
+        let sectext = secrets + " / " + room?.secrets || "?";
+        if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
+
+        //let text = room.name;
+        let scale = 0.75;
+        let location = room.comps[0];
+
+        let minX = Math.min(...room.comps.map((a) => a[0]));
+        let minZ = Math.min(...room.comps.map((a) => a[1]));
+        let roomWidth = Math.max(...room.comps.map((a) => a[0])) - minX;
+        let roomHeight = Math.max(...room.comps.map((a) => a[1])) - minZ;
+        location = [minX + roomWidth / 2, minZ + roomHeight / 2];
+        if (room.shape == "L") {
+            if (room.comps.filter((a) => a[1] == minZ).length == 2) location[1] -= roomHeight / 2;
+            else location[1] += roomHeight / 2;
+        }
+
+        let [x, y] = getRoomPosition(location[0], location[1]);
+
+        Renderer.retainTransforms(true);
+        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.scale(MapGui.getScale());
+        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.scale(scale);
+
+        let i = 0;
+        for (let line of text) {
+            let ly = 9 * i - (text.length * 9) / 2;
+            let w = Renderer.getStringWidth(line);
+
+            //shadow
+            Renderer.drawStringWithShadow("&0" + line, -w / 2 + scale, ly);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2 - scale, ly);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2, ly + scale);
+            Renderer.drawStringWithShadow("&0" + line, -w / 2, ly - scale);
+
+            //normal
             Renderer.drawStringWithShadow(textColor + line, -w / 2, ly);
             i++;
         }

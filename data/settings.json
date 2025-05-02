@@ -216,6 +216,16 @@
                 "value": true
             },
             {
+                "type": 7,
+                "name": "mapRoomType",
+                "value": 2
+            },
+            {
+                "type": 7,
+                "name": "mapPuzzleType",
+                "value": 3
+            },
+            {
                 "type": 6,
                 "name": "mapInfoUnder",
                 "value": true
