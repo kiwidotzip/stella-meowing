@@ -43,6 +43,9 @@ let rooms = [];
 
 let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
 let mapImage = new Image(mapBuffered);
+let emptyBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
+let emptyImage = new Image(emptyBuffered);
+
 let mapIsEmpty = true;
 
 let mapScale = 1;
@@ -153,6 +156,7 @@ StellaNav.register("tick", () => {
                 iconY: null,
                 yaw: null,
                 visited: p?.visitedRooms,
+                cleared: p?.clearedRooms,
                 deaths: p?.deaths,
                 inRender: false,
             };
@@ -160,8 +164,9 @@ StellaNav.register("tick", () => {
 
         //update player info
         players[player].info = updatePlayer(player);
-        players[player].class = Dungeon.partyMembers[player]?.className;
+        players[player].class = Dungeon.players[player].className;
         players[player].visited = p?.visitedRooms;
+        players[player].cleared = p?.clearedRooms;
         players[player].deaths = p?.deaths;
 
         //update player position from map
@@ -180,8 +185,11 @@ StellaNav.register("tick", () => {
                 }
             }
         }
-        rooms = DungeonScanner?.rooms;
     });
+    rooms = DungeonScanner?.rooms;
+
+    for (let room of rooms) {
+    }
 });
 
 StellaNav.register("tick", () => {
@@ -201,28 +209,6 @@ StellaNav.register("tick", () => {
         players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
         players[p].yaw = player.getYaw() + 180;
     }
-
-    let tabList = getTabList(false);
-    if (!tabList || tabList.length < 60) return;
-    // Party and Classes
-    const lines = Array(5)
-        .fill()
-        .map((_, i) => tabList[i * 4 + 1]);
-    // Matches the name and class of every player in the party
-    // [74] UnclaimedBloom6 (Mage XXXIX)
-    const matches = lines.reduce((a, b) => {
-        // https://regex101.com/r/cUzJoK/7
-        const match = b.match(/^.?\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
-        if (!match) return a;
-        let [_, sbLevel, player, dungeonClass, classLevel] = match;
-        return a.concat([[player, dungeonClass, classLevel]]);
-    }, []);
-
-    deadPlayers = matches.reduce((a, b) => {
-        let [player, dungeonClass] = b;
-        if (dungeonClass == "DEAD") a.add(player);
-        return a;
-    }, new Set());
 });
 
 let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘";
@@ -345,7 +331,7 @@ StellaNav.register("tick", () => {
     let dMimic = [6, 7].includes(Dungeon.floorNumber) ? "&7Mimic: " + (Dungeon.mimicDead ? "&a✔" : "&c✘") : "";
 
     let minSecrets = "&7Min Secrets: " + (!Dungeon.secretsFound ? "&b?" : Dungeon.scoreData.minSecrets > Dungeon.secretsFound ? `&e${Dungeon.scoreData.minSecrets}` : `&a${Dungeon.scoreData.minSecrets}`);
-    let dDeaths = "&7Deaths: " + (Dungeon.scoreData.deathPenalty < 0 ? `&c${Dungeon.scoreData.deathPenalty}` : "&a0");
+    let dDeaths = "&7Deaths: " + (Dungeon.teamDeaths < 0 ? `&c${Dungeon.scoreData.teamDeaths}` : "&a0");
     let dScore = "&7Score: " + (Dungeon.scoreData.score >= 300 ? `&a${Dungeon.scoreData.score}` : Dungeon.scoreData.score >= 270 ? `&e${Dungeon.scoreData.score}` : `&c${Dungeon.scoreData.score}`) + (Dungeon._hasPaul ? " &b★" : "");
 
     mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim();
@@ -354,7 +340,7 @@ StellaNav.register("tick", () => {
 
 //map rendering
 const renderMap = () => {
-    let map = mapIsEmpty ? defaultMapImage : mapImage;
+    let map = mapIsEmpty ? emptyImage : mapImage;
     let [x, y] = [MapGui.getX(), MapGui.getY()];
     let [w, h] = defaultMapSize;
     h += settings().mapInfoUnder ? 10 : 0;
@@ -382,7 +368,7 @@ const renderPlayers = () => {
         keys = keys.concat(keys.splice(ind, 1));
     }
     for (let p of keys) {
-        if (deadPlayers.has(p) && p !== Player.getName()) continue;
+        if (players[p].class == "DEAD" && p !== Player.getName()) continue;
         let size = [7, 10];
         let head = p == Player.getName() ? GreenMarker : WhiteMarker;
         let borderWidth = 0;
@@ -424,6 +410,8 @@ const renderPlayers = () => {
         let hscale = MapGui.getScale() * mapScale;
 
         // Render the player head
+        if (!players[p]) return;
+        if (!players[p].info) return;
         if (settings().mapPlayerHeads) renderPlayerHeads(players[p]?.info[0], (x + mapOffset) * hscale + MapGui.getX(), y * hscale + MapGui.getY(), yaw, headScale, borderWidth, players[p]?.info[1], hscale);
     }
 };
@@ -662,10 +650,8 @@ register("worldUnload", () => {
 });
 
 register("command", () => {
-    ChatLib.chat(Dungeon.floorNumber);
-    ChatLib.chat(mapOffset);
-    for (let room of rooms) {
-        let text = room.name?.split(" ") || ["???"];
-        ChatLib.chat(JSON.stringify(text));
+    for (let p of Object.keys(DungeonScanner.players)) {
+        let player = DungeonScanner.players[p];
+        ChatLib.chat(JSON.stringify(Object.keys(player.clearedRooms["WHITE"])));
     }
 }).setName("stellaNav");
