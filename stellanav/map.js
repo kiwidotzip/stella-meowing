@@ -652,6 +652,7 @@ register("worldUnload", () => {
 register("command", () => {
     for (let p of Object.keys(DungeonScanner.players)) {
         let player = DungeonScanner.players[p];
-        ChatLib.chat(JSON.stringify(Object.keys(player.clearedRooms["WHITE"])));
+        let rooms = player.clearedRooms["WHITE"].toObject();
+        ChatLib.chat(JSON.stringify(Object.keys(rooms)));
     }
 }).setName("stellaNav");
