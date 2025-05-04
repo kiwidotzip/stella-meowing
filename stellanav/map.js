@@ -1,6 +1,6 @@
-import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor } from "./utils/mapUtils";
+import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
-import { getTabList, isBetween } from "../utils/utils";
+import { formatTime, isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import InternalEvents from "../../tska/event/InternalEvents";
@@ -273,20 +273,9 @@ InternalEvents.on("mapdata", (mapData) => {
                     tempCheckmarkMap.set(roomIndex, 34); // White checkmark for blood room
                 }
                 if (center in checkmarkImages && roomColor !== center) {
-                    if (center != 119) continue;
+                    if (center !== 119) continue;
                     tempCheckmarkMap.set(roomIndex, center);
-                    /*if (roomColor == 66) {
-                        let p = Object.keys(puzzles).find((key) => puzzles[key].pos[0] == rmx && puzzles[key].pos[1] == rmy);
-                        if (p) puzzles[p].check = puzzleStatusColors[center];
-                    }*/
                 }
-                // Puzzles
-                if (roomColor == 66 && !Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rmx && puzzles[a].pos[1] == rmy) && !unassignedPuzzles.some((a) => a[0] == rmx && a[1] == rmy)) {
-                    unassignedPuzzles.push([rmx, rmy]);
-                }
-                // Trap
-                if (roomColor == 62) trapPos = [rmx, rmy];
-                continue;
             }
             // Center of 2x2
             if (xx % 2 && yy % 2) {
@@ -450,9 +439,9 @@ const renderCheckmarks = (map) => {
         if (!room.checkmark) continue;
         if (!room.comps) continue;
 
-        if (((settings().mapRoomType > 0 && room.type != 1) || (settings().mapPuzzleType != 2 && room.type == 1)) && (room.type != 3 || room.type != 5)) continue;
-
-        if (room.checkmark == 0) continue;
+        if (settings().mapRoomType > 0 && (room.type == 0 || room.type == 6)) continue;
+        if (settings().mapPuzzleType > 0 && room.type == 1) continue;
+        if (room.type == 7) if (room.checkmark == 0) continue;
         if (room.checkmark == 1) checkImg = check[34];
         if (room.checkmark == 2) checkImg = check[30];
         if (room.checkmark == 3) checkImg = check[18];
@@ -494,8 +483,7 @@ const renderRoomNames = () => {
         if (!room.explored) continue;
         if (!room.comps) continue;
         if (!room.name) continue;
-        if (room.type == 1 || room.type == 3) continue;
-        if (room.name == "Entrance") continue;
+        if (room.type != 0 && room.type != 6) continue;
 
         let textColor = null;
 
@@ -650,9 +638,83 @@ register("worldUnload", () => {
 });
 
 register("command", () => {
-    for (let p of Object.keys(DungeonScanner.players)) {
-        let player = DungeonScanner.players[p];
-        let rooms = player.clearedRooms["WHITE"].toObject();
-        ChatLib.chat(JSON.stringify(Object.keys(rooms)));
+    ChatLib.chat("&d[Stella]" + " &bCleared room counts");
+    for (let p of Object.keys(players)) {
+        let player = players[p];
+        let pWhiteRooms = player.cleared["WHITE"].toObject();
+        let pGreenRooms = player.cleared["GREEN"].toObject();
+        let wRoomNames = [];
+        let minRooms = 0;
+        let maxRooms = 0;
+
+        let final = new Message();
+        final.addTextComponent(new TextComponent("&d|" + "&b " + p + "&7 cleared "));
+
+        let roomLore = "";
+
+        for (let pRoomName of Object.keys(pGreenRooms)) {
+            if (pGreenRooms[pRoomName].solo) minRooms++;
+            maxRooms++;
+
+            let room = pGreenRooms[pRoomName].room;
+
+            wRoomNames.push(room.name);
+
+            let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+            let type = typeToName(room.type);
+            let color = typeToColor(room.type);
+            let time = formatTime(pGreenRooms[pRoomName].time);
+
+            let stackStr = " test";
+            /*
+            let stackStr =
+                players.length === 1
+                    ? ""
+                    : " Stacked with " +
+                      players
+                          .filter((pl) => pl !== p)
+                          .map((p) => p.username)
+                          .join(", ");
+            */
+
+            roomLore += `&${color}${name} (${type}) Full Cleared in (${time})${stackStr}\n`;
+        }
+
+        for (let pRoomName of Object.keys(pWhiteRooms)) {
+            let room = pWhiteRooms[pRoomName].room;
+            let greenCleared = false;
+            for (let roomName of wRoomNames) if (room.name == roomName) greenCleared = true;
+            if (greenCleared) continue;
+
+            if (pWhiteRooms[pRoomName].solo) minRooms++;
+            maxRooms++;
+
+            let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+            let type = typeToName(room.type);
+            let color = typeToColor(room.type);
+            let time = formatTime(pWhiteRooms[pRoomName].time);
+
+            let stackStr = " test";
+            /*
+            let stackStr =
+                players.length === 1
+                    ? ""
+                    : " Stacked with " +
+                      players
+                          .filter((pl) => pl !== p)
+                          .map((p) => p.username)
+                          .join(", ");
+            */
+
+            roomLore += `&${color}${name} (${type}) Cleared in (${time})${stackStr}\n`;
+        }
+
+        final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
+
+        final.addTextComponent(new TextComponent("&7 rooms | &b" + "0" + "&7 secrets"));
+
+        final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
+
+        final.chat();
     }
 }).setName("stellaNav");

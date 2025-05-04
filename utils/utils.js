@@ -25,6 +25,16 @@ export const calcDistance = (p1, p2) => {
     return dist;
 };
 
+export const formatTime = (time) => {
+    let date = new Date(time);
+    let minutes = String(date.getMinutes()).padStart(2, "0");
+    let seconds = String(date.getSeconds()).padStart(2, "0");
+    let milliseconds = String(date.getMilliseconds()).padStart(2, "0");
+    let formattedTime = `${minutes}m ${seconds}.${milliseconds}s`;
+
+    return formattedTime;
+};
+
 export const GuiContainer = Java.type("net.minecraft.client.gui.inventory.GuiContainer");
 const guiContainerLeftField = GuiContainer.class.getDeclaredField("field_147003_i");
 const guiContainerTopField = GuiContainer.class.getDeclaredField("field_147009_r");
@@ -71,10 +81,4 @@ export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z =
     Renderer.translate(x, y, zPosition);
     Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
     Renderer.finishDraw();
-};
-
-// Get the tab list
-export const getTabList = (formatted = false) => {
-    if (formatted) return TabList.getNames();
-    return TabList.getNames().map((a) => a.removeFormatting());
 };

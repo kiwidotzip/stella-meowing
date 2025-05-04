@@ -89,7 +89,7 @@ export function getPlayerName(player) {
         .trim();
 }
 
-getClassColor = (dClass) => {
+const getClassColor = (dClass) => {
     let color = [];
     switch (dClass) {
         case "Healer":
@@ -106,6 +106,68 @@ getClassColor = (dClass) => {
             break;
         case "Tank":
             color = [150, 150, 150, 255];
+            break;
+    }
+    return color;
+};
+
+export const typeToName = (type) => {
+    let name = null;
+    switch (type) {
+        case 0:
+            name = "NORMAL";
+            break;
+        case 1:
+            name = "PUZZLE";
+            break;
+        case 2:
+            name = "TRAP";
+            break;
+        case 3:
+            name = "MINIBOSS";
+            break;
+        case 4:
+            name = "BLOOD";
+            break;
+        case 5:
+            name = "FAIRY";
+            break;
+        case 6:
+            name = "RARE";
+            break;
+        case 7:
+            name = "ENTRANCE";
+            break;
+    }
+    return name;
+};
+
+export const typeToColor = (type) => {
+    let color = null;
+    switch (type) {
+        case 0:
+            color = "7";
+            break;
+        case 1:
+            color = "d";
+            break;
+        case 2:
+            color = "6";
+            break;
+        case 3:
+            color = "e";
+            break;
+        case 4:
+            color = "c";
+            break;
+        case 5:
+            color = "d";
+            break;
+        case 6:
+            color = "b";
+            break;
+        case 7:
+            color = "a";
             break;
     }
     return color;
