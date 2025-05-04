@@ -7,6 +7,7 @@ import InternalEvents from "../../tska/event/InternalEvents";
 import settings from "../utils/config";
 import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
 import EventListener from "../../tska/event/EventListener";
+import { fetch } from "../../tska/polyfill/Fetch.js";
 require("./utils/events.js");
 
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer");
@@ -158,6 +159,9 @@ StellaNav.register("tick", () => {
                 visited: p?.visitedRooms,
                 cleared: p?.clearedRooms,
                 deaths: p?.deaths,
+                secrets: 0,
+                initSecrets: 0,
+                currSecrets: 0,
                 inRender: false,
             };
         }
@@ -168,6 +172,7 @@ StellaNav.register("tick", () => {
         players[player].visited = p?.visitedRooms;
         players[player].cleared = p?.clearedRooms;
         players[player].deaths = p?.deaths;
+        updatePlayerUUID(player);
 
         //update player position from map
         if (!players[player].inRender) {
@@ -620,6 +625,54 @@ const renderUnderMapInfo = () => {
     Renderer.retainTransforms(false);
 };
 
+//api stuff
+let secretsData = new Map();
+
+register("step", () => {
+    // Check if peoples data needs to be cleared from the map
+
+    secretsData.forEach(([timestamp], uuid) => {
+        if (Date.now() - timestamp > 5 * 60 * 1000) secretsData.delete(uuid);
+    });
+}).setDelay(10);
+
+function getPlayerSecrets(uuid, cacheMs, callback) {
+    if (secretsData.get(uuid)?.[0]?.timestamp > Date.now() - cacheMs) {
+        callback(secretsData.get(uuid)[1]);
+        return;
+    }
+    fetch(`https://api.tenios.dev/secrets/${uuid}`, {
+        headers: { "User-Agent": "Stella" },
+        json: true,
+    }).then((secretsNum) => {
+        let secrets = parseInt(secretsNum);
+        secretsData.set(uuid, [Date.now(), secrets]);
+
+        callback(secretsData.get(uuid)[1]);
+    });
+}
+
+function updatePlayerUUID(p) {
+    if (players[p].uuid) return;
+    // Check players in world to update uuid field
+
+    let player = World.getPlayerByName(p);
+    if (!player) return;
+    players[p].uuid = player.getUUID().toString();
+    getPlayerSecrets(players[p].uuid, 120000, (secrets) => {
+        players[p].initSecrets = secrets;
+        players[p].currSecrets = secrets;
+    });
+}
+
+function updateCurrentSecrets(p) {
+    if (!players[p].uuid) return;
+
+    getPlayerSecrets(players[p].uuid, 0, (secrets) => {
+        players[p].currSecrets = secrets;
+    });
+}
+
 register("chat", () => {
     watcherDone = true;
 }).setCriteria(/\[BOSS\] The Watcher: That will be enough for now\./);
@@ -640,10 +693,12 @@ register("worldUnload", () => {
 register("command", () => {
     ChatLib.chat("&d[Stella]" + " &bCleared room counts");
     for (let p of Object.keys(players)) {
+        updateCurrentSecrets(p);
         let player = players[p];
         let pWhiteRooms = player.cleared["WHITE"].toObject();
         let pGreenRooms = player.cleared["GREEN"].toObject();
         let wRoomNames = [];
+        let secrets = player.currSecrets - player.initSecrets;
         let minRooms = 0;
         let maxRooms = 0;
 
@@ -665,7 +720,7 @@ register("command", () => {
             let color = typeToColor(room.type);
             let time = formatTime(pGreenRooms[pRoomName].time);
 
-            let stackStr = " test";
+            let stackStr = "";
             /*
             let stackStr =
                 players.length === 1
@@ -677,7 +732,7 @@ register("command", () => {
                           .join(", ");
             */
 
-            roomLore += `&${color}${name} (${type}) Full Cleared in (${time})${stackStr}\n`;
+            roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
         }
 
         for (let pRoomName of Object.keys(pWhiteRooms)) {
@@ -706,12 +761,12 @@ register("command", () => {
                           .join(", ");
             */
 
-            roomLore += `&${color}${name} (${type}) Cleared in (${time})${stackStr}\n`;
+            roomLore += `&${color}${name} (${type}) &f✔ &${color}in (${time})${stackStr}\n`;
         }
 
         final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
 
-        final.addTextComponent(new TextComponent("&7 rooms | &b" + "0" + "&7 secrets"));
+        final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
 
         final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
 
