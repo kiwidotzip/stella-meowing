@@ -125,6 +125,7 @@ MapGui.onDraw((x, y) => {
 
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
+    if (Dungeon.inBoss()) return;
     renderMap();
     renderCheckmarks(checkmarkMap);
     renderRoomNames();
@@ -246,6 +247,7 @@ EventListener.on("stella:secretCollect", (secret) => {
 
 //update from map
 InternalEvents.on("mapdata", (mapData) => {
+    if (Dungeon.inBoss()) return;
     const colors = mapData.field_76198_e;
 
     if (!colors || colors[0] == 119) return;
@@ -319,6 +321,7 @@ InternalEvents.on("mapdata", (mapData) => {
     });
 });
 
+//update under map info
 StellaNav.register("tick", () => {
     let dSecrets = "&7Secrets: " + (!Dungeon.secretsFound ? "&b?" : `&b${Dungeon.secretsFound}&8-&e${Dungeon.scoreData.secretsRemaining}&8-&c${Dungeon.scoreData.totalSecrets}`);
     let dCrypts = "&7Crypts: " + (Dungeon.crypts >= 5 ? `&a${Dungeon.crypts}` : Dungeon.crypts > 0 ? `&e${Dungeon.crypts}` : `&c0`);
@@ -331,6 +334,98 @@ StellaNav.register("tick", () => {
     mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim();
     mapLine2 = `${minSecrets}    ${dDeaths}    ${dScore}`.trim();
 });
+
+//post dungeon breakdown
+StellaNav.register(
+    "chat",
+    () => {
+        for (let p of Object.keys(players)) updateCurrentSecrets(p);
+
+        Client.scheduleTask(4 * 20, () => {
+            ChatLib.chat("&d[Stella]" + " &bCleared room counts:");
+            for (let p of Object.keys(players)) {
+                let player = players[p];
+                let pWhiteRooms = player.cleared["WHITE"].toObject();
+                let pGreenRooms = player.cleared["GREEN"].toObject();
+                let wRoomNames = [];
+                let secrets = player.currSecrets - player.initSecrets;
+                let minRooms = 0;
+                let maxRooms = 0;
+                let final = new Message();
+
+                final.addTextComponent(new TextComponent("&d|" + "&b " + p + "&7 cleared "));
+
+                let roomLore = "";
+
+                for (let pRoomName of Object.keys(pGreenRooms)) {
+                    if (pGreenRooms[pRoomName].solo) minRooms++;
+                    maxRooms++;
+
+                    let room = pGreenRooms[pRoomName].room;
+
+                    wRoomNames.push(room.name);
+
+                    let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+                    let type = typeToName(room.type);
+                    let color = typeToColor(room.type);
+                    let time = formatTime(pGreenRooms[pRoomName].time);
+
+                    let stackStr = "";
+                    /*
+            let stackStr =
+                players.length === 1
+                    ? ""
+                    : " Stacked with " +
+                      players
+                          .filter((pl) => pl !== p)
+                          .map((p) => p.username)
+                          .join(", ");
+            */
+
+                    roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
+                }
+
+                for (let pRoomName of Object.keys(pWhiteRooms)) {
+                    let room = pWhiteRooms[pRoomName].room;
+                    let greenCleared = false;
+                    for (let roomName of wRoomNames) if (room.name == roomName) greenCleared = true;
+                    if (greenCleared) continue;
+
+                    if (pWhiteRooms[pRoomName].solo) minRooms++;
+                    maxRooms++;
+
+                    let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+                    let type = typeToName(room.type);
+                    let color = typeToColor(room.type);
+                    let time = formatTime(pWhiteRooms[pRoomName].time);
+
+                    let stackStr = " test";
+                    /*
+            let stackStr =
+                players.length === 1
+                    ? ""
+                    : " Stacked with " +
+                      players
+                          .filter((pl) => pl !== p)
+                          .map((p) => p.username)
+                          .join(", ");
+            */
+
+                    roomLore += `&${color}${name} (${type}) &f✔ &${color}in (${time})${stackStr}\n`;
+                }
+
+                final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
+
+                final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
+
+                final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
+
+                final.chat();
+            }
+        });
+    },
+    /^\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})$/
+);
 
 //map rendering
 const renderMap = () => {
@@ -690,86 +785,4 @@ register("worldUnload", () => {
     watcherDone = false;
 });
 
-register("command", () => {
-    ChatLib.chat("&d[Stella]" + " &bCleared room counts");
-    for (let p of Object.keys(players)) {
-        updateCurrentSecrets(p);
-        let player = players[p];
-        let pWhiteRooms = player.cleared["WHITE"].toObject();
-        let pGreenRooms = player.cleared["GREEN"].toObject();
-        let wRoomNames = [];
-        let secrets = player.currSecrets - player.initSecrets;
-        let minRooms = 0;
-        let maxRooms = 0;
-
-        let final = new Message();
-        final.addTextComponent(new TextComponent("&d|" + "&b " + p + "&7 cleared "));
-
-        let roomLore = "";
-
-        for (let pRoomName of Object.keys(pGreenRooms)) {
-            if (pGreenRooms[pRoomName].solo) minRooms++;
-            maxRooms++;
-
-            let room = pGreenRooms[pRoomName].room;
-
-            wRoomNames.push(room.name);
-
-            let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
-            let type = typeToName(room.type);
-            let color = typeToColor(room.type);
-            let time = formatTime(pGreenRooms[pRoomName].time);
-
-            let stackStr = "";
-            /*
-            let stackStr =
-                players.length === 1
-                    ? ""
-                    : " Stacked with " +
-                      players
-                          .filter((pl) => pl !== p)
-                          .map((p) => p.username)
-                          .join(", ");
-            */
-
-            roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
-        }
-
-        for (let pRoomName of Object.keys(pWhiteRooms)) {
-            let room = pWhiteRooms[pRoomName].room;
-            let greenCleared = false;
-            for (let roomName of wRoomNames) if (room.name == roomName) greenCleared = true;
-            if (greenCleared) continue;
-
-            if (pWhiteRooms[pRoomName].solo) minRooms++;
-            maxRooms++;
-
-            let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
-            let type = typeToName(room.type);
-            let color = typeToColor(room.type);
-            let time = formatTime(pWhiteRooms[pRoomName].time);
-
-            let stackStr = " test";
-            /*
-            let stackStr =
-                players.length === 1
-                    ? ""
-                    : " Stacked with " +
-                      players
-                          .filter((pl) => pl !== p)
-                          .map((p) => p.username)
-                          .join(", ");
-            */
-
-            roomLore += `&${color}${name} (${type}) &f✔ &${color}in (${time})${stackStr}\n`;
-        }
-
-        final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
-
-        final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
-
-        final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
-
-        final.chat();
-    }
-}).setName("stellaNav");
+register("command", () => {}).setName("stellaNav");
