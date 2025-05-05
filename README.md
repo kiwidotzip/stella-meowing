@@ -71,4 +71,5 @@
 - [Amaterasu](https://github.com/DocilElm/Amaterasu/) - Such a clean config library
 - [BadAddons](https://github.com/mehdii000/BadAddons/) - Read Me insperation
 - [ShaderLib](https://github.com/PerseusPotter/shaderlib/) - Chroma shader
+- [MeowAddons](https://github.com/kiwidotzip/MeowAddons/) - Auto Updates (kiwi is my goat)
 - Dr Pepper - idk its just good
