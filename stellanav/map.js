@@ -1,5 +1,6 @@
 import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
+import renderLibs from "./utils/render.js";
 import { formatTime, isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
@@ -36,9 +37,7 @@ const defaultMapSize = [138, 138];
 let headScale = 1;
 
 let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
-let deadPlayers = new Set();
-let puzzles = {}; // {"Water Board":{"pos": [2, 4], "checkmark": 1}, ...} checkmark: 0=failed, 1=incomplete, 2=white check, 3=green check
-let unassignedPuzzles = []; // [[0, 5], [2,4], ...] Coordinates of puzzles on map (0-5)
+
 let collectedSecrets = {};
 let rooms = [];
 
@@ -125,12 +124,16 @@ MapGui.onDraw((x, y) => {
 
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
-    if (Dungeon.inBoss()) return;
     renderMap();
-    renderCheckmarks(checkmarkMap);
-    renderRoomNames();
-    renderPuzzleNames();
-    renderPlayers();
+
+    if (!Dungeon.inBoss()) {
+        renderCheckmarks(checkmarkMap);
+        renderRoomNames();
+        renderPuzzleNames();
+        renderPlayers();
+    } else {
+        renderBoss();
+    }
     if (settings().mapInfoUnder) renderUnderMapInfo();
 });
 
@@ -156,6 +159,8 @@ StellaNav.register("tick", () => {
                 visited: [],
                 iconX: null,
                 iconY: null,
+                worldX: null,
+                worldY: null,
                 yaw: null,
                 visited: p?.visitedRooms,
                 cleared: p?.clearedRooms,
@@ -193,9 +198,6 @@ StellaNav.register("tick", () => {
         }
     });
     rooms = DungeonScanner?.rooms;
-
-    for (let room of rooms) {
-    }
 });
 
 StellaNav.register("tick", () => {
@@ -209,11 +211,18 @@ StellaNav.register("tick", () => {
             delete players[p];
             continue;
         }
-        if (!isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) continue;
-        players[p].inRender = true;
-        players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
-        players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
+
+        if (isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) {
+            players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
+            players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
+            players[p].inRender = true;
+        }
+
+        players[p].worldX = player.getX();
+        players[p].worldY = player.getZ();
+
         players[p].yaw = player.getYaw() + 180;
+        players[p].class = Dungeon.players[p].className;
     }
 });
 
@@ -438,12 +447,16 @@ const renderMap = () => {
     Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, w, h);
-    Renderer.translate(mapOffset, 0);
-    Renderer.translate(5, 5);
-    Renderer.scale(mapScale);
-    Renderer.drawImage(map, 0, 0, 128, 128);
+    if (!Dungeon.inBoss()) {
+        Renderer.translate(mapOffset, 0);
+        Renderer.translate(5, 5);
+        Renderer.scale(mapScale);
+        Renderer.drawImage(map, 0, 0, 128, 128);
+
+        Renderer.finishDraw();
+    }
+
     Renderer.retainTransforms(false);
-    Renderer.finishDraw();
 };
 
 //player heads
@@ -516,7 +529,6 @@ const renderCheckmarks = (map) => {
         let ry = roomIndex % 6;
         let scale = 0.9;
         let [x, y] = getRoomPosition(rx, ry);
-        if (Object.keys(puzzles).some((a) => puzzles[a].pos[0] == rx && puzzles[a].pos[1] == ry)) continue;
         let [w, h] = [12 * scale * mapScale, 12 * scale * mapScale];
         if (checkmarkImage == 119) [w, h] = [10 * scale * mapScale, 12 * scale * mapScale];
 
@@ -720,6 +732,85 @@ const renderUnderMapInfo = () => {
     Renderer.retainTransforms(false);
 };
 
+//boss map stuff
+dungeonBossImages = {};
+new Thread(() => {
+    let imageData = JSON.parse(FileLib.read("Stella", "stellanav/data/imageData.json"));
+    Object.keys(imageData).forEach((v) => {
+        for (let i of imageData[v]) i.image = Image.fromAsset(i.image);
+    });
+    dungeonBossImages = imageData;
+}).start();
+
+const getBossMap = (floor) => {
+    let tempData = dungeonBossImages[floor.toString()];
+    if (!tempData) return;
+
+    let bossMap = null;
+    let playerPos = [Player.getX(), Player.getY(), Player.getZ()];
+    tempData.forEach((data) => {
+        // Creates an array of player coords, corner1, corner2 and transposes it to make it easier to use the inBetween function.
+        let c = [playerPos, data.bounds[0], data.bounds[1]];
+        let coords = [0, 1, 2].map((v) => c.map((b) => b[v])); // Transpose the matrix
+        if (!coords.every((v) => isBetween(...v))) return;
+        bossMap = data;
+    });
+    return bossMap;
+};
+
+const renderBoss = () => {
+    let bossMap = getBossMap(Dungeon.floorNumber);
+    if (!bossMap) return;
+
+    let size = 128;
+    let topLeftHudLocX = 0;
+    let topLeftHudLocZ = 0;
+    let sizeInWorld = 0;
+    let sizeInPixels = 0;
+    let textureScale = 0;
+
+    //icons
+    let headScale = 1;
+    let borderWidth = 0;
+
+    if (settings().mapHeadOutline) borderWidth = 3;
+
+    sizeInWorld = Math.min(bossMap.widthInWorld, bossMap.heightInWorld, bossMap.renderSize || Infinity);
+    let pixelWidth = (bossMap.image.getTextureWidth() / bossMap.widthInWorld) * (bossMap.renderSize || bossMap.widthInWorld);
+    let pixelHeight = (bossMap.image.getTextureHeight() / bossMap.heightInWorld) * (bossMap.renderSize || bossMap.heightInWorld);
+    sizeInPixels = Math.min(pixelWidth, pixelHeight);
+
+    textureScale = size / sizeInPixels;
+
+    topLeftHudLocX = ((Player.getX() - bossMap.topLeftLocation[0]) / sizeInWorld) * size - size / 2;
+    topLeftHudLocZ = ((Player.getZ() - bossMap.topLeftLocation[1]) / sizeInWorld) * size - size / 2;
+
+    topLeftHudLocX = MathLib.clampFloat(topLeftHudLocX, 0, Math.max(0, bossMap.image.getTextureWidth() * textureScale - size));
+    topLeftHudLocZ = MathLib.clampFloat(topLeftHudLocZ, 0, Math.max(0, bossMap.image.getTextureHeight() * textureScale - size));
+
+    let image = bossMap.image;
+    Renderer.retainTransforms(true);
+    Renderer.translate(MapGui.getX() + 5, MapGui.getY() + 5);
+    Renderer.scale(MapGui.getScale());
+    //renderLibs.scizzor(0, 0, size, size);
+    image.draw(-topLeftHudLocX, 0 - topLeftHudLocZ, image.getTextureWidth() * textureScale, image.getTextureHeight() * textureScale);
+    //renderLibs.stopScizzor();
+    Renderer.retainTransforms(false);
+
+    for (let p of Object.keys(players)) {
+        //if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
+        let player = players[p];
+
+        let renderX = null;
+        let renderY = null;
+
+        renderX = ((player.worldX - bossMap.topLeftLocation[0]) / sizeInWorld) * size - topLeftHudLocX;
+        renderY = ((player.worldY - bossMap.topLeftLocation[1]) / sizeInWorld) * size - topLeftHudLocZ;
+
+        renderPlayerHeads(player?.info[0], renderX + MapGui.getX() + 5, renderY + MapGui.getY() + 5, player.yaw ? player.yaw : 0, headScale, borderWidth, players[p]?.info[1], MapGui.getScale());
+    }
+};
+
 //api stuff
 let secretsData = new Map();
 
@@ -777,7 +868,6 @@ register("worldUnload", () => {
     clearMap();
     checkmarkMap.clear();
     collectedSecrets = {};
-    puzzles = {};
     players = {};
     mapIsEmpty = true;
     trapPos = null;

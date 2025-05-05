@@ -1,3 +1,5 @@
+import { isBetween } from "../../utils/utils";
+
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats");
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
 const Color = Java.type("java.awt.Color");
