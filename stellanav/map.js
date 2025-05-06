@@ -1,6 +1,5 @@
 import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
-import renderLibs from "./utils/render.js";
 import { formatTime, isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
@@ -19,6 +18,11 @@ let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay")
 let c = PlayerComparator.class.getDeclaredConstructor();
 c.setAccessible(true);
 let sorter = c.newInstance();
+
+if (!GlStateManager) {
+    var GL11 = Java.type("org.lwjgl.opengl.GL11"); //using var so it goes to global scope
+    var GlStateManager = Java.type("net.minecraft.client.renderer.GlStateManager");
+}
 
 /*  ---------------- StellarNav -----------------
 
@@ -179,24 +183,23 @@ StellaNav.register("tick", () => {
         players[player].cleared = p?.clearedRooms;
         players[player].deaths = p?.deaths;
         updatePlayerUUID(player);
+    });
 
-        //update player position from map
-        if (!players[player].inRender) {
-            if (Dungeon.mapData && Dungeon.mapCorners) {
-                for (let p of Object.keys(players)) {
-                    let player = players[p];
-                    if (!players[p].inRender) {
-                        let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
-                        if (!icon) continue;
-                        icon = Dungeon.icons[icon];
-                        player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 138);
-                        player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 138);
-                        player.yaw = icon.rotation;
-                    }
-                }
+    //update player position from map
+    if (Dungeon.mapData && Dungeon.mapCorners) {
+        for (let p of Object.keys(players)) {
+            let player = players[p];
+            if (!players[p].inRender) {
+                let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
+                if (!icon) continue;
+                icon = Dungeon.icons[icon];
+                player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 138);
+                player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 138);
+                player.yaw = icon.rotation;
             }
         }
-    });
+    }
+
     rooms = DungeonScanner?.rooms;
 });
 
@@ -378,18 +381,14 @@ StellaNav.register(
                     let type = typeToName(room.type);
                     let color = typeToColor(room.type);
                     let time = formatTime(pGreenRooms[pRoomName].time);
+                    let rplayers = room.players.toArray();
+                    let stackStr = pGreenRooms[pRoomName].solo ? "" : ", Stacked with ";
 
-                    let stackStr = "";
-                    /*
-            let stackStr =
-                players.length === 1
-                    ? ""
-                    : " Stacked with " +
-                      players
-                          .filter((pl) => pl !== p)
-                          .map((p) => p.username)
-                          .join(", ");
-            */
+                    if (!pGreenRooms[pRoomName].solo) {
+                        rplayers.forEach((plr) => {
+                            stackStr += plr?.name + " ";
+                        });
+                    }
 
                     roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
                 }
@@ -407,20 +406,16 @@ StellaNav.register(
                     let type = typeToName(room.type);
                     let color = typeToColor(room.type);
                     let time = formatTime(pWhiteRooms[pRoomName].time);
+                    let rplayers = room.players.toArray();
+                    let stackStr = pWhiteRooms[pRoomName].solo ? "" : ", Stacked with ";
 
-                    let stackStr = " test";
-                    /*
-            let stackStr =
-                players.length === 1
-                    ? ""
-                    : " Stacked with " +
-                      players
-                          .filter((pl) => pl !== p)
-                          .map((p) => p.username)
-                          .join(", ");
-            */
+                    if (!pWhiteRooms[pRoomName].solo) {
+                        rplayers.forEach((plr) => {
+                            stackStr += plr?.name + " ";
+                        });
+                    }
 
-                    roomLore += `&${color}${name} (${type}) &f✔ &${color}in (${time})${stackStr}\n`;
+                    roomLore += `&${color}${name} (${type}) &f✔ &${color}in ${time}${stackStr}\n`;
                 }
 
                 final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
@@ -762,6 +757,8 @@ const renderBoss = () => {
     let bossMap = getBossMap(Dungeon.floorNumber);
     if (!bossMap) return;
 
+    let [x, y, scale] = [MapGui.getX(), MapGui.getY(), MapGui.getScale()];
+
     let size = 128;
     let topLeftHudLocX = 0;
     let topLeftHudLocZ = 0;
@@ -772,8 +769,6 @@ const renderBoss = () => {
     //icons
     let headScale = 1;
     let borderWidth = 0;
-
-    if (settings().mapHeadOutline) borderWidth = 3;
 
     sizeInWorld = Math.min(bossMap.widthInWorld, bossMap.heightInWorld, bossMap.renderSize || Infinity);
     let pixelWidth = (bossMap.image.getTextureWidth() / bossMap.widthInWorld) * (bossMap.renderSize || bossMap.widthInWorld);
@@ -789,17 +784,32 @@ const renderBoss = () => {
     topLeftHudLocZ = MathLib.clampFloat(topLeftHudLocZ, 0, Math.max(0, bossMap.image.getTextureHeight() * textureScale - size));
 
     let image = bossMap.image;
-    Renderer.retainTransforms(true);
-    Renderer.translate(MapGui.getX() + 5, MapGui.getY() + 5);
-    Renderer.scale(MapGui.getScale());
-    //renderLibs.scizzor(0, 0, size, size);
-    image.draw(-topLeftHudLocX, 0 - topLeftHudLocZ, image.getTextureWidth() * textureScale, image.getTextureHeight() * textureScale);
-    //renderLibs.stopScizzor();
-    Renderer.retainTransforms(false);
 
+    let guiScale = Renderer.screen.getScale();
+    let screenHeight = Renderer.screen.getHeight();
+    let sx = (x + 5) * guiScale;
+    let sy = screenHeight * guiScale - (y + 5) * guiScale - size * scale * guiScale;
+    let ssize = size * scale * guiScale;
+
+    GL11.glEnable(GL11.GL_SCISSOR_TEST);
+    GL11.glScissor(sx, sy, ssize, ssize);
+
+    Renderer.retainTransforms(true);
+    Renderer.translate(x + 5, y + 5);
+    Renderer.scale(scale);
+    image.draw(-topLeftHudLocX, 0 - topLeftHudLocZ, image.getTextureWidth() * textureScale, image.getTextureHeight() * textureScale);
+    Renderer.retainTransforms(false);
+    Renderer.finishDraw();
+
+    //players
     for (let p of Object.keys(players)) {
-        //if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
+        if (players[p].class == "DEAD" && p !== Player.getName()) continue;
+
         let player = players[p];
+
+        let hsize = [7, 10];
+        let head = p == Player.getName() ? GreenMarker : WhiteMarker;
+        if (settings().mapHeadOutline) borderWidth = 3;
 
         let renderX = null;
         let renderY = null;
@@ -807,8 +817,35 @@ const renderBoss = () => {
         renderX = ((player.worldX - bossMap.topLeftLocation[0]) / sizeInWorld) * size - topLeftHudLocX;
         renderY = ((player.worldY - bossMap.topLeftLocation[1]) / sizeInWorld) * size - topLeftHudLocZ;
 
-        renderPlayerHeads(player?.info[0], renderX + MapGui.getX() + 5, renderY + MapGui.getY() + 5, player.yaw ? player.yaw : 0, headScale, borderWidth, players[p]?.info[1], MapGui.getScale());
+        Renderer.retainTransforms(true);
+        Renderer.translate(x + renderX + 5, y + renderY + 5);
+        Renderer.scale(scale);
+
+        let dontRenderOwn = !settings().mapShowOwn && p == Player.getName();
+
+        // Render the player name
+        if (settings().mapShowPlayerNames && ["Spirit Leap", "Infinileap"].includes(Player.getHeldItem()?.getName()?.removeFormatting()) && !dontRenderOwn) {
+            let name = p;
+            let width = Renderer.getStringWidth(name);
+            let tscale = headScale / 1.3;
+            Renderer.translate(0, 8.5);
+            Renderer.scale(tscale);
+            Renderer.drawStringWithShadow(name, -width / 2, 0);
+            Renderer.scale(1.3 / headScale, 1.3 / headScale);
+            Renderer.translate(0, -8.5);
+        }
+
+        Renderer.rotate(player.yaw ? player.yaw : 0);
+        Renderer.translate(-hsize[0] / 2, -hsize[1] / 2);
+        if (!settings().mapPlayerHeads) Renderer.drawImage(head, 0, 0, hsize[0], hsize[1]);
+        Renderer.retainTransforms(false);
+        Renderer.finishDraw();
+
+        if (settings().mapPlayerHeads) renderPlayerHeads(player?.info[0], renderX + x + 5, renderY + y + 5, player.yaw ? player.yaw : 0, headScale, borderWidth, players[p]?.info[1], scale);
     }
+
+    GL11.glScissor(0, 0, 0, 0);
+    GL11.glDisable(GL11.GL_SCISSOR_TEST);
 };
 
 //api stuff
