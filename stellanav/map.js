@@ -730,7 +730,7 @@ const renderUnderMapInfo = () => {
 //boss map stuff
 dungeonBossImages = {};
 new Thread(() => {
-    let imageData = JSON.parse(FileLib.read("Stella", "stellanav/data/imageData.json"));
+    let imageData = JSON.parse(FileLib.read("stella", "stellanav/data/imageData.json"));
     Object.keys(imageData).forEach((v) => {
         for (let i of imageData[v]) i.image = Image.fromAsset(i.image);
     });
