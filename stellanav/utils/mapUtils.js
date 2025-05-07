@@ -2,8 +2,6 @@ const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.Def
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
 const Color = Java.type("java.awt.Color");
 
-export const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
-
 /*  -------------- StellaNav Utils --------------
 
     Utilities for StellaNav
@@ -14,6 +12,10 @@ export const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
 
     --------------------------------------------- */
 
+//asset url
+export const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
+
+//map scaling
 export const oscale = (floor) => {
     if (!floor) return 1;
 
@@ -71,6 +73,7 @@ export const mapRGBs = {
     119: new Color(0, 0, 0, 1), // Wither door
 };
 
+//room types
 export const roomTypes = {
     63: "Normal",
     30: "Entrance",
@@ -89,6 +92,7 @@ export function getPlayerName(player) {
         .trim();
 }
 
+//class colors
 const getClassColor = (dClass) => {
     let color = [];
     switch (dClass) {

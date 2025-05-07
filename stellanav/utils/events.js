@@ -1,6 +1,6 @@
+import DungeonScanner from "../../../tska/skyblock/dungeon/DungeonScanner";
 import EventListener from "../../../tska/event/EventListener";
 import Location from "../../../tska/skyblock/Location";
-import DungeonScanner from "../../../tska/skyblock/dungeon/DungeonScanner";
 import Dungeon from "../../../tska/skyblock/dungeon/Dungeon";
 
 /*  -------------- StellaNav Events -------------

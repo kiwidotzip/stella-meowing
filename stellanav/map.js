@@ -1,13 +1,13 @@
 import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor, assets } from "./utils/mapUtils";
-import { FeatManager } from "../utils/helpers";
 import { formatTime, isBetween } from "../utils/utils";
+import { FeatManager } from "../utils/helpers";
+import { fetch } from "../../tska/polyfill/Fetch.js";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import InternalEvents from "../../tska/event/InternalEvents";
+import EventListener from "../../tska/event/EventListener";
 import settings from "../utils/config";
 import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
-import EventListener from "../../tska/event/EventListener";
-import { fetch } from "../../tska/polyfill/Fetch.js";
 require("./utils/events.js");
 
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer");
@@ -34,35 +34,44 @@ if (!GlStateManager) {
 
     --------------------------------------------- */
 
-//variables
-const checkmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
-const editCheckmarkMap = new Map(); // {dungeonIndex: int, checkmarkImage: Image}
-const defaultMapSize = [138, 138];
-let headScale = 1;
+// Variables ///////////////////////////////////////////////////////////////////////////
+const checkmarkMap = new Map(); //                                                    \\
+const editCheckmarkMap = new Map(); //                                                //
+const defaultMapSize = [138, 138]; //                                                 \\
+let headScale = 1; //                                                                 //
+//                                                                                    \\
+let players = {}; //                                                                  //
+//                                                                                    \\
+let collectedSecrets = {}; //                                                         //
+let rooms = []; //                                                                    \\
+//                                                                                    //
+let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //        \\
+let mapImage = new Image(mapBuffered); //                                             //
+let emptyBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //      \\
+let emptyImage = new Image(emptyBuffered); //                                         //
+//                                                                                    \\
+let mapIsEmpty = true; //                                                             //
+//                                                                                    \\
+let mapScale = 1; //                                                                  //
+let mapOffset = 0; //                                                                 \\
+//                                                                                    //
+let watcherDone = false; //                                                           \\
+let dungeonDone = false; //                                                           //
+//                                                                                    \\
+let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘"; //                  //
+let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0"; //              \\
+////////////////////////////////////////////////////////////////////////////////////////
 
-let players = {}; // {"UnclaimedBloom6":{"head": Image, "uuid": "", "hasSpirit": true, "rank": "&6[MVP&0++&6] ", "visited": ["Trap", "Blaze"]}}
+//feature
+const StellaNav = FeatManager.createFeature("mapEnabled", "catacombs");
 
-let collectedSecrets = {};
-let rooms = [];
+//gui
+const MapGui = hud.createHud("StellaNav", 10, 10, defaultMapSize[0], defaultMapSize[1]);
 
-let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
-let mapImage = new Image(mapBuffered);
-let emptyBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR);
-let emptyImage = new Image(emptyBuffered);
-
-let mapIsEmpty = true;
-
-let mapScale = 1;
-let mapOffset = 0;
-
-let watcherDone = false;
-
+//functions
 let ll = 128 / 23;
 const getRoomPosition = (x, y) => [ll * 1.5 + ll * 4 * x, ll * 1.5 + ll * 4 * y];
 
-// Checkmark status of the puzzle
-
-//functions
 const setPixels = (x1, y1, width, height, color) => {
     if (!color) return;
     for (let x = x1; x < x1 + width; x++) for (let y = y1; y < y1 + height; y++) mapBuffered.setRGB(x, y, color.getRGB());
@@ -90,12 +99,6 @@ const updatePlayer = (player) => {
         return [p, clazz, level, sbLevel]; // [player, class, level, sbLevel]
     }
 };
-
-//feature
-const StellaNav = FeatManager.createFeature("mapEnabled", "catacombs");
-
-//gui
-const MapGui = hud.createHud("StellaNav", 10, 10, defaultMapSize[0], defaultMapSize[1]);
 
 //edit hud
 MapGui.onDraw((x, y) => {
@@ -135,102 +138,205 @@ StellaNav.register("renderOverlay", () => {
         renderRoomNames();
         renderPuzzleNames();
         renderPlayers();
-    } else {
+    } else if (!dungeonDone) {
         renderBoss();
+    } else {
+        renderScore();
     }
+
     if (settings().mapInfoUnder) renderUnderMapInfo();
-});
+})
+    //get players and map offset / scale
+    .register("tick", () => {
+        mapScale = oscale(Dungeon.floorNumber);
+        mapOffset = Dungeon.floorNumber == 1 ? 10.6 : 0;
 
-//get players and map offset / scale
-StellaNav.register("tick", () => {
-    mapScale = oscale(Dungeon.floorNumber);
-    mapOffset = Dungeon.floorNumber == 1 ? 10.6 : 0;
+        let tempPlayers = DungeonScanner.players;
+        if (!tempPlayers) return;
 
-    let tempPlayers = DungeonScanner.players;
-    if (!tempPlayers) return;
+        tempPlayers.forEach((p) => {
+            let player = p?.name;
+            if (!player) return;
 
-    tempPlayers.forEach((p) => {
-        let player = p?.name;
-        if (!player) return;
+            //create a player object
+            if (!Object.keys(players).includes(player)) {
+                players[player] = {
+                    info: [],
+                    class: null,
+                    uuid: null,
+                    hasSpirit: false,
+                    visited: [],
+                    iconX: null,
+                    iconY: null,
+                    worldX: null,
+                    worldY: null,
+                    yaw: null,
+                    visited: p?.visitedRooms,
+                    cleared: p?.clearedRooms,
+                    deaths: p?.deaths,
+                    secrets: 0,
+                    initSecrets: 0,
+                    currSecrets: 0,
+                    inRender: false,
+                };
+            }
 
-        //create a player object
-        if (!Object.keys(players).includes(player)) {
-            players[player] = {
-                info: [],
-                class: null,
-                uuid: null,
-                hasSpirit: false,
-                visited: [],
-                iconX: null,
-                iconY: null,
-                worldX: null,
-                worldY: null,
-                yaw: null,
-                visited: p?.visitedRooms,
-                cleared: p?.clearedRooms,
-                deaths: p?.deaths,
-                secrets: 0,
-                initSecrets: 0,
-                currSecrets: 0,
-                inRender: false,
-            };
-        }
+            //update player info
+            players[player].info = updatePlayer(player);
+            players[player].class = Dungeon.players[player].className;
+            players[player].visited = p?.visitedRooms;
+            players[player].cleared = p?.clearedRooms;
+            players[player].deaths = p?.deaths;
+            updatePlayerUUID(player);
+        });
 
-        //update player info
-        players[player].info = updatePlayer(player);
-        players[player].class = Dungeon.players[player].className;
-        players[player].visited = p?.visitedRooms;
-        players[player].cleared = p?.clearedRooms;
-        players[player].deaths = p?.deaths;
-        updatePlayerUUID(player);
-    });
-
-    //update player position from map
-    if (Dungeon.mapData && Dungeon.mapCorners) {
-        for (let p of Object.keys(players)) {
-            let player = players[p];
-            if (!players[p].inRender) {
-                let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
-                if (!icon) continue;
-                icon = Dungeon.icons[icon];
-                player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 138);
-                player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 138);
-                player.yaw = icon.rotation;
+        //update player position from map
+        if (Dungeon.mapData && Dungeon.mapCorners) {
+            for (let p of Object.keys(players)) {
+                let player = players[p];
+                if (!players[p].inRender) {
+                    let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
+                    if (!icon) continue;
+                    icon = Dungeon.icons[icon];
+                    player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 138);
+                    player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 138);
+                    player.yaw = icon.rotation;
+                }
             }
         }
-    }
 
-    rooms = DungeonScanner?.rooms;
-});
+        rooms = DungeonScanner?.rooms;
+    })
+    //update player pos from world
+    .register("tick", () => {
+        for (let p of Object.keys(players)) {
+            let player = World.getPlayerByName(p);
+            if (!player) {
+                players[p].inRender = false;
+                continue;
+            }
+            if (player.getPing() == -1) {
+                delete players[p];
+                continue;
+            }
 
-StellaNav.register("tick", () => {
-    for (let p of Object.keys(players)) {
-        let player = World.getPlayerByName(p);
-        if (!player) {
-            players[p].inRender = false;
-            continue;
+            if (isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) {
+                players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
+                players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
+                players[p].inRender = true;
+            }
+
+            players[p].worldX = player.getX();
+            players[p].worldY = player.getZ();
+
+            players[p].yaw = player.getYaw() + 180;
+            players[p].class = Dungeon.players[p].className;
         }
-        if (player.getPing() == -1) {
-            delete players[p];
-            continue;
-        }
+    })
+    //update under map info
+    .register("tick", () => {
+        let dSecrets = "&7Secrets: " + (!Dungeon.secretsFound ? "&b?" : `&b${Dungeon.secretsFound}&8-&e${Dungeon.scoreData.secretsRemaining}&8-&c${Dungeon.scoreData.totalSecrets}`);
+        let dCrypts = "&7Crypts: " + (Dungeon.crypts >= 5 ? `&a${Dungeon.crypts}` : Dungeon.crypts > 0 ? `&e${Dungeon.crypts}` : `&c0`);
+        let dMimic = [6, 7].includes(Dungeon.floorNumber) ? "&7Mimic: " + (Dungeon.mimicDead ? "&a✔" : "&c✘") : "";
 
-        if (isBetween(player.getX(), -200, -10) || !isBetween(player.getZ(), -200, -10)) {
-            players[p].iconX = MathLib.map(player.getX(), -200, -10, 0, 128);
-            players[p].iconY = MathLib.map(player.getZ(), -200, -10, 0, 128);
-            players[p].inRender = true;
-        }
+        let minSecrets = "&7Min Secrets: " + (!Dungeon.secretsFound ? "&b?" : Dungeon.scoreData.minSecrets > Dungeon.secretsFound ? `&e${Dungeon.scoreData.minSecrets}` : `&a${Dungeon.scoreData.minSecrets}`);
+        let dDeaths = "&7Deaths: " + (Dungeon.teamDeaths < 0 ? `&c${Dungeon.scoreData.teamDeaths}` : "&a0");
+        let dScore = "&7Score: " + (Dungeon.scoreData.score >= 300 ? `&a${Dungeon.scoreData.score}` : Dungeon.scoreData.score >= 270 ? `&e${Dungeon.scoreData.score}` : `&c${Dungeon.scoreData.score}`) + (Dungeon._hasPaul ? " &b★" : "");
 
-        players[p].worldX = player.getX();
-        players[p].worldY = player.getZ();
+        mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim();
+        mapLine2 = `${minSecrets}    ${dDeaths}    ${dScore}`.trim();
+    })
+    //post dungeon breakdown
+    .register(
+        "chat",
+        () => {
+            dungeonDone = true;
+            for (let p of Object.keys(players)) updateCurrentSecrets(p);
 
-        players[p].yaw = player.getYaw() + 180;
-        players[p].class = Dungeon.players[p].className;
-    }
-});
+            Client.scheduleTask(4 * 20, () => {
+                ChatLib.chat("&d[Stella]" + " &bCleared room counts:");
+                for (let p of Object.keys(players)) {
+                    let player = players[p];
+                    let pWhiteRooms = player.cleared["WHITE"].toObject();
+                    let pGreenRooms = player.cleared["GREEN"].toObject();
+                    let wRoomNames = [];
+                    let secrets = player.currSecrets - player.initSecrets;
+                    let minRooms = 0;
+                    let maxRooms = 0;
+                    let final = new Message();
 
-let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘";
-let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0";
+                    final.addTextComponent(new TextComponent("&d|" + "&b " + p + "&7 cleared "));
+
+                    let roomLore = "";
+
+                    for (let pRoomName of Object.keys(pGreenRooms)) {
+                        if (pGreenRooms[pRoomName].solo) minRooms++;
+                        maxRooms++;
+
+                        let room = pGreenRooms[pRoomName].room;
+
+                        wRoomNames.push(room.name);
+
+                        let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+                        let type = typeToName(room.type);
+                        let color = typeToColor(room.type);
+                        let time = formatTime(pGreenRooms[pRoomName].time);
+                        let rplayers = room.players.toArray();
+                        let stackStr = pGreenRooms[pRoomName].solo ? "" : ", Stacked with ";
+
+                        if (!pGreenRooms[pRoomName].solo) {
+                            rplayers.forEach((plr) => {
+                                stackStr += plr?.name + " ";
+                            });
+                        }
+
+                        roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
+                    }
+
+                    for (let pRoomName of Object.keys(pWhiteRooms)) {
+                        let room = pWhiteRooms[pRoomName].room;
+                        let greenCleared = false;
+                        for (let roomName of wRoomNames) if (room.name == roomName) greenCleared = true;
+                        if (greenCleared) continue;
+
+                        if (pWhiteRooms[pRoomName].solo) minRooms++;
+                        maxRooms++;
+
+                        let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
+                        let type = typeToName(room.type);
+                        let color = typeToColor(room.type);
+                        let time = formatTime(pWhiteRooms[pRoomName].time);
+                        let rplayers = room.players.toArray();
+                        let stackStr = pWhiteRooms[pRoomName].solo ? "" : ", Stacked with ";
+
+                        if (!pWhiteRooms[pRoomName].solo) {
+                            rplayers.forEach((plr) => {
+                                stackStr += plr?.name + " ";
+                            });
+                        }
+
+                        roomLore += `&${color}${name} (${type}) &f✔ &${color}in ${time}${stackStr}\n`;
+                    }
+
+                    final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
+
+                    final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
+
+                    final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
+
+                    final.chat();
+                }
+            });
+        },
+        /^\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})$/
+    )
+    .register(
+        "chat",
+        () => {
+            watcherDone = true;
+        },
+        /\[BOSS\] The Watcher: That will be enough for now\./
+    );
 
 //secret logging
 EventListener.on("stella:secretCollect", (secret) => {
@@ -238,10 +344,6 @@ EventListener.on("stella:secretCollect", (secret) => {
     if (collectedSecrets[secret.room]) {
         let i = 0;
         for (let srts of collectedSecrets[secret.room]) {
-            //ChatLib.chat("&d[Stella] &5[Secret Index]");
-            //ChatLib.chat("&d| &bIndex: &r" + i);
-            //ChatLib.chat("&d| &bType: &r" + srts.type);
-            //ChatLib.chat("&d| &bPosition: &r" + srts.pos[0] + " " + srts.pos[1] + " " + srts.pos[2]);
             if (srts.type != secret.type) continue;
             if (srts.pos[0] !== secret.pos[0] && srts.pos[1] !== secret.pos[1] && srts.pos[2] !== secret.pos[2]) continue;
             collected = true;
@@ -332,104 +434,6 @@ InternalEvents.on("mapdata", (mapData) => {
         checkmarkMap.set(ind, img);
     });
 });
-
-//update under map info
-StellaNav.register("tick", () => {
-    let dSecrets = "&7Secrets: " + (!Dungeon.secretsFound ? "&b?" : `&b${Dungeon.secretsFound}&8-&e${Dungeon.scoreData.secretsRemaining}&8-&c${Dungeon.scoreData.totalSecrets}`);
-    let dCrypts = "&7Crypts: " + (Dungeon.crypts >= 5 ? `&a${Dungeon.crypts}` : Dungeon.crypts > 0 ? `&e${Dungeon.crypts}` : `&c0`);
-    let dMimic = [6, 7].includes(Dungeon.floorNumber) ? "&7Mimic: " + (Dungeon.mimicDead ? "&a✔" : "&c✘") : "";
-
-    let minSecrets = "&7Min Secrets: " + (!Dungeon.secretsFound ? "&b?" : Dungeon.scoreData.minSecrets > Dungeon.secretsFound ? `&e${Dungeon.scoreData.minSecrets}` : `&a${Dungeon.scoreData.minSecrets}`);
-    let dDeaths = "&7Deaths: " + (Dungeon.teamDeaths < 0 ? `&c${Dungeon.scoreData.teamDeaths}` : "&a0");
-    let dScore = "&7Score: " + (Dungeon.scoreData.score >= 300 ? `&a${Dungeon.scoreData.score}` : Dungeon.scoreData.score >= 270 ? `&e${Dungeon.scoreData.score}` : `&c${Dungeon.scoreData.score}`) + (Dungeon._hasPaul ? " &b★" : "");
-
-    mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim();
-    mapLine2 = `${minSecrets}    ${dDeaths}    ${dScore}`.trim();
-});
-
-//post dungeon breakdown
-StellaNav.register(
-    "chat",
-    () => {
-        for (let p of Object.keys(players)) updateCurrentSecrets(p);
-
-        Client.scheduleTask(4 * 20, () => {
-            ChatLib.chat("&d[Stella]" + " &bCleared room counts:");
-            for (let p of Object.keys(players)) {
-                let player = players[p];
-                let pWhiteRooms = player.cleared["WHITE"].toObject();
-                let pGreenRooms = player.cleared["GREEN"].toObject();
-                let wRoomNames = [];
-                let secrets = player.currSecrets - player.initSecrets;
-                let minRooms = 0;
-                let maxRooms = 0;
-                let final = new Message();
-
-                final.addTextComponent(new TextComponent("&d|" + "&b " + p + "&7 cleared "));
-
-                let roomLore = "";
-
-                for (let pRoomName of Object.keys(pGreenRooms)) {
-                    if (pGreenRooms[pRoomName].solo) minRooms++;
-                    maxRooms++;
-
-                    let room = pGreenRooms[pRoomName].room;
-
-                    wRoomNames.push(room.name);
-
-                    let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
-                    let type = typeToName(room.type);
-                    let color = typeToColor(room.type);
-                    let time = formatTime(pGreenRooms[pRoomName].time);
-                    let rplayers = room.players.toArray();
-                    let stackStr = pGreenRooms[pRoomName].solo ? "" : ", Stacked with ";
-
-                    if (!pGreenRooms[pRoomName].solo) {
-                        rplayers.forEach((plr) => {
-                            stackStr += plr?.name + " ";
-                        });
-                    }
-
-                    roomLore += `&${color}${name} (${type}) &a✔ &${color}in ${time}${stackStr}\n`;
-                }
-
-                for (let pRoomName of Object.keys(pWhiteRooms)) {
-                    let room = pWhiteRooms[pRoomName].room;
-                    let greenCleared = false;
-                    for (let roomName of wRoomNames) if (room.name == roomName) greenCleared = true;
-                    if (greenCleared) continue;
-
-                    if (pWhiteRooms[pRoomName].solo) minRooms++;
-                    maxRooms++;
-
-                    let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
-                    let type = typeToName(room.type);
-                    let color = typeToColor(room.type);
-                    let time = formatTime(pWhiteRooms[pRoomName].time);
-                    let rplayers = room.players.toArray();
-                    let stackStr = pWhiteRooms[pRoomName].solo ? "" : ", Stacked with ";
-
-                    if (!pWhiteRooms[pRoomName].solo) {
-                        rplayers.forEach((plr) => {
-                            stackStr += plr?.name + " ";
-                        });
-                    }
-
-                    roomLore += `&${color}${name} (${type}) &f✔ &${color}in ${time}${stackStr}\n`;
-                }
-
-                final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
-
-                final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
-
-                final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
-
-                final.chat();
-            }
-        });
-    },
-    /^\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})$/
-);
 
 //map rendering
 const renderMap = () => {
@@ -542,13 +546,17 @@ const renderCheckmarks = (map) => {
 
         let check = getCheckmarks();
         let checkImg = null;
+        let roomType = settings().mapRoomType;
+        let mapType = settings().mapPuzzleType;
 
         if (!room.checkmark) continue;
         if (!room.comps) continue;
 
-        if (settings().mapRoomType > 0 && (room.type == 0 || room.type == 6)) continue;
-        if (settings().mapPuzzleType > 0 && room.type == 1) continue;
-        if (room.type == 7) if (room.checkmark == 0) continue;
+        if (roomType == 2 && room?.secrets != 0 && (room.type == 0 || room.type == 6)) continue;
+        if ((roomType == 1 || roomType == 3) && (room.type == 0 || room.type == 6)) continue;
+        if (mapType > 0 && room.type == 1) continue;
+        if (room.type == 7) continue;
+        if (room.checkmark == 0) continue;
         if (room.checkmark == 1) checkImg = check[34];
         if (room.checkmark == 2) checkImg = check[30];
         if (room.checkmark == 3) checkImg = check[18];
@@ -848,6 +856,29 @@ const renderBoss = () => {
     GL11.glDisable(GL11.GL_SCISSOR_TEST);
 };
 
+const renderScore = () => {
+    let mapData; // Get map data from hotbar
+    try {
+        let item = Player.getInventory().getStackInSlot(8);
+        //                      .getMapData
+        mapData = item.getItem().func_77873_a(item.getItemStack(), World.getWorld()); // ItemStack.getItem().getMapData()
+    } catch (error) {}
+
+    if (!mapData) return;
+
+    // Render map directly from hotbar
+
+    let [x, y, scale] = [MapGui.getX(), MapGui.getY(), MapGui.getScale()];
+    let size = 128;
+
+    GlStateManager.func_179094_E(); // GlStateManager.push()
+    Renderer.translate(x + 5, y + 5, 1);
+    GlStateManager.func_179152_a((size / 128) * scale, (size / 128) * scale, 1); // GlStateManager.scale()
+    GlStateManager.func_179131_c(1.0, 1.0, 1.0, 1.0); // GlStateManager.color()
+    Client.getMinecraft().field_71460_t.func_147701_i().func_148250_a(mapData, true);
+    GlStateManager.func_179121_F(); // GlStateManager.pop()
+};
+
 //api stuff
 let secretsData = new Map();
 
@@ -896,10 +927,6 @@ function updateCurrentSecrets(p) {
     });
 }
 
-register("chat", () => {
-    watcherDone = true;
-}).setCriteria(/\[BOSS\] The Watcher: That will be enough for now\./);
-
 //Reset on world unload
 register("worldUnload", () => {
     clearMap();
@@ -907,9 +934,7 @@ register("worldUnload", () => {
     collectedSecrets = {};
     players = {};
     mapIsEmpty = true;
-    trapPos = null;
     rooms = [];
     watcherDone = false;
+    dungeonDone = false;
 });
-
-register("command", () => {}).setName("stellaNav");
