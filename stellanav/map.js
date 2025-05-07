@@ -95,7 +95,7 @@ const updatePlayer = (player) => {
 const StellaNav = FeatManager.createFeature("mapEnabled", "catacombs");
 
 //gui
-const MapGui = hud.createHud("StellaNav", 10, 10, 150, 150);
+const MapGui = hud.createHud("StellaNav", 10, 10, defaultMapSize[0], defaultMapSize[1]);
 
 //edit hud
 MapGui.onDraw((x, y) => {

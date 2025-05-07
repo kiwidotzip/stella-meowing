@@ -69,7 +69,7 @@
             {
                 "type": 6,
                 "name": "termNumbers",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
@@ -114,12 +114,12 @@
             {
                 "type": 7,
                 "name": "termClass",
-                "value": 1
+                "value": 4
             },
             {
                 "type": 6,
                 "name": "termTracker",
-                "value": true
+                "value": false
             }
         ]
     },
@@ -129,7 +129,7 @@
             {
                 "type": 6,
                 "name": "overlayEnabled",
-                "value": true
+                "value": false
             },
             {
                 "type": 5,
@@ -144,7 +144,7 @@
             {
                 "type": 6,
                 "name": "fillBlockOverlay",
-                "value": true
+                "value": false
             },
             {
                 "type": 5,
@@ -159,7 +159,7 @@
             {
                 "type": 6,
                 "name": "chromaHighlight",
-                "value": true
+                "value": false
             },
             {
                 "type": 1,
@@ -169,7 +169,7 @@
             {
                 "type": 1,
                 "name": "overlayLineWidth",
-                "value": 2
+                "value": 3
             },
             {
                 "type": 6,
@@ -203,7 +203,7 @@
             {
                 "type": 6,
                 "name": "mapClassColors",
-                "value": true
+                "value": false
             },
             {
                 "type": 6,
@@ -213,17 +213,17 @@
             {
                 "type": 6,
                 "name": "mapShowOwn",
-                "value": true
+                "value": false
             },
             {
                 "type": 7,
                 "name": "mapRoomType",
-                "value": 2
+                "value": 0
             },
             {
                 "type": 7,
                 "name": "mapPuzzleType",
-                "value": 3
+                "value": 1
             },
             {
                 "type": 6,

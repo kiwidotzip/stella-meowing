@@ -1,0 +1,16 @@
+{
+    "roomHud": {
+        "x": 6.5,
+        "y": 165,
+        "scale": 1,
+        "width": 77,
+        "height": 9
+    },
+    "StellaNav": {
+        "x": 4,
+        "y": 2.5,
+        "scale": 1.06,
+        "width": 138,
+        "height": 138
+    }
+}
