@@ -1,4 +1,4 @@
-import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor } from "./utils/mapUtils";
+import { getCheckmarks, WhiteMarker, GreenMarker, mapRGBs, defaultMapImage, renderPlayerHeads, oscale, getTextColor, typeToName, typeToColor, assets } from "./utils/mapUtils";
 import { FeatManager } from "../utils/helpers";
 import { formatTime, isBetween } from "../utils/utils";
 import { hud } from "../utils/hud";
@@ -732,7 +732,7 @@ dungeonBossImages = {};
 new Thread(() => {
     let imageData = JSON.parse(FileLib.read("stella", "stellanav/data/imageData.json"));
     Object.keys(imageData).forEach((v) => {
-        for (let i of imageData[v]) i.image = Image.fromAsset(i.image);
+        for (let i of imageData[v]) i.image = Image.fromFile(assets + "/boss/" + i.image);
     });
     dungeonBossImages = imageData;
 }).start();
