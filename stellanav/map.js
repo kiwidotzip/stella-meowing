@@ -135,6 +135,7 @@ MapGui.onDraw((x, y) => {
 
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
+    if (Dungeon.inBoss() && !settings().mapBossEnabled) return;
     renderMap();
 
     if (!Dungeon.inBoss()) {
@@ -142,9 +143,9 @@ StellaNav.register("renderOverlay", () => {
         renderRoomNames();
         renderPuzzleNames();
         renderPlayers();
-    } else if (!dungeonDone) {
+    } else if (!dungeonDone && settings().mapBossEnabled) {
         renderBoss();
-    } else {
+    } else if (settings().mapScoreEnabled) {
         renderScore();
     }
 

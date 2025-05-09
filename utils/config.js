@@ -403,6 +403,22 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         },
     })
 
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapBossEnabled",
+        title: "Dungeon Boss Map",
+        description: "Renders stella's boss map",
+        subcategory: "Main",
+    })
+
+    .addSwitch({
+        category: "StellaNav",
+        configName: "mapScoreEnabled",
+        title: "Dungeon Score Map",
+        description: "Renders stella's score map",
+        subcategory: "Main",
+    })
+
     .addSlider({
         configName: "mapHeadScale",
         title: "Marker Size",
