@@ -30,7 +30,7 @@ if (!GlStateManager) {
 
     ------------------- To Do -------------------
 
-    - Make the  map
+    - Fix room name duplicates at low render distances
 
     --------------------------------------------- */
 
@@ -204,8 +204,8 @@ StellaNav.register("renderOverlay", () => {
                     let icon = Object.keys(Dungeon.icons).find((key) => Dungeon.icons[key].player == p);
                     if (!icon) continue;
                     icon = Dungeon.icons[icon];
-                    player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 138);
-                    player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 138);
+                    player.iconX = MathLib.map(icon.x - Dungeon.mapCorners[0] * 2, 0, 256, 0, 128);
+                    player.iconY = MathLib.map(icon.y - Dungeon.mapCorners[1] * 2, 0, 256, 0, 128);
                     player.yaw = icon.rotation;
                 }
             }
