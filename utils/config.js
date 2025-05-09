@@ -409,8 +409,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         description: "Size of the player marker / heads",
         category: "StellaNav",
         subcategory: "Map",
-        options: [1, 5],
-        value: 3,
+        options: [1, 10],
+        value: 5,
     })
 
     .addSwitch({
@@ -494,8 +494,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         description: "Size of the room name / checkmark",
         category: "StellaNav",
         subcategory: "Map",
-        options: [1, 5],
-        value: 3,
+        options: [1, 10],
+        value: 5,
     })
 
     .addDropDown({
@@ -514,8 +514,8 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         description: "Size of the puzzle name / checkmark",
         category: "StellaNav",
         subcategory: "Map",
-        options: [1, 5],
-        value: 3,
+        options: [1, 10],
+        value: 5,
     })
 
     .addSwitch({

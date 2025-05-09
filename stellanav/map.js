@@ -154,7 +154,7 @@ StellaNav.register("renderOverlay", () => {
     .register("tick", () => {
         mapScale = oscale(Dungeon.floorNumber);
         mapOffset = Dungeon.floorNumber == 1 ? 10.6 : 0;
-        headScale = settings().mapHeadScale / 3;
+        headScale = settings().mapHeadScale / 5;
 
         let tempPlayers = DungeonScanner.players;
         if (!tempPlayers) return;
@@ -567,7 +567,7 @@ const renderCheckmarks = (map) => {
         if (room.checkmark == 3) checkImg = check[18];
         if (room.checkmark == 4) checkImg = check[119];
 
-        let scale = 0.9 * (settings().mapRoomScale / 3);
+        let scale = 0.9 * (settings().mapRoomScale / 5);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -619,7 +619,7 @@ const renderRoomNames = () => {
         if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.75 * (settings().mapRoomScale / 3);
+        let scale = 0.75 * (settings().mapRoomScale / 5);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -685,7 +685,7 @@ const renderPuzzleNames = () => {
         if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.75(settings().mapPuzzleScale / 3);
+        let scale = 0.75(settings().mapPuzzleScale / 5);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
