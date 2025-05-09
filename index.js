@@ -3,11 +3,11 @@ import { LocalStore } from "../tska/storage/LocalStore";
 import { hud } from "./utils/hud";
 import settings from "./utils/config";
 
-import "./utils/helpers";
 import "./features/firstInstall";
 import "./features/blockOverlay";
 import "./features/terms";
 import "./features/dungeon";
+import "./features/slotBinding";
 import "./stellanav/map";
 
 /*  ------------------- Index -------------------

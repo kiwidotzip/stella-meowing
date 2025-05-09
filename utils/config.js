@@ -377,6 +377,15 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcatagory: "Dev",
     })
 
+    //slot binding
+    .addSwitch({
+        category: "Msc.",
+        configName: "slotBinding",
+        title: "Slot Binding",
+        description: "Bind slots to hotbar slots",
+        subcategory: "Slot Binding",
+    })
+
     //map
     .addSwitch({
         category: "StellaNav",

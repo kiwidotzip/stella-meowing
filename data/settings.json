@@ -175,6 +175,11 @@
                 "type": 6,
                 "name": "devMode",
                 "value": false
+            },
+            {
+                "type": 6,
+                "name": "slotBinding",
+                "value": true
             }
         ]
     },
@@ -189,6 +194,16 @@
             {
                 "type": 2,
                 "name": "editMap"
+            },
+            {
+                "type": 6,
+                "name": "mapBossEnabled",
+                "value": false
+            },
+            {
+                "type": 6,
+                "name": "mapScoreEnabled",
+                "value": false
             },
             {
                 "type": 1,

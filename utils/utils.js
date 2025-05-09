@@ -8,6 +8,10 @@
 
     --------------------------------------------- */
 
+//prefixes
+export const prefix = "&d[Stella]";
+export const shortPrefix = "&d[SA]";
+
 //check if something is between two numbers
 export const isBetween = (number, min, max) => (number - min) * (number - max) <= 0;
 
@@ -80,5 +84,25 @@ export const highlightSlot = (gui, slotIndex, r, g, b, a, aboveItem = false, z =
 
     Renderer.translate(x, y, zPosition);
     Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, 16);
+    Renderer.finishDraw();
+};
+
+//outlines slot
+export const outlineSlot = (gui, slotIndex, r, g, b, a, lw = 1, aboveItem = false, z = null) => {
+    if (!(gui instanceof GuiContainer)) return;
+
+    const [x, y] = getSlotRenderPosition(slotIndex, gui);
+
+    let zPosition = 245;
+    if (aboveItem) zPosition = 241;
+    if (z !== null) zPosition = z;
+
+    Renderer.retainTransforms(true);
+    Renderer.translate(x, y, zPosition);
+    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, lw, 16);
+    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 0, 16, lw);
+    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 0, 16 - lw, 16, lw);
+    Renderer.drawRect(Renderer.color(r * 255, g * 255, b * 255, a * 255), 16 - lw, 0, lw, 16);
+    Renderer.retainTransforms(false);
     Renderer.finishDraw();
 };
