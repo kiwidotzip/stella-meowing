@@ -3,9 +3,8 @@ import { FeatManager } from "../utils/helpers";
 import { hud } from "../utils/hud";
 import DungeonScanner from "../../tska/skyblock/dungeon/DungeonScanner";
 import settings from "../utils/config";
-import Dungeon from "../../BloomCore/dungeons/Dungeon";
+import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
 import Shader from "../../shaderlib/index";
-import Location from "../../tska/skyblock/Location";
 
 /*  --------------- secret routes ---------------
 
@@ -113,13 +112,12 @@ RoomName.register(
         currRoomName = room.name;
     },
     20
-);
-
-//renders guis
-register("renderOverlay", () => {
-    if (hud.isOpen() || !settings().showRoomName || !Dungeon.inDungeon || Dungeon.bossEntry) return;
-    renderRoomName();
-});
+)
+    //renders guis
+    .register("renderOverlay", () => {
+        if (hud.isOpen() || !settings().showRoomName || Dungeon.inBoss()) return;
+        renderRoomName();
+    });
 
 //highlihgt trash
 TrashHighlight.register("guiRender", (mx, mt, gui) => {

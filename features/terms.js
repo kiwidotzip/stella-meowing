@@ -3,7 +3,7 @@ import { calcDistance } from "../utils/utils";
 import { FeatManager } from "../utils/helpers";
 import { Render3D } from "../../tska/rendering/Render3D";
 import settings from "../utils/config";
-import Dungeon from "../../BloomCore/dungeons/Dungeon";
+import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
 
 /*  -------------- Terminal Things ---------------
 
@@ -19,7 +19,7 @@ import Dungeon from "../../BloomCore/dungeons/Dungeon";
     --------------------------------------------- */
 
 //feature
-const TerminalTracker = FeatManager.createFeature("termNumbers", "catacombs");
+const TermNumbers = FeatManager.createFeature("termNumbers", "catacombs");
 
 // [X, Y, Z, #, Class, M7]
 const terms = JSON.parse(FileLib.read("stella", "data/dungeons/terms.json"));
@@ -38,8 +38,8 @@ const termLabels = {
     5: 5,
 };
 
-TerminalTracker.register("renderWorld", () => {
-    if (!Dungeon.inDungeon || Dungeon.floor !== "F7" || !Dungeon.bossEntry) return;
+TermNumbers.register("renderWorld", () => {
+    if (!Dungeon.inBoss() || Dungeon.floorNumber == 7) return;
 
     let [r, g, b] = [settings().termColor[0] / 255, settings().termColor[1] / 255, settings().termColor[2] / 255];
     let playerPos = [Math.round(Player.getX() + 0.25) - 1, Math.round(Player.getY()), Math.round(Player.getZ() + 0.25) - 1];
