@@ -403,6 +403,16 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         },
     })
 
+    .addSlider({
+        configName: "mapHeadScale",
+        title: "Marker Size",
+        description: "Size of the player marker / heads",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: [1, 5],
+        value: 3,
+    })
+
     .addSwitch({
         category: "StellaNav",
         configName: "mapPlayerHeads",
@@ -417,6 +427,23 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         title: "Outline player heads",
         description: "Outlines the head",
         subcategory: "Markers",
+
+        shouldShow(data) {
+            return data.mapPlayerHeads;
+        },
+    })
+
+    .addColorPicker({
+        configName: "mapHeadColor",
+        title: "Player Head Outline Color",
+        description: "The color to make the player head outline",
+        category: "StellaNav",
+        subcategory: "Markers",
+        value: [0, 0, 0, 255],
+
+        shouldShow(data) {
+            return data.mapHeadOutline && data.mapPlayerHeads;
+        },
     })
 
     .addSwitch({
@@ -425,6 +452,10 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         title: "Class Colors",
         description: "Makes the outline the color of the class",
         subcategory: "Markers",
+
+        shouldShow(data) {
+            return data.mapHeadOutline && data.mapPlayerHeads;
+        },
     })
 
     .addSwitch({
@@ -441,6 +472,10 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         title: "Show Own Name",
         description: "Showes your own name",
         subcategory: "Markers",
+
+        shouldShow(data) {
+            return data.mapShowPlayerNames;
+        },
     })
 
     .addDropDown({
@@ -453,6 +488,16 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         value: 0,
     })
 
+    .addSlider({
+        configName: "mapRoomScale",
+        title: "Room Name / Checkmark Size",
+        description: "Size of the room name / checkmark",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: [1, 5],
+        value: 3,
+    })
+
     .addDropDown({
         configName: "mapPuzzleType",
         title: "Puzzle Check Type",
@@ -461,6 +506,16 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         subcategory: "Map",
         options: ["Checkmark", "Name", "Secrets", "Both"],
         value: 1,
+    })
+
+    .addSlider({
+        configName: "mapPuzzleScale",
+        title: "Puzzle Name / Checkmark Size",
+        description: "Size of the puzzle name / checkmark",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: [1, 5],
+        value: 3,
     })
 
     .addSwitch({

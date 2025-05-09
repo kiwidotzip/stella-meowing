@@ -1,3 +1,5 @@
+import settings from "../../utils/config";
+
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats");
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator");
 const Color = Java.type("java.awt.Color");
@@ -189,7 +191,8 @@ export function renderPlayerHeads(netInfo, x, y, yaw, headScale, borderWidth, dC
     Renderer.rotate(yaw);
 
     if (borderWidth) {
-        let playerColor = getClassColor(dClass);
+        let playerColor = [settings().mapHeadColor[0], settings().mapHeadColor[1], settings().mapHeadColor[2], settings().mapHeadColor[3]];
+        if (settings().mapClassColors) playerColor = getClassColor(dClass);
 
         Renderer.drawRect(
             Renderer.color(playerColor[0] ?? 0, playerColor[1] ?? 0, playerColor[2] ?? 0, playerColor[3] ?? 255),

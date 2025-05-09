@@ -35,32 +35,37 @@ if (!GlStateManager) {
     --------------------------------------------- */
 
 // Variables ///////////////////////////////////////////////////////////////////////////
+//                                                                                    \\
+//checkmarks                                                                          //
 const checkmarkMap = new Map(); //                                                    \\
-const editCheckmarkMap = new Map(); //                                                //
-const defaultMapSize = [138, 138]; //                                                 \\
-let headScale = 1; //                                                                 //
+const editCheckmarkMap = new Map(); //                                                //                                                                //
 //                                                                                    \\
-let players = {}; //                                                                  //
-//                                                                                    \\
-let collectedSecrets = {}; //                                                         //
-let rooms = []; //                                                                    \\
+//dungeon info                                                                        //
+let players = {}; //                                                                  \\
+let rooms = []; //                                                                    //
+let collectedSecrets = {}; //                                                         \\
 //                                                                                    //
-let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //        \\
-let mapImage = new Image(mapBuffered); //                                             //
-let emptyBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //      \\
-let emptyImage = new Image(emptyBuffered); //                                         //
-//                                                                                    \\
-let mapIsEmpty = true; //                                                             //
+//map image                                                                           \\
+let mapBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //        //
+let mapImage = new Image(mapBuffered); //                                             \\
+let emptyBuffered = new BufferedImage(23, 23, BufferedImage.TYPE_4BYTE_ABGR); //      //
+let emptyImage = new Image(emptyBuffered); //                                         \\                                                                                   \\
+//                                                                                    //
+//map size                                                                            \\
+const defaultMapSize = [138, 138]; //                                                 //
 //                                                                                    \\
 let mapScale = 1; //                                                                  //
 let mapOffset = 0; //                                                                 \\
-//                                                                                    //
-let watcherDone = false; //                                                           \\
-let dungeonDone = false; //                                                           //
+let headScale = 1; //                                                                 //
 //                                                                                    \\
-let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘"; //                  //
-let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0"; //              \\
-////////////////////////////////////////////////////////////////////////////////////////
+//map data                                                                            //
+let mapIsEmpty = true; //                                                             \\
+let watcherDone = false; //                                                           //
+let dungeonDone = false; //                                                           \\
+//                                                                                    //
+let mapLine1 = "&7Secrets: &b?    &7Crypts: &c0    &7Mimic: &c✘"; //                  \\
+let mapLine2 = "&7Min Secrets: &b?    &7Deaths: &a0    &7Score: &c0"; //              //
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //feature
 const StellaNav = FeatManager.createFeature("mapEnabled", "catacombs");
@@ -108,9 +113,8 @@ MapGui.onDraw((x, y) => {
     Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
     Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, w, h);
+    Renderer.drawImage(defaultMapImage, 5, 5, 128, 128);
     Renderer.finishDraw();
-
-    Renderer.drawImage(defaultMapImage, 5 + x, 5 + y, 128 * MapGui.getScale(), 128 * MapGui.getScale());
 
     // Add fake checkmarks
     editCheckmarkMap.set(0, 34);
@@ -150,6 +154,7 @@ StellaNav.register("renderOverlay", () => {
     .register("tick", () => {
         mapScale = oscale(Dungeon.floorNumber);
         mapOffset = Dungeon.floorNumber == 1 ? 10.6 : 0;
+        headScale = settings().mapHeadScale / 3;
 
         let tempPlayers = DungeonScanner.players;
         if (!tempPlayers) return;
@@ -562,7 +567,7 @@ const renderCheckmarks = (map) => {
         if (room.checkmark == 3) checkImg = check[18];
         if (room.checkmark == 4) checkImg = check[119];
 
-        let scale = 0.9;
+        let scale = 0.9 * (settings().mapRoomScale / 3);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -614,7 +619,7 @@ const renderRoomNames = () => {
         if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.75;
+        let scale = 0.75 * (settings().mapRoomScale / 3);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
@@ -680,7 +685,7 @@ const renderPuzzleNames = () => {
         if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.75;
+        let scale = 0.75(settings().mapPuzzleScale / 3);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));
