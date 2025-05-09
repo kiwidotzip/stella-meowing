@@ -34,23 +34,19 @@ EventListener.createEvent("stella:secretCollect");
 
 //right click secrets
 register("playerInteract", (action) => {
-    if (!Location.inWorld("catacombs")) return;
-    if (Dungeon.inBoss()) return;
+    if (!Location.inWorld("catacombs") || Dungeon.inBoss()) return;
     if (action.toString() !== "RIGHT_CLICK_BLOCK") return;
 
     let room = DungeonScanner.getCurrentRoom();
-
     if (!room) return;
 
     let block = Player.lookingAt();
 
-    if (!block) return;
-    if (!block?.type) return;
+    if (!block || !block?.type) return;
     if (block?.getID() === 0) return;
 
     let pos = [block?.getX(), block?.getY(), block?.getZ()];
     let id = block?.getType().getID();
-
     let secretpos = room.getRoomCoord(pos);
     let secret = {};
 
@@ -80,10 +76,7 @@ register("playerInteract", (action) => {
         };
     }
 
-    if (secret == {}) return;
-    if (!secret.type) return;
-    if (!secret.pos) return;
-    if (!secret.room) return;
+    if (!secret || !secret.type || !secret.pos || !secret.room) return;
     EventListener.post("stella:secretCollect", secret);
 });
 
@@ -112,22 +105,15 @@ register("packetReceived", (packet) => {
         room: room.name,
     };
 
-    if (secret == {}) return;
-    if (!secret.type) return;
-    if (!secret.pos) return;
-    if (!secret.room) return;
+    if (!secret || !secret.type || !secret.pos || !secret.room) return;
     EventListener.post("stella:secretCollect", secret);
 }).setFilteredClass(net.minecraft.network.play.server.S29PacketSoundEffect);
 
 //item secrets
 let tempItemIdLocs = new Map();
-
 register(net.minecraftforge.event.entity.EntityJoinWorldEvent, (event) => {
-    if (event.entity instanceof EntityItem) {
-        tempItemIdLocs.set(event.entity.func_145782_y(), event.entity);
-    }
+    if (event.entity instanceof EntityItem) tempItemIdLocs.set(event.entity.func_145782_y(), event.entity);
 });
-
 register("worldLoad", () => {
     tempItemIdLocs.clear();
 });
@@ -136,12 +122,9 @@ register("packetReceived", (packet) => {
     let entityID = packet.func_149354_c();
 
     if (!this.tempItemIdLocs.has(entityID)) return;
-
-    if (!Location.inWorld("catacombs")) return;
-    if (Dungeon.inBoss()) return;
+    if (!Location.inWorld("catacombs") || Dungeon.inBoss()) return;
 
     let room = DungeonScanner.getCurrentRoom();
-
     if (!room) return;
 
     let entity = tempItemIdLocs.get(entityID);
@@ -151,7 +134,6 @@ register("packetReceived", (packet) => {
     let e = new Entity(entity);
     let pos = [e.getX(), e.getY(), e.getZ()];
     let secretpos = room.getRoomCoord([Math.round(pos[0]), Math.round(pos[1]), Math.round(pos[2])]);
-
     if (!name || !secretItems.has(name.removeFormatting())) return;
 
     secret = {
@@ -160,9 +142,6 @@ register("packetReceived", (packet) => {
         room: room.name,
     };
 
-    if (secret == {}) return;
-    if (!secret.type) return;
-    if (!secret.pos) return;
-    if (!secret.room) return;
+    if (!secret || !secret.type || !secret.pos || !secret.room) return;
     EventListener.post("stella:secretCollect", secret);
 }).setFilteredClass(net.minecraft.network.play.server.S0DPacketCollectItem);

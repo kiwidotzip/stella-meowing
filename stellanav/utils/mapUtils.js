@@ -20,17 +20,13 @@ export const assets = "config/ChatTriggers/modules/stella/stellanav/assets";
 //map scaling
 export const oscale = (floor) => {
     if (!floor) return 1;
-
     // The max dungeon size is 6x6
     // Lower floors contain smaller dungeons
     // Entrance is only a 4x4 dungeon, so we need to scale the rooms by the inverse of 4/6
     // To make them fill the entire map area, which is 6/4.
     // The same goes for the other non 6x6 dungeons
     if (floor == 0) return 6 / 4;
-    if (floor == 1) return 6 / 5;
-    if (floor == 2) return 6 / 5;
-    if (floor == 3) return 6 / 5;
-
+    if (1 < floor < 4) return 6 / 5;
     return 1;
 };
 
