@@ -279,7 +279,6 @@ StellaNav.register("renderOverlay", () => {
                         maxRooms++;
 
                         let room = pGreenRooms[pRoomName].room;
-
                         wRoomNames.push(room.name);
 
                         let name = room.name == "Default" ? room.shape : room.name ?? room.shape;
@@ -324,11 +323,8 @@ StellaNav.register("renderOverlay", () => {
                     }
 
                     final.addTextComponent(new TextComponent("&b" + minRooms + "-" + maxRooms).setHover("show_text", roomLore.trim()));
-
                     final.addTextComponent(new TextComponent("&7 rooms | &b" + secrets + "&7 secrets"));
-
                     final.addTextComponent(new TextComponent("&7 | &b" + player.deaths + "&7 deaths"));
-
                     final.chat();
                 }
             });
@@ -369,8 +365,7 @@ InternalEvents.on("mapdata", (mapData) => {
     if (Dungeon.inBoss()) return;
     const colors = mapData.field_76198_e;
 
-    if (!colors || colors[0] == 119) return;
-    if (!Dungeon.mapCorners) return;
+    if (!colors || colors[0] == 119 || !Dungeon.mapCorners) return;
 
     clearMap();
 
@@ -456,11 +451,9 @@ const renderMap = () => {
         Renderer.translate(5, 5);
         Renderer.scale(mapScale);
         Renderer.drawImage(map, 0, 0, 128, 128);
-
-        Renderer.finishDraw();
     }
-
     Renderer.retainTransforms(false);
+    Renderer.finishDraw();
 };
 
 //player heads
@@ -478,7 +471,6 @@ const renderPlayers = () => {
         let size = [7, 10];
         let head = p == Player.getName() ? GreenMarker : WhiteMarker;
         let borderWidth = 0;
-
         if (settings().mapHeadOutline) borderWidth = 3;
 
         let x = players[p].iconX || 0;
@@ -502,6 +494,13 @@ const renderPlayers = () => {
             let scale = headScale / 1.3;
             Renderer.translate(0, 8.5);
             Renderer.scale(scale);
+            //shadow
+            Renderer.drawStringWithShadow("&0" + name, -width / 2 + scale, 0);
+            Renderer.drawStringWithShadow("&0" + name, -width / 2 - scale, 0);
+            Renderer.drawStringWithShadow("&0" + name, -width / 2, +scale);
+            Renderer.drawStringWithShadow("&0" + name, -width / 2, -scale);
+
+            //normal
             Renderer.drawStringWithShadow(name, -width / 2, 0);
             Renderer.scale(1.3 / headScale, 1.3 / headScale);
             Renderer.translate(0, -8.5);
@@ -516,8 +515,7 @@ const renderPlayers = () => {
         let hscale = MapGui.getScale() * mapScale;
 
         // Render the player head
-        if (!players[p]) return;
-        if (!players[p].info) return;
+        if (!players[p] || !players[p].info) return;
         if (settings().mapPlayerHeads) renderPlayerHeads(players[p]?.info[0], (x + mapOffset) * hscale + MapGui.getX(), y * hscale + MapGui.getY(), yaw, headScale, borderWidth, players[p]?.info[1], hscale);
     }
 };
@@ -546,21 +544,18 @@ const renderCheckmarks = (map) => {
     }
     //render all other checkmarks
     for (let room of rooms) {
-        if (!room) continue;
-        if (!room.explored) continue;
+        if (!room || !room.explored) continue;
 
         let check = getCheckmarks();
         let checkImg = null;
         let roomType = settings().mapRoomType;
         let mapType = settings().mapPuzzleType;
 
-        if (!room.checkmark) continue;
-        if (!room.comps) continue;
+        if (!room.checkmark || !room.comps) continue;
 
         if (roomType == 2 && room?.secrets != 0 && (room.type == 0 || room.type == 6)) continue;
         if ((roomType == 1 || roomType == 3) && (room.type == 0 || room.type == 6)) continue;
-        if (mapType > 0 && room.type == 1) continue;
-        if (room.type == 7) continue;
+        if ((mapType > 0 && room.type == 1) || room.type == 7) continue;
         if (room.checkmark == 0) continue;
         if (room.checkmark == 1) checkImg = check[34];
         if (room.checkmark == 2) checkImg = check[30];
@@ -599,19 +594,14 @@ const renderRoomNames = () => {
     for (let room of rooms) {
         let type = settings().mapRoomType;
         if (type < 1) continue;
-        if (!room) continue;
-        if (!room.explored) continue;
-        if (!room.comps) continue;
-        if (!room.name) continue;
+        if (!room || !room.explored || !room.comps || !room.name) continue;
         if (room.type != 0 && room.type != 6) continue;
 
         let textColor = null;
-
         let secrets = collectedSecrets[room.name] ? collectedSecrets[room.name].length : 0;
         if (room.checkmark == 2) secrets = room.secrets;
 
         textColor = getTextColor(room.checkmark);
-
         let text = [];
         if (type == 1 || type == 3) text = room.name?.split(" ") || ["???"];
 
@@ -631,7 +621,6 @@ const renderRoomNames = () => {
             if (room.comps.filter((a) => a[1] == minZ).length == 2) location[1] -= roomHeight / 2;
             else location[1] += roomHeight / 2;
         }
-
         let [x, y] = getRoomPosition(location[0], location[1]);
 
         Renderer.retainTransforms(true);
@@ -665,19 +654,14 @@ const renderPuzzleNames = () => {
     for (let room of rooms) {
         let type = settings().mapPuzzleType;
         if (type < 1) continue;
-        if (!room) continue;
-        if (!room.explored) continue;
-        if (!room.comps) continue;
-        if (!room.name) continue;
+        if (!room || !room.explored || !room.comps || !room.name) continue;
         if (room.type != 1) continue;
 
         let textColor = null;
-
         let secrets = 0;
         if (room.checkmark == 2) secrets = room?.secrets;
 
         textColor = getTextColor(room.checkmark);
-
         let text = [];
         if (type == 1 || type == 3) text = room.name?.split(" ") || ["???"];
 
@@ -865,14 +849,12 @@ const renderScore = () => {
     let mapData; // Get map data from hotbar
     try {
         let item = Player.getInventory().getStackInSlot(8);
-        //                      .getMapData
         mapData = item.getItem().func_77873_a(item.getItemStack(), World.getWorld()); // ItemStack.getItem().getMapData()
     } catch (error) {}
 
     if (!mapData) return;
 
     // Render map directly from hotbar
-
     let [x, y, scale] = [MapGui.getX(), MapGui.getY(), MapGui.getScale()];
     let size = 128;
 
@@ -889,7 +871,6 @@ let secretsData = new Map();
 
 register("step", () => {
     // Check if peoples data needs to be cleared from the map
-
     secretsData.forEach(([timestamp], uuid) => {
         if (Date.now() - timestamp > 5 * 60 * 1000) secretsData.delete(uuid);
     });
@@ -914,7 +895,6 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
 function updatePlayerUUID(p) {
     if (players[p].uuid) return;
     // Check players in world to update uuid field
-
     let player = World.getPlayerByName(p);
     if (!player) return;
     players[p].uuid = player.getUUID().toString();
@@ -926,7 +906,6 @@ function updatePlayerUUID(p) {
 
 function updateCurrentSecrets(p) {
     if (!players[p].uuid) return;
-
     getPlayerSecrets(players[p].uuid, 0, (secrets) => {
         players[p].currSecrets = secrets;
     });
