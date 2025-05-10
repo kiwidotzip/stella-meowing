@@ -670,7 +670,7 @@ const renderPuzzleNames = () => {
         if (room?.secrets && room?.secrets !== 0 && (type == 2 || type == 3)) text.push(sectext);
 
         //let text = room.name;
-        let scale = 0.75(settings().mapPuzzleScale / 5);
+        let scale = 0.75 * (settings().mapPuzzleScale / 5);
         let location = room.comps[0];
 
         let minX = Math.min(...room.comps.map((a) => a[0]));

@@ -208,7 +208,7 @@
             {
                 "type": 1,
                 "name": "mapHeadScale",
-                "value": 3
+                "value": 5
             },
             {
                 "type": 6,
@@ -253,7 +253,7 @@
             {
                 "type": 1,
                 "name": "mapRoomScale",
-                "value": 3
+                "value": 5
             },
             {
                 "type": 7,
@@ -263,7 +263,7 @@
             {
                 "type": 1,
                 "name": "mapPuzzleScale",
-                "value": 3
+                "value": 5
             },
             {
                 "type": 6,

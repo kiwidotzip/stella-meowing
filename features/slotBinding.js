@@ -1,6 +1,6 @@
 import { LocalStore } from "../../tska/storage/LocalStore";
 import { FeatManager } from "../utils/helpers";
-import { prefix, outlineSlot } from "../utils/utils";
+import { prefix, outlineSlot, highlightSlot, drawLineBetweenSlots } from "../utils/utils";
 
 const data = new LocalStore(
     "stella",
@@ -11,7 +11,6 @@ const data = new LocalStore(
 );
 
 const slotBinnding = FeatManager.createFeature("slotBinding");
-
 const bindingKeybind = new KeyBind("Bind Slots", Keyboard.KEY_NONE, "Stella");
 
 let previousSlot = null;
@@ -23,7 +22,6 @@ const handleShiftClick = (slotClicked) => {
     const container = Player.getContainer();
     if (slot > 35) {
         slot = Object.keys(data.binds).find((key) => data.binds[key] === slotClicked);
-        ChatLib.chat(`${prefix} &bGoofy ${slot}`);
     }
     const hotbarSlot = data.binds[slot] % 36;
 
@@ -36,11 +34,8 @@ slotBinnding.register("guiMouseClick", (_, __, mbtn, gui, event) => {
     if (mbtn !== 0 || !(gui instanceof net.minecraft.client.gui.inventory.GuiInventory)) return;
 
     const slot = gui.getSlotUnderMouse()?.field_75222_d;
-    ChatLib.chat(`${prefix} &bSlot: &6${slot}`);
-
     // 0 - 4 crafting slots
     if (!slot || slot < 5) return;
-
     if (previousSlot && (slot < 36 || slot > 44)) {
         ChatLib.chat(`${prefix} &cPlease click a valid hotbar slot!`);
         previousSlot = null;
@@ -50,7 +45,6 @@ slotBinnding.register("guiMouseClick", (_, __, mbtn, gui, event) => {
 
     if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
         if (slot in data.binds || Object.values(data.binds).includes(slot)) {
-            ChatLib.chat(`${prefix} &cThis slot is bound to something!`);
             cancel(event);
             handleShiftClick(slot);
             return;
@@ -58,6 +52,16 @@ slotBinnding.register("guiMouseClick", (_, __, mbtn, gui, event) => {
     }
 
     if (!Keyboard.isKeyDown(bindingKeybind.getKeyCode())) return;
+
+    if (slot in data.binds || Object.values(data.binds).includes(slot)) {
+        cancel(event);
+        let tempslot = slot;
+        if (Object.values(data.binds).includes(slot)) tempslot = Object.keys(data.binds).find((key) => data.binds[key] === slot);
+        delete data.binds[tempslot];
+        data.save();
+        ChatLib.chat(`${prefix} &bBinding deleted`);
+        return;
+    }
 
     if (!previousSlot) previousSlot = slot;
 
@@ -81,27 +85,21 @@ slotBinnding.register("guiMouseClick", (_, __, mbtn, gui, event) => {
 
 slotBinnding.register("guiRender", (mx, mt, gui) => {
     if (!(gui instanceof net.minecraft.client.gui.inventory.GuiInventory)) return;
+    let curslot = gui?.getSlotUnderMouse()?.field_75222_d;
     let [r, g, b, a] = [0, 0, 255, 255];
     for (let slot of Object.keys(data.binds)) {
         outlineSlot(gui, slot, r, g, b, a, 1, false);
         outlineSlot(gui, data.binds[slot], r, g, b, a, 1, false);
+        if ((slot == curslot || data.binds[slot] == curslot) && curslot) {
+            drawLineBetweenSlots(gui, slot, data.binds[slot], r, g, b, a, 1, true);
+        }
     }
 
     if (previousSlot) {
         let inv = Player.getContainer();
         for (let i = 0; i < inv.getSize(); i++) {
-            if (i > 35 || i == previousSlot) continue;
+            if (i > 35 || i == previousSlot || i < 5) continue;
             highlightSlot(gui, i, 1, 0, 0, 1, false);
         }
     }
 });
-
-register("command", (slotNumber) => {
-    const slot = parseInt(slotNumber);
-    if (!(slot in data.binds)) return ChatLib.chat(`${prefix} &cPlease set a valid slot! &7slots&r: &b${Object.keys(data.binds).join(", &b")}`);
-
-    delete data.binds[slot];
-    data.save();
-
-    ChatLib.chat(`${prefix} &bBinding with slot &5${slot} &bdeleted`);
-}).setName("deletebinding");

@@ -106,3 +106,17 @@ export const outlineSlot = (gui, slotIndex, r, g, b, a, lw = 1, aboveItem = fals
     Renderer.retainTransforms(false);
     Renderer.finishDraw();
 };
+
+export const drawLineBetweenSlots = (gui, slot1Index, slot2Index, r, g, b, a, lw = 1, aboveItem = false, z = null) => {
+    if (!(gui instanceof GuiContainer)) return;
+
+    const [x1, y1] = getSlotRenderPosition(slot1Index, gui);
+    const [x2, y2] = getSlotRenderPosition(slot2Index, gui);
+
+    let zPosition = 245;
+    if (aboveItem) zPosition = 241;
+    if (z !== null) zPosition = z;
+
+    Renderer.translate(0, 0, zPosition);
+    Renderer.drawLine(Renderer.color(r * 255, g * 255, b * 255, a * 255), x1 + 8, y1 + 8, x2 + 8, y2 + 8, lw);
+};

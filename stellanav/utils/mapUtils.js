@@ -26,7 +26,7 @@ export const oscale = (floor) => {
     // To make them fill the entire map area, which is 6/4.
     // The same goes for the other non 6x6 dungeons
     if (floor == 0) return 6 / 4;
-    if (1 < floor < 4) return 6 / 5;
+    if (floor > 0 && floor < 4) return 6 / 5;
     return 1;
 };
 
