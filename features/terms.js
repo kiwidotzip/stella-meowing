@@ -85,6 +85,7 @@ termTracker
     .register(
         "chat",
         (name, type) => {
+            if (name.includes(">")) return;
             let data = completed.get(name) || { terminal: 0, device: 0, lever: 0 };
             data[type]++;
             completed.set(name, data);
