@@ -1,5 +1,5 @@
 import { renderBoxOutline, renderFilledBox } from "../utils/renderUtils";
-import { calcDistance } from "../utils/utils";
+import { calcDistance, shortPrefix } from "../utils/utils";
 import { FeatManager } from "../utils/helpers";
 import { Render3D } from "../../tska/rendering/Render3D";
 import settings from "../utils/config";
@@ -20,6 +20,7 @@ import Dungeon from "../../tska/skyblock/dungeon/Dungeon";
 
 //feature
 const TermNumbers = FeatManager.createFeature("termNumbers", "catacombs");
+const termTracker = FeatManager.createFeature("termTracker", "catacombs");
 
 // [X, Y, Z, #, Class, M7]
 const terms = JSON.parse(FileLib.read("stella", "data/dungeons/terms.json"));
@@ -80,30 +81,24 @@ TermNumbers.register("renderWorld", () => {
 //terminal tracker
 const completed = new Map();
 
-//reset
-register("chat", () => {
-    completed.clear();
-}).setCriteria("[BOSS] Goldor: Who dares trespass into my domain?");
-
-//add compleated stuff
-register("chat", (name, type) => {
-    if (!settings().termTracker) return;
-    if (name.includes(">")) return;
-
-    let data = completed.get(name) || { terminal: 0, device: 0, lever: 0 };
-    data[type]++;
-    completed.set(name, data);
-}).setCriteria(/^(\w{1,16}) (?:activated|completed) a (\w+)! \(\d\/\d\)$/);
-
-//Print to chat
-register("chat", () => {
-    if (!settings().termTracker) return;
-    completed.forEach((data, name) => {
-        ChatLib.chat("&b[SA] &d" + name + " &7completed &f" + data.terminal + "&7 terms, &f" + data.device + "&7 devices, and &f" + data.lever + " &7levers!");
-    });
-}).setCriteria("The Core entrance is opening!");
-
-//Reset on world unload
-register("worldUnload", () => {
-    completed.clear();
-});
+termTracker
+    .register(
+        "chat",
+        (name, type) => {
+            let data = completed.get(name) || { terminal: 0, device: 0, lever: 0 };
+            data[type]++;
+            completed.set(name, data);
+        },
+        /^(\w{1,16}) (?:activated|completed) a (\w+)! \(\d\/\d\)$/
+    )
+    .register(
+        "chat",
+        () => {
+            completed.forEach((data, name) => {
+                ChatLib.chat(shortPrefix + "&b" + name + " &7completed &f" + data.terminal + "&7 terms, &f" + data.device + "&7 devices, and &f" + data.lever + " &7levers!");
+            });
+        },
+        "^The Core entrance is opening!"
+    )
+    .onRegister(() => completed.clear())
+    .onUnregister(() => completed.clear());
