@@ -433,7 +433,7 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         title: "Marker Size",
         description: "Size of the player marker / heads",
         category: "StellaNav",
-        subcategory: "Map",
+        subcategory: "Markers",
         options: [1, 10],
         value: 5,
     })
@@ -558,6 +558,50 @@ const defaultConf = new DefaultConfig("stella", "data/settings.json")
         category: "StellaNav",
         subcategory: "Map",
         value: [0, 0, 0, 255],
+    })
+
+    .addColorPicker({
+        configName: "mapBackgroundColor",
+        title: "Map Background Color",
+        description: "The color to make the map background",
+        category: "StellaNav",
+        subcategory: "Map",
+        value: [0, 0, 0, 100],
+    })
+
+    .addSwitch({
+        configName: "mapBorder",
+        title: "Map Border",
+        description: "Shows a border around the map",
+        category: "StellaNav",
+        subcategory: "Map",
+    })
+
+    .addSlider({
+        configName: "mapBorderWidth",
+        title: "Map Border Width",
+        description: "Width of the map border",
+        category: "StellaNav",
+        subcategory: "Map",
+        options: [1, 5],
+        value: 1,
+
+        shouldShow(data) {
+            return data.mapBorder;
+        },
+    })
+
+    .addColorPicker({
+        configName: "mapBorderColor",
+        title: "Map Border Color",
+        description: "The color to make the map border",
+        category: "StellaNav",
+        subcategory: "Map",
+        value: [0, 0, 0, 255],
+
+        shouldShow(data) {
+            return data.mapBorder;
+        },
     })
 
     //themeing

@@ -108,13 +108,19 @@ const updatePlayer = (player) => {
 //edit hud
 MapGui.onDraw((x, y) => {
     let [w, h] = defaultMapSize;
+    let [r, g, b, a] = settings().mapBackgroundColor;
     h += settings().mapInfoUnder ? 10 : 0;
 
+    Renderer.retainTransforms(true);
     Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
-    Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, w, h);
+    Renderer.drawRect(Renderer.color(r, g, b, a), 0, 0, w, h);
     Renderer.drawImage(defaultMapImage, 5, 5, 128, 128);
+    Renderer.retainTransforms(false);
     Renderer.finishDraw();
+
+    // add border
+    if (settings().mapBorder) renderMapBorder();
 
     // Add fake checkmarks
     editCheckmarkMap.set(0, 34);
@@ -136,14 +142,17 @@ MapGui.onDraw((x, y) => {
 StellaNav.register("renderOverlay", () => {
     if (hud.isOpen()) return;
     if (Dungeon.inBoss() && !settings().mapBossEnabled) return;
+
     renderMap();
+
+    if (settings().mapBorder) renderMapBorder();
 
     if (!Dungeon.inBoss()) {
         renderCheckmarks(checkmarkMap);
         renderRoomNames();
         renderPuzzleNames();
         renderPlayers();
-    } else if (!dungeonDone && settings().mapBossEnabled) {
+    } else if ((!dungeonDone && settings().mapBossEnabled && settings().mapScoreEnabled) || (dungeonDone && settings().mapBossEnabled && !settings().mapScoreEnabled)) {
         renderBoss();
     } else if (settings().mapScoreEnabled) {
         renderScore();
@@ -436,17 +445,36 @@ InternalEvents.on("mapdata", (mapData) => {
     });
 });
 
+//map border rendering
+const renderMapBorder = () => {
+    let [w, h] = defaultMapSize;
+    let scale = settings().mapBorderWidth - 1;
+    let [r, g, b, a] = settings().mapBorderColor;
+    h += settings().mapInfoUnder ? 10 : 0;
+    Renderer.retainTransforms(true);
+    Renderer.translate(MapGui.getX(), MapGui.getY());
+    Renderer.scale(MapGui.getScale());
+    let color = Renderer.color(r, g, b, a);
+
+    Renderer.drawLine(color, 0, 0 - scale, 0, h + scale, scale + 1);
+    Renderer.drawLine(color, 0 - scale, 0, w + scale, 0, scale + 1);
+    Renderer.drawLine(color, w, 0 - scale, w, h + scale, scale + 1);
+    Renderer.drawLine(color, 0 - scale, h, w + scale, h, scale + 1);
+    Renderer.retainTransforms(false);
+};
+
 //map rendering
 const renderMap = () => {
     let map = mapIsEmpty ? emptyImage : mapImage;
     let [x, y] = [MapGui.getX(), MapGui.getY()];
     let [w, h] = defaultMapSize;
+    let [r, g, b, a] = settings().mapBackgroundColor;
     h += settings().mapInfoUnder ? 10 : 0;
 
     Renderer.retainTransforms(true);
     Renderer.translate(x, y);
     Renderer.scale(MapGui.getScale());
-    Renderer.drawRect(Renderer.color(0, 0, 0, 100), 0, 0, w, h);
+    Renderer.drawRect(Renderer.color(r, g, b, a), 0, 0, w, h);
     if (!Dungeon.inBoss()) {
         Renderer.translate(mapOffset, 0);
         Renderer.translate(5, 5);
@@ -532,13 +560,15 @@ const renderCheckmarks = (map) => {
         let ry = roomIndex % 6;
         let scale = 0.9;
         let [x, y] = getRoomPosition(rx, ry);
-        let [w, h] = [12 * scale * mapScale, 12 * scale * mapScale];
-        if (checkmarkImage == 119) [w, h] = [10 * scale * mapScale, 12 * scale * mapScale];
+        let [w, h] = [12 * scale, 12 * scale];
+        if (checkmarkImage == 119) [w, h] = [10 * scale, 12 * scale];
 
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.translate(mapOffset, 0);
+        Renderer.scale(mapScale);
+        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
         Renderer.drawImage(checkmarkImages[checkmarkImage], -w / 2, -h / 2, w, h);
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
@@ -578,12 +608,14 @@ const renderCheckmarks = (map) => {
 
         let [x, y] = getRoomPosition(location[0], location[1]);
 
-        let [w, h] = [12 * scale * mapScale, 12 * scale * mapScale];
+        let [w, h] = [12 * scale, 12 * scale];
 
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.translate(mapOffset, 0);
+        Renderer.scale(mapScale);
+        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
         Renderer.drawImage(checkImg, -w / 2, -h / 2, w, h);
         Renderer.retainTransforms(false);
         Renderer.finishDraw();
@@ -625,9 +657,11 @@ const renderRoomNames = () => {
         let [x, y] = getRoomPosition(location[0], location[1]);
 
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.translate(mapOffset, 0);
+        Renderer.scale(mapScale);
+        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
         Renderer.scale(scale);
 
         let i = 0;
@@ -686,9 +720,11 @@ const renderPuzzleNames = () => {
         let [x, y] = getRoomPosition(location[0], location[1]);
 
         Renderer.retainTransforms(true);
-        Renderer.translate(MapGui.getX() + mapOffset, MapGui.getY());
+        Renderer.translate(MapGui.getX(), MapGui.getY());
         Renderer.scale(MapGui.getScale());
-        Renderer.translate((x + 128 / 23 - 1) * mapScale, (y + 128 / 23 - 1) * mapScale);
+        Renderer.translate(mapOffset, 0);
+        Renderer.scale(mapScale);
+        Renderer.translate(x + 128 / 23 - 1, y + 128 / 23 - 1);
         Renderer.scale(scale);
 
         let i = 0;

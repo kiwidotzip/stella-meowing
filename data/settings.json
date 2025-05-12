@@ -179,7 +179,7 @@
             {
                 "type": 6,
                 "name": "slotBinding",
-                "value": true
+                "value": false
             }
         ]
     },
@@ -198,12 +198,12 @@
             {
                 "type": 6,
                 "name": "mapBossEnabled",
-                "value": false
+                "value": true
             },
             {
                 "type": 6,
                 "name": "mapScoreEnabled",
-                "value": false
+                "value": true
             },
             {
                 "type": 1,
@@ -273,6 +273,36 @@
             {
                 "type": 5,
                 "name": "mapWitherDoorColor",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    255
+                ]
+            },
+            {
+                "type": 5,
+                "name": "mapBackgroundColor",
+                "value": [
+                    0,
+                    0,
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": 6,
+                "name": "mapBorder",
+                "value": true
+            },
+            {
+                "type": 1,
+                "name": "mapBorderWidth",
+                "value": 1
+            },
+            {
+                "type": 5,
+                "name": "mapBorderColor",
                 "value": [
                     0,
                     0,
